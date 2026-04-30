@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISS RTU — Complete Study Guide | B.Tech VI Sem</title>
+<meta name="description" content="Complete RTU exam prep guide for Information Security Systems (6E7103 / 6CS4-03). All units, PYQs 2022–2025, formulas, solved problems and tricks.">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@300;400;500;600&family=Outfit:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:       #060a0d;
+  --bg2:      #091018;
+  --surface:  #0f1c26;
+  --surface2: #152432;
+  --border:   #1e3040;
+  --border2:  #122030;
+  --u1: #22d3ee;
+  --u2: #f97316;
+  --u3: #ef4444;
+  --u4: #a78bfa;
+  --u5: #10b981;
+  --u6: #3b82f6;
+  --upred: #f59e0b;
+  --gold: #fbbf24;
+  --text: #dde8f0;
+  --dim:  #3d5a70;
+  --dim2: #6a8fa8;
+  --mono: 'JetBrains Mono', monospace;
+  --head: 'Fraunces', serif;
+  --body: 'Outfit', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+.topnav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(6,10,13,0.94);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border2);
+  padding: 0 20px;
+  display: flex; align-items: center; gap: 4px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.topnav::-webkit-scrollbar { display: none; }
+.tnlabel {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--u1);
+  padding: 14px 12px 14px 0;
+  border-right: 1px solid var(--border); margin-right: 6px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.tnlink {
+  font-family: var(--mono); font-size: 11px; padding: 7px 12px;
+  border-radius: 6px; text-decoration: none; color: var(--dim2);
+  white-space: nowrap; flex-shrink: 0; transition: all 0.18s;
+  border: 1px solid transparent;
+}
+.tnlink:hover { color: var(--text); background: var(--surface2); }
+.tnlink.active { color: var(--u1); background: rgba(34,211,238,0.1); border-color: rgba(34,211,238,0.3); }
+.tnlink.pyq { color: var(--upred); background: rgba(245,158,11,0.06); border-color: rgba(245,158,11,0.2); margin-left: 4px; }
+.tnlink.pyq:hover { background: rgba(245,158,11,0.12); }
+
+.hero {
+  position: relative; overflow: hidden;
+  padding: 68px 40px 60px;
+  background: var(--bg);
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(34,211,238,0.09) 1px, transparent 1px),
+    radial-gradient(circle, rgba(239,68,68,0.05) 1px, transparent 1px);
+  background-size: 40px 40px, 80px 80px;
+  background-position: 0 0, 20px 20px;
+  animation: dotDrift 28s linear infinite;
+}
+@keyframes dotDrift {
+  0%   { transform: translate(0,0); }
+  100% { transform: translate(40px, 40px); }
+}
+.hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 55% at 15% 50%, rgba(34,211,238,0.08) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 45% at 85% 15%, rgba(239,68,68,0.07) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  position: relative; z-index: 1;
+  max-width: 960px; margin: 0 auto;
+  display: flex; flex-direction: column; gap: 18px;
+}
+
+.hero-eyebrow {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--u1);
+  animation: fadeUp 0.5s ease both;
+}
+.hero-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--u1); box-shadow: 0 0 12px var(--u1);
+  animation: blink 2.5s ease-in-out infinite;
+}
+@keyframes blink {
+  0%,100% { opacity:1; transform:scale(1); }
+  50%      { opacity:0.4; transform:scale(0.7); }
+}
+
+.hero-title {
+  font-family: var(--head); font-weight: 800;
+  font-size: clamp(38px, 7vw, 78px);
+  line-height: 0.95; letter-spacing: -1.5px; color: #fff;
+  animation: fadeUp 0.5s 0.08s ease both;
+}
+.hero-title .thin { font-weight: 300; font-style: italic; color: var(--dim2); }
+.hero-title .accent-word {
+  display: block;
+  background: linear-gradient(120deg, var(--u1) 0%, #06b6d4 35%, var(--u3) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero-sub {
+  font-size: 17px; color: var(--dim2);
+  max-width: 640px; line-height: 1.75;
+  animation: fadeUp 0.5s 0.16s ease both;
+}
+.hero-sub strong { color: var(--text); font-weight: 600; }
+
+.hero-meta {
+  display: flex; gap: 20px; flex-wrap: wrap;
+  font-family: var(--mono); font-size: 11px; color: var(--dim);
+  animation: fadeUp 0.5s 0.24s ease both;
+}
+.hero-meta span { display: flex; align-items: center; gap: 7px; }
+.hero-meta span::before { content:'·'; color: var(--u1); font-size: 18px; line-height:0; }
+
+.hero-badges {
+  display: flex; gap: 8px; flex-wrap: wrap;
+  animation: fadeUp 0.5s 0.32s ease both;
+}
+.hbadge {
+  font-family: var(--mono); font-size: 11px;
+  padding: 5px 13px; border-radius: 20px; border: 1px solid;
+}
+.hb-c { color: var(--u1); border-color: rgba(34,211,238,0.35); background: rgba(34,211,238,0.08); }
+.hb-o { color: var(--u2); border-color: rgba(249,115,22,0.35); background: rgba(249,115,22,0.08); }
+.hb-r { color: var(--u3); border-color: rgba(239,68,68,0.35); background: rgba(239,68,68,0.08); }
+.hb-v { color: var(--u4); border-color: rgba(167,139,250,0.35); background: rgba(167,139,250,0.08); }
+.hb-g { color: var(--u5); border-color: rgba(16,185,129,0.35); background: rgba(16,185,129,0.08); }
+.hb-b { color: var(--u6); border-color: rgba(59,130,246,0.35); background: rgba(59,130,246,0.08); }
+.hb-gold { color: var(--upred); border-color: rgba(245,158,11,0.35); background: rgba(245,158,11,0.08); }
+
+.crafted-by {
+  display: flex; align-items: center; gap: 12px;
+  margin-top: 6px;
+  animation: fadeUp 0.5s 0.4s ease both;
+}
+.crafted-label { font-family: var(--mono); font-size: 10px; color: var(--dim); letter-spacing: 1.5px; text-transform: uppercase; }
+.crafted-name { font-family: var(--head); font-size: 15px; font-weight: 700; color: var(--text); font-style: italic; }
+.crafted-links { display: flex; gap: 6px; }
+.crafted-link {
+  display: flex; align-items: center; gap: 5px;
+  font-family: var(--mono); font-size: 10px;
+  padding: 4px 10px; border-radius: 5px;
+  text-decoration: none; color: var(--dim2);
+  background: var(--surface); border: 1px solid var(--border);
+  transition: all 0.18s;
+}
+.crafted-link:hover { color: var(--u1); border-color: var(--u1); }
+.crafted-link svg { width: 12px; height: 12px; fill: currentColor; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.stats-strip {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 28px 40px;
+}
+.stats-inner {
+  max-width: 1400px; margin: 0 auto;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px,1fr)); gap: 20px;
+}
+.stat-item { text-align: center; }
+.stat-num {
+  font-family: var(--mono); font-size: 30px; font-weight: 600;
+  color: var(--u1); line-height: 1; display: block; margin-bottom: 5px;
+}
+.stat-label { font-family: var(--mono); font-size: 10px; color: var(--dim); letter-spacing: 1px; text-transform: uppercase; }
+
+.section-wrap {
+  max-width: 1400px; margin: 0 auto;
+  padding: 60px 40px;
+}
+.section-wrap.alt {
+  background: var(--bg2);
+  max-width: 100%;
+}
+.section-wrap.alt .section-inner {
+  max-width: 1400px; margin: 0 auto;
+  padding: 0;
+}
+.sec-header {
+  display: flex; align-items: baseline; gap: 14px;
+  margin-bottom: 28px;
+}
+.sec-header h2 {
+  font-family: var(--head); font-size: clamp(20px,3vw,28px);
+  font-weight: 800; color: #fff;
+}
+.sec-header .sub {
+  font-family: var(--mono); font-size: 11px;
+  color: var(--dim); letter-spacing: 1px;
+}
+
+.imp-grid { display: flex; flex-direction: column; gap: 10px; }
+.imp-row {
+  display: grid;
+  grid-template-columns: 200px 1fr 50px;
+  align-items: center; gap: 14px;
+}
+.imp-label {
+  font-family: var(--mono); font-size: 12px; color: var(--dim2);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.imp-bar-wrap { background: var(--surface2); border-radius: 3px; height: 8px; overflow: hidden; }
+.imp-bar {
+  height: 100%; border-radius: 3px;
+  background: var(--bar-color);
+  box-shadow: 0 0 8px var(--bar-color);
+  animation: barGrow 1.2s cubic-bezier(0.22,1,0.36,1) both;
+  animation-delay: var(--bar-delay, 0s);
+}
+@keyframes barGrow { from { width: 0 !important; } }
+.imp-pct {
+  font-family: var(--mono); font-size: 12px;
+  color: var(--bar-color); text-align: right; font-weight: 600;
+}
+
+.units-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 14px;
+}
+.unit-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 24px;
+  text-decoration: none;
+  display: flex; flex-direction: column; gap: 10px;
+  overflow: hidden;
+  transition: transform 0.22s, border-color 0.22s, box-shadow 0.22s;
+}
+.unit-card::before {
+  content: '';
+  position: absolute; inset: 0; border-radius: 14px;
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, var(--card-accent) 0%, transparent 70%);
+  opacity: 0; transition: opacity 0.3s;
+}
+.unit-card:hover { transform: translateY(-4px); border-color: var(--card-accent); box-shadow: 0 12px 40px rgba(0,0,0,0.45); }
+.unit-card:hover::before { opacity: 0.1; }
+.unit-num {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--card-accent);
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+  padding: 3px 10px; border-radius: 4px;
+  display: inline-block; width: fit-content;
+}
+.unit-card h3 { font-family: var(--head); font-size: 17px; font-weight: 700; color: #fff; line-height: 1.25; }
+.unit-topics { font-family: var(--mono); font-size: 11px; color: var(--dim); line-height: 1.65; }
+.unit-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: auto; padding-top: 12px;
+  border-top: 1px solid var(--border2);
+}
+.unit-go { font-family: var(--mono); font-size: 11px; color: var(--card-accent); display: flex; align-items: center; gap: 5px; transition: gap 0.2s; }
+.unit-card:hover .unit-go { gap: 8px; }
+.unit-badge { font-family: var(--mono); font-size: 10px; padding: 3px 8px; border-radius: 3px; background: rgba(255,255,255,0.04); color: var(--dim2); }
+.active-badge { font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 3px; color: var(--u1); background: rgba(34,211,238,0.12); border: 1px solid rgba(34,211,238,0.3); }
+
+.pyq-header-row {
+  display: flex; align-items: baseline; justify-content: space-between;
+  margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+}
+.pyq-view-all { font-family: var(--mono); font-size: 11px; color: var(--upred); text-decoration: none; display: flex; align-items: center; gap: 5px; transition: gap 0.2s; }
+.pyq-view-all:hover { gap: 8px; }
+.pyq-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+}
+.pyq-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+  text-decoration: none;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: all 0.2s;
+  position: relative; overflow: hidden;
+}
+.pyq-card.latest { border-color: rgba(245,158,11,0.4); background: linear-gradient(135deg, var(--surface) 0%, rgba(245,158,11,0.04) 100%); }
+.pyq-card.latest::before {
+  content: 'LATEST';
+  position: absolute; top: 10px; right: 10px;
+  font-family: var(--mono); font-size: 9px; letter-spacing: 1.5px;
+  color: var(--upred); background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.3);
+  padding: 2px 7px; border-radius: 3px;
+}
+.pyq-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,0.4); }
+.pyq-year { font-family: var(--head); font-size: 28px; font-weight: 800; color: #fff; line-height: 1; }
+.pyq-code { font-family: var(--mono); font-size: 11px; color: var(--dim2); }
+.pyq-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.pyq-tag { font-family: var(--mono); font-size: 10px; padding: 2px 8px; border-radius: 3px; background: var(--surface2); color: var(--dim2); }
+.pyq-go { font-family: var(--mono); font-size: 11px; color: var(--upred); margin-top: auto; }
+
+.predicted-section {
+  background: linear-gradient(135deg, var(--bg2) 0%, rgba(245,158,11,0.04) 100%);
+  border-top: 1px solid rgba(245,158,11,0.2);
+  border-bottom: 1px solid rgba(245,158,11,0.2);
+}
+.pred-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--mono); font-size: 11px;
+  color: var(--upred); background: rgba(245,158,11,0.1);
+  border: 1px solid rgba(245,158,11,0.3);
+  padding: 5px 14px; border-radius: 20px; margin-bottom: 16px;
+}
+.pred-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px; margin-top: 20px;
+}
+.pred-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+  position: relative;
+}
+.pred-part {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--upred);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+}
+.pred-q {
+  font-family: var(--head); font-size: 14px; font-weight: 700;
+  color: var(--text); margin-bottom: 6px;
+}
+.pred-reason {
+  font-family: var(--mono); font-size: 11px; color: var(--dim2);
+  line-height: 1.6;
+}
+.pred-conf {
+  display: inline-block; margin-top: 8px;
+  font-family: var(--mono); font-size: 10px;
+  padding: 2px 8px; border-radius: 3px;
+}
+.pred-conf.high { color: var(--u5); background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.25); }
+.pred-conf.med  { color: var(--upred); background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); }
+.pred-conf.low  { color: var(--u4); background: rgba(167,139,250,0.1); border: 1px solid rgba(167,139,250,0.25); }
+
+.content-header {
+  display: flex; align-items: center; gap: 14px;
+  margin-bottom: 24px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.cs-num {
+  font-family: var(--mono); font-size: 12px;
+  color: var(--u1); background: rgba(34,211,238,0.1);
+  border: 1px solid rgba(34,211,238,0.25);
+  padding: 4px 10px; border-radius: 5px;
+}
+.cs-title { font-family: var(--head); font-size: clamp(18px,3vw,24px); font-weight: 800; color: #fff; }
+.cs-pill { margin-left: auto; font-family: var(--mono); font-size: 11px; padding: 4px 12px; border-radius: 20px; }
+
+.theory {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 22px 24px; margin-bottom: 16px;
+}
+.theory h3 { font-family: var(--head); font-size: 17px; font-weight: 700; color: var(--u1); margin-bottom: 12px; }
+.theory p { margin-bottom: 10px; font-size: 16px; }
+.theory p:last-child { margin-bottom: 0; }
+.theory ul, .theory ol { padding-left: 20px; margin: 10px 0; }
+.theory li { margin-bottom: 8px; font-size: 15px; }
+
+.layman {
+  background: rgba(34,211,238,0.06);
+  border: 1px solid rgba(34,211,238,0.2);
+  border-radius: 8px; padding: 12px 16px;
+  font-family: var(--mono); font-size: 13px;
+  color: #a5f3fc; margin: 10px 0;
+}
+.layman::before { content: '💬 LAYMAN: '; color: var(--u1); font-weight: 600; }
+
+.formula {
+  background: #040c12;
+  border: 1px solid rgba(34,211,238,0.25);
+  border-left: 3px solid var(--u1);
+  border-radius: 8px; padding: 16px 20px; margin: 14px 0;
+  font-family: var(--mono); font-size: 13px; color: #a5f3fc;
+  overflow-x: auto;
+}
+.formula .lbl { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; display: block; }
+.formula .note { color: var(--dim2); font-size: 12px; margin-top: 8px; }
+
+.tip {
+  border-radius: 8px; padding: 14px 18px; margin: 12px 0;
+  display: flex; gap: 12px;
+}
+.tip.trick { background: rgba(251,191,36,0.07); border: 1px solid rgba(251,191,36,0.25); }
+.tip.note  { background: rgba(34,211,238,0.06); border: 1px solid rgba(34,211,238,0.25); }
+.tip.link  { background: rgba(59,130,246,0.07); border: 1px solid rgba(59,130,246,0.25); }
+.tip.warn  { background: rgba(239,68,68,0.07);  border: 1px solid rgba(239,68,68,0.25); }
+.ti { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+.tb { flex: 1; }
+.ttl { font-family: var(--head); font-size: 13px; font-weight: 700; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+.tip.trick .ttl { color: var(--gold); }
+.tip.note  .ttl { color: var(--u1); }
+.tip.link  .ttl { color: var(--u6); }
+.tip.warn  .ttl { color: var(--u3); }
+.tb p { font-size: 14px; color: var(--text); margin: 0; }
+
+.tbl { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 14px; display: block; overflow-x: auto; }
+.tbl th { background: var(--surface2); padding: 10px 14px; text-align: left; font-family: var(--head); font-weight: 700; color: var(--u1); border-bottom: 1px solid var(--border); white-space: nowrap; }
+.tbl td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td { background: var(--surface2); }
+
+.hl   { color: var(--u1); font-weight: 600; }
+.hl-o { color: var(--u2); font-weight: 600; }
+.hl-r { color: var(--u3); font-weight: 600; }
+.hl-v { color: var(--u4); font-weight: 600; }
+.hl-g { color: var(--u5); font-weight: 600; }
+.hl-b { color: var(--u6); font-weight: 600; }
+h4 { font-family: var(--head); font-size: 15px; font-weight: 700; color: var(--text); margin: 16px 0 8px; }
+.divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+.pyq-q {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-left: 3px solid var(--upred);
+  border-radius: 8px; padding: 14px 18px; margin: 12px 0;
+}
+.pyq-q .q-meta {
+  font-family: var(--mono); font-size: 10px; color: var(--upred);
+  letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px;
+  display: flex; gap: 12px; flex-wrap: wrap;
+}
+.pyq-q .q-text { font-family: var(--body); font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.pyq-q .q-ans { font-size: 14px; color: var(--dim2); line-height: 1.65; }
+
+.site-footer { background: var(--bg); border-top: 1px solid var(--border2); }
+.footer-inner { max-width: 1400px; margin: 0 auto; padding: 52px 40px 32px; }
+.footer-grid {
+  display: grid; grid-template-columns: 1.2fr 1fr 1fr;
+  gap: 40px; padding-bottom: 40px; border-bottom: 1px solid var(--border2);
+}
+.footer-brand .brand-title { font-family: var(--head); font-size: 20px; font-weight: 800; color: #fff; font-style: italic; margin-bottom: 8px; }
+.footer-brand .brand-sub { font-family: var(--mono); font-size: 11px; color: var(--dim); line-height: 1.65; margin-bottom: 16px; }
+.footer-tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.ftag { font-family: var(--mono); font-size: 10px; padding: 3px 8px; border-radius: 3px; background: var(--surface); border: 1px solid var(--border); color: var(--dim2); }
+.footer-links h4, .footer-dev h4 { font-family: var(--mono); font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--dim); margin-bottom: 16px; }
+.footer-links ul { list-style: none; }
+.footer-links li { margin-bottom: 10px; }
+.footer-links a { font-family: var(--mono); font-size: 12px; color: var(--dim2); text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.18s; }
+.footer-links a::before { content:''; width:12px; height:1px; background:currentColor; opacity:0.4; flex-shrink:0; transition: width 0.18s; }
+.footer-links a:hover { color: var(--u1); }
+.footer-links a:hover::before { width:18px; opacity:1; }
+.dev-card { background: var(--surface); border: 1px solid var(--border); border-top: 2px solid var(--u1); border-radius: 10px; padding: 18px; }
+.dev-name { font-family: var(--head); font-size: 18px; font-weight: 800; font-style: italic; color: #fff; margin-bottom: 2px; }
+.dev-role { font-family: var(--mono); font-size: 11px; color: var(--dim); margin-bottom: 14px; }
+.dev-social { display: flex; gap: 8px; }
+.social-btn { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 11px; padding: 6px 12px; border-radius: 6px; text-decoration: none; color: var(--dim2); background: var(--surface2); border: 1px solid var(--border); transition: all 0.18s; }
+.social-btn:hover { color: var(--text); border-color: var(--u1); }
+.social-btn svg { width: 12px; height: 12px; fill: currentColor; }
+.footer-bottom { padding: 20px 0 0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.footer-copy { font-family: var(--mono); font-size: 11px; color: var(--dim); }
+.footer-legal { font-family: var(--mono); font-size: 11px; color: var(--dim); display: flex; gap: 14px; }
+
+@media (max-width: 1100px) {
+  .hero { padding: 60px 30px 52px; }
+  .section-wrap { padding: 52px 30px; }
+  .imp-row { grid-template-columns: 160px 1fr 46px; }
+}
+
+@media (max-width: 768px) {
+  body { font-size: 17px; }
+  .hero { padding: 50px 18px 44px; }
+  .hero-title { font-size: clamp(36px,11vw,54px); }
+  .hero-sub { font-size: 16px; }
+  .section-wrap { padding: 44px 18px; }
+  .stats-strip { padding: 24px 18px; }
+  .footer-inner { padding: 36px 18px 24px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
+  .imp-row { grid-template-columns: 1fr 1fr 46px; }
+  .imp-label { font-size: 11px; white-space: normal; overflow: visible; text-overflow: unset; }
+  .crafted-by { flex-wrap: wrap; }
+  .theory p, .theory li { font-size: 16px; }
+  .tbl { font-size: 13px; }
+  .tbl th, .tbl td { padding: 8px 10px; }
+}
+
+@media (max-width: 480px) {
+  body { font-size: 17px; }
+  .hero-title { font-size: clamp(34px,12vw,50px); }
+  .units-grid, .pyq-grid, .pred-grid { grid-template-columns: 1fr; }
+  .stats-inner { grid-template-columns: repeat(2,1fr); }
+  .imp-row { grid-template-columns: 1fr 80px 40px; }
+  .tnlink { font-size: 11px; padding: 7px 10px; }
+  .formula { font-size: 12px; }
+}
+
+@media (max-width: 768px) and (orientation: portrait) {
+  body { font-size: 18px; line-height: 1.8; }
+  .hero-sub { font-size: 17px; }
+  .theory p, .theory li { font-size: 17px; }
+  .layman { font-size: 14px; }
+  h4 { font-size: 16px; }
+  .tbl { font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="topnav">
+  <span class="tnlabel">ISS · RTU</span>
+  <a class="tnlink active" href="index.html">🏠 Home</a>
+  <a class="tnlink" href="unit2.html">⚔️ U2: Attacks</a>
+  <a class="tnlink" href="unit3.html">🔴 U3: Block Ciphers</a>
+  <a class="tnlink" href="unit4.html">🔮 U4: Public Key</a>
+  <a class="tnlink" href="unit5.html">🔐 U5: Hash/MAC/Sig</a>
+  <a class="tnlink" href="unit6.html">🌐 U6: Key Mgmt/SSL</a>
+  <a class="tnlink pyq" href="pyq.html">📋 Solved PYQs</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">
+      <span class="hero-dot"></span>
+      B.Tech VI Semester · RTU Kota · 6E7103 / 6CS4-03 / 6CAI4-03
+    </div>
+    <h1 class="hero-title">
+      <span class="thin">the science of</span><br>
+      <span class="accent-word">Information Security</span>
+    </h1>
+    <p class="hero-sub">
+      A <strong>complete exam-ready guide</strong> — every topic from cryptography basics to RSA, AES, Digital Signatures, SSL and Kerberos, explained from scratch with <strong>all RTU PYQs 2022–2025 fully solved</strong> + predicted 2026 paper.
+    </p>
+    <div class="hero-meta">
+      <span>CS / IT / AID / CAI</span>
+      <span>6 Units Covered</span>
+      <span>70 Marks Paper</span>
+      <span>3 Hours</span>
+    </div>
+    <div class="hero-badges">
+      <span class="hbadge hb-c">✦ All PYQs Solved</span>
+      <span class="hbadge hb-o">⚡ Exam Tricks</span>
+      <span class="hbadge hb-r">🔐 Numericals (RSA, ElGamal)</span>
+      <span class="hbadge hb-v">📐 Formulas &amp; Diagrams</span>
+      <span class="hbadge hb-gold">🔮 2026 Predicted Paper</span>
+    </div>
+    <div class="crafted-by">
+      <span class="crafted-label">crafted by</span>
+      <span class="crafted-name">Mahansh Gaur</span>
+      <div class="crafted-links">
+        <a class="crafted-link" href="https://github.com/mahanshstarktech" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          GitHub
+        </a>
+        <a class="crafted-link" href="https://www.instagram.com/mahaanshgaur_6513" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+          Instagram
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stats-inner">
+    <div class="stat-item"><span class="stat-num">6</span><span class="stat-label">Units Covered</span></div>
+    <div class="stat-item"><span class="stat-num">5</span><span class="stat-label">Years PYQs</span></div>
+    <div class="stat-item"><span class="stat-num">45+</span><span class="stat-label">PYQ Solutions</span></div>
+    <div class="stat-item"><span class="stat-num">10+</span><span class="stat-label">Numericals</span></div>
+    <div class="stat-item"><span class="stat-num">25+</span><span class="stat-label">Diagrams</span></div>
+    <div class="stat-item"><span class="stat-num">70</span><span class="stat-label">Max Marks</span></div>
+  </div>
+</div>
+
+<!-- TOPIC IMPORTANCE -->
+<div class="section-wrap">
+  <div class="sec-header">
+    <h2>Topic Importance — RTU Exam</h2>
+    <span class="sub">BASED ON 5-YEAR PYQ ANALYSIS (2022–2025)</span>
+  </div>
+  <div class="imp-grid">
+    <div class="imp-row"><span class="imp-label">RSA Algorithm (Numerical)</span><div class="imp-bar-wrap"><div class="imp-bar" style="width:98%;--bar-color:#ef4444;--bar-delay:0.05s"></div></div><span class="imp-pct" style="--bar-color:#ef4444">98%</span></div>
+    <div class="imp-row"><span class="imp-label">DES Algorithm + S-Boxes</span><div class="imp-bar-wrap"><div class="imp-bar" style="width:92%;--bar-color:#ef4444;--bar-delay:0.1s"></div></div><span class="imp-pct" style="--bar-color:#ef4444">92%</span></div>
+    <div class="imp-row"><span class="imp-label">Digital Signature (DSA/Elgamal)</span><div class="imp-bar-wrap"><div class="imp-bar" style="width:90%;--bar-color:#10b981;--bar-delay:0.15s"></div></div><span class="imp-pct" style="--bar-color:#10b981">90%</span></div>
+    <div class="imp-row"><span class="imp-label">AES Algorithm + Structure</span><div class="imp-bar-wrap"><div class="imp-bar" style="width:88%;--bar-color:#ef4444;--bar-delay:0.2s"></div></div><span class="imp-pct" style="--bar-color:#ef4444">88%</span></div>
+    <div class="imp-row"><span class="imp-label">ElGamal Encryption (Numerical)</span><div class="imp-bar-wrap"><div class="imp-bar" style="width:86%;--bar-color:#a78bfa;--bar-delay:0.25s"></div></div><span class="imp-pct" style="--bar-color:#a78bfa">86%</span></div>
+    <div class="imp-row"><span class="imp-label">Hash Functions / SHA-512</span><div class="imp-bar-wrap"><div class="imp-bar" style="width:83%;--bar-color:#10b981;--bar-delay:0.3s"></div></div><span class="imp-pct" style="--bar-color:#10b981">83%</span></div>
+    <div class="imp-row"><span class="imp-label">SSL Architecture + Protocols</span><div class="imp-bar-wrap"><div class="imp-bar" style="width:80%;--bar-color:#3b82f6;--bar-delay:0.35s"></div></div><span class="imp-pct" style="--bar-color:#3b82f6">80%</span></div>
+    <div class="imp-row"><span class="imp-label">Block Cipher Modes (ECB/CBC)</span><div class="imp-bar-wrap"><div class="imp-bar" style="width:78%;--bar-color:#ef4444;--bar-delay:0.4s"></div></div><span class="imp-pct" style="--bar-color:#ef4444">78%</span></div>
+    <div class="imp-row"><span class="imp-label">MACs (CMAC / HMAC)</span><div class="imp-bar-wrap"><div class="imp-bar" style="width:75%;--bar-color:#10b981;--bar-delay:0.45s"></div></div><span class="imp-pct" style="--bar-color:#10b981">75%</span></div>
+    <div class="imp-row"><span class="imp-label">Active vs Passive Attacks</span><div class="imp-bar-wrap"><div class="imp-bar" style="width:72%;--bar-color:#f97316;--bar-delay:0.5s"></div></div><span class="imp-pct" style="--bar-color:#f97316">72%</span></div>
+    <div class="imp-row"><span class="imp-label">Hill Cipher / Playfair Cipher</span><div class="imp-bar-wrap"><div class="imp-bar" style="width:68%;--bar-color:#f97316;--bar-delay:0.55s"></div></div><span class="imp-pct" style="--bar-color:#f97316">68%</span></div>
+    <div class="imp-row"><span class="imp-label">Kerberos (Version 4)</span><div class="imp-bar-wrap"><div class="imp-bar" style="width:65%;--bar-color:#3b82f6;--bar-delay:0.6s"></div></div><span class="imp-pct" style="--bar-color:#3b82f6">65%</span></div>
+    <div class="imp-row"><span class="imp-label">Diffie-Hellman Key Exchange</span><div class="imp-bar-wrap"><div class="imp-bar" style="width:62%;--bar-color:#a78bfa;--bar-delay:0.65s"></div></div><span class="imp-pct" style="--bar-color:#a78bfa">62%</span></div>
+    <div class="imp-row"><span class="imp-label">Public Key Infrastructure / X.509</span><div class="imp-bar-wrap"><div class="imp-bar" style="width:60%;--bar-color:#3b82f6;--bar-delay:0.7s"></div></div><span class="imp-pct" style="--bar-color:#3b82f6">60%</span></div>
+  </div>
+</div>
+
+<!-- UNIT CARDS -->
+<div class="section-wrap alt">
+  <div class="section-inner">
+    <div class="sec-header" style="padding-top:60px">
+      <h2>All Units at a Glance</h2>
+      <span class="sub">CLICK ANY UNIT TO OPEN THE FULL STUDY GUIDE</span>
+    </div>
+    <div class="units-grid" style="padding-bottom:60px">
+      <a class="unit-card" href="index.html" style="--card-accent:var(--u1)">
+        <span class="unit-num">Unit 01 · You are here</span>
+        <h3>Introduction to Information Security</h3>
+        <p class="unit-topics">Objectives · Scope · Outcomes · CIA Triad · Security Services · Mechanisms · Attack Models</p>
+        <div class="unit-footer"><span class="unit-go">Open guide →</span><span class="active-badge">★ Active</span></div>
+      </a>
+      <a class="unit-card" href="unit2.html" style="--card-accent:var(--u2)">
+        <span class="unit-num">Unit 02</span>
+        <h3>Security Attacks &amp; Classical Encryption</h3>
+        <p class="unit-topics">Active vs Passive Attacks · Substitution Ciphers · Caesar · Playfair · Hill Cipher · Vigenère · Transposition · Cryptanalysis</p>
+        <div class="unit-footer"><span class="unit-go" style="color:var(--u2)">Open guide →</span><span class="unit-badge">🔢 Numericals</span></div>
+      </a>
+      <a class="unit-card" href="unit3.html" style="--card-accent:var(--u3)">
+        <span class="unit-num">Unit 03</span>
+        <h3>Modern Block Ciphers</h3>
+        <p class="unit-topics">DES (+ S-Boxes) · AES (Structure, SubBytes, ShiftRows, MixColumns, Key Expansion) · Triple DES · ECB · CBC · CFB · OFB · CTR</p>
+        <div class="unit-footer"><span class="unit-go" style="color:var(--u3)">Open guide →</span><span class="unit-badge">🔥 Very High Priority</span></div>
+      </a>
+      <a class="unit-card" href="unit4.html" style="--card-accent:var(--u4)">
+        <span class="unit-num">Unit 04</span>
+        <h3>Public Key Cryptosystems</h3>
+        <p class="unit-topics">Requirements · RSA (Numerical) · Rabin · ElGamal (Numerical) · Elliptic Curve · Diffie-Hellman Key Exchange</p>
+        <div class="unit-footer"><span class="unit-go" style="color:var(--u4)">Open guide →</span><span class="unit-badge">🔥 RSA Every Paper</span></div>
+      </a>
+      <a class="unit-card" href="unit5.html" style="--card-accent:var(--u5)">
+        <span class="unit-num">Unit 05</span>
+        <h3>Hash Functions, MACs &amp; Digital Signatures</h3>
+        <p class="unit-topics">SHA-512 Algorithm · HMAC · CMAC · Digital Signature Properties · ElGamal Signature · Schnorr · NIST DSA</p>
+        <div class="unit-footer"><span class="unit-go" style="color:var(--u5)">Open guide →</span><span class="unit-badge">⭐ High Priority</span></div>
+      </a>
+      <a class="unit-card" href="unit6.html" style="--card-accent:var(--u6)">
+        <span class="unit-num">Unit 06</span>
+        <h3>Key Management, SSL &amp; Web Security</h3>
+        <p class="unit-topics">Symmetric Key Distribution · X.509 Certificates · PKI · Kerberos v4 · SSL Architecture · TLS · HTTPS · SSH</p>
+        <div class="unit-footer"><span class="unit-go" style="color:var(--u6)">Open guide →</span><span class="unit-badge">🌐 SSL Always Asked</span></div>
+      </a>
+      <a class="unit-card" href="pyq.html" style="--card-accent:var(--upred)">
+        <span class="unit-num">Solved PYQs</span>
+        <h3>Previous Year Questions — Fully Solved</h3>
+        <p class="unit-topics">May 2025 · 2024 · Jul 2023 · Aug 2023 · 2023-24 · Jun 2022 · Step-by-step solutions</p>
+        <div class="unit-footer"><span class="unit-go" style="color:var(--upred)">Open PYQs →</span><span class="unit-badge">📋 5 Papers</span></div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- PYQ QUICK-PICK -->
+<div class="section-wrap">
+  <div class="pyq-header-row">
+    <h2 style="font-family:var(--head);font-size:clamp(20px,3vw,26px);font-weight:800;color:#fff">Solved Previous Year Papers</h2>
+    <a class="pyq-view-all" href="pyq.html">View all solutions →</a>
+  </div>
+  <div class="pyq-grid">
+    <a class="pyq-card latest" href="pyq.html#2025">
+      <div class="pyq-year">2025</div>
+      <div class="pyq-code">6E7103 · May 2025 · AID/CS/IT</div>
+      <div class="pyq-tags">
+        <span class="pyq-tag">Cryptography vs Cryptanalysis</span>
+        <span class="pyq-tag">DES Round</span>
+        <span class="pyq-tag">RSA Numerical</span>
+        <span class="pyq-tag">Digital Signature</span>
+        <span class="pyq-tag">Public Key Cert</span>
+      </div>
+      <div class="pyq-go">Open solved paper →</div>
+    </a>
+    <a class="pyq-card" href="pyq.html#2024">
+      <div class="pyq-year">2024</div>
+      <div class="pyq-code">6E7103 · 2024 · CS/IT/AID/CAI</div>
+      <div class="pyq-tags">
+        <span class="pyq-tag">Hill Cipher</span>
+        <span class="pyq-tag">AES Key Expansion</span>
+        <span class="pyq-tag">ElGamal Numerical</span>
+        <span class="pyq-tag">CMAC</span>
+        <span class="pyq-tag">SSL Record</span>
+      </div>
+      <div class="pyq-go">Open solved paper →</div>
+    </a>
+    <a class="pyq-card" href="pyq.html#2023jul">
+      <div class="pyq-year">2023</div>
+      <div class="pyq-code">6E7103 · July 2023 · AID</div>
+      <div class="pyq-tags">
+        <span class="pyq-tag">Hill Cipher</span>
+        <span class="pyq-tag">RSA p=3,q=11</span>
+        <span class="pyq-tag">AES</span>
+        <span class="pyq-tag">ElGamal Sig</span>
+        <span class="pyq-tag">Kerberos v4</span>
+      </div>
+      <div class="pyq-go">Open solved paper →</div>
+    </a>
+    <a class="pyq-card" href="pyq.html#2022">
+      <div class="pyq-year">2022</div>
+      <div class="pyq-code">6E1553 · Jun 2022 · IT</div>
+      <div class="pyq-tags">
+        <span class="pyq-tag">DES</span>
+        <span class="pyq-tag">RSA</span>
+        <span class="pyq-tag">Hash/SHA</span>
+        <span class="pyq-tag">SSL</span>
+        <span class="pyq-tag">MACs</span>
+      </div>
+      <div class="pyq-go">Open solved paper →</div>
+    </a>
+  </div>
+</div>
+
+<!-- ══════ PREDICTED PAPER 2026 ══════ -->
+<div class="section-wrap predicted-section">
+  <div class="section-inner">
+    <div style="max-width:1400px;margin:0 auto;padding:60px 0">
+      <div class="pred-badge">🔮 AI-Powered Analysis</div>
+      <div class="sec-header" style="margin-bottom:12px">
+        <h2>Predicted Paper — 2026</h2>
+        <span class="sub">BASED ON 2022–2025 PYQ PATTERN ANALYSIS + DIP &amp; ML 2026 PAPERS</span>
+      </div>
+      <p style="font-family:var(--mono);font-size:13px;color:var(--dim2);margin-bottom:8px">Deep analysis of 6 ISS papers (2022–2025) cross-referenced with the actual 2026 DIP and ML papers confirms RTU's rotation pattern. Topics absent in 2025 (Active/Passive attacks, Avalanche effect) are due for return. ElGamal values, RSA primes, and Hill Cipher keys are changed each cycle — prepare the method, not the numbers.</p>
+      <div class="tip warn" style="margin-bottom:20px">
+        <div class="ti">⚠️</div>
+        <div class="tb">
+          <div class="ttl">Disclaimer</div>
+          <p>These predictions are based on historical patterns. Actual paper may differ. Use this to prioritize study time — don't skip unpredicted topics entirely.</p>
+        </div>
+      </div>
+      <div class="pred-grid">
+
+        <!-- ── PART A ── -->
+        <div class="pred-card">
+          <div class="pred-part">📝 Part A — 2 marks (10 questions)</div>
+          <div class="pred-q">Q1: Differentiate Active vs Passive Attacks</div>
+          <div class="pred-reason">Present in 2023-Jul and 2024. Absent in 2025 (which had "Cryptography vs Cryptanalysis" instead). Classic rotation — strongly due to return in 2026.</div>
+          <span class="pred-conf high">VERY HIGH confidence</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📝 Part A</div>
+          <div class="pred-q">Q2: Differentiate Stream Cipher vs Block Cipher</div>
+          <div class="pred-reason">Present in every single ISS paper from 2022 to 2025 without exception. The most consistent Part A question in this subject.</div>
+          <span class="pred-conf high">CERTAIN</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📝 Part A</div>
+          <div class="pred-q">Q3: What is Avalanche Effect? Give an example.</div>
+          <div class="pred-reason">Asked in 2023-Jul and 2024. Replaced in 2025 by "Confusion and Diffusion". RTU rotation pattern strongly suggests Avalanche effect returns to Q3 slot in 2026.</div>
+          <span class="pred-conf high">VERY HIGH confidence</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📝 Part A</div>
+          <div class="pred-q">Q4: What are Confusion and Diffusion in cryptography?</div>
+          <div class="pred-reason">Introduced as Q3 in 2025 paper. Based on 2026 DIP/ML pattern of retaining new topics, Confusion/Diffusion now appears to be a permanent fixture — migrating to Q4 slot.</div>
+          <span class="pred-conf high">HIGH confidence</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📝 Part A</div>
+          <div class="pred-q">Q5: Differentiate Public Key vs Private Key cryptosystems</div>
+          <div class="pred-reason">Asked in 2023-Jul, 2024, and 2025 in different phrasings (advantages, differences, disadvantages). Core Unit 4 distinction — never dropped.</div>
+          <span class="pred-conf high">CERTAIN</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📝 Part A</div>
+          <div class="pred-q">Q6: Write any two applications of public key cryptography</div>
+          <div class="pred-reason">Rotates between "applications" (2023-Jul, 2025) and "disadvantages" (2024). The applications variant is due for 2026 based on the alternating pattern.</div>
+          <span class="pred-conf high">HIGH confidence</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📝 Part A</div>
+          <div class="pred-q">Q7: What is a cryptographic hash function? Write its two properties.</div>
+          <div class="pred-reason">Asked in 2023-Jul, 2024, and 2025. Present in all three recent papers without variation. Unit 5 anchor — will not be dropped.</div>
+          <span class="pred-conf high">CERTAIN</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📝 Part A</div>
+          <div class="pred-q">Q8: What are the requirements of a Message Authentication Code (MAC)?</div>
+          <div class="pred-reason">"What is MAC" appeared in 2023-Jul and 2024. "Requirements of MAC" appeared in 2025. The requirements phrasing is now established and likely to repeat in 2026.</div>
+          <span class="pred-conf high">HIGH confidence</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📝 Part A</div>
+          <div class="pred-q">Q9: Write any four general means of authenticating a user's identity</div>
+          <div class="pred-reason">Appears verbatim in 2023-Jul, 2024, and 2025 — zero variation across three consecutive papers. Among the most reliable Part A questions in this subject.</div>
+          <span class="pred-conf high">CERTAIN</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📝 Part A</div>
+          <div class="pred-q">Q10: What is HTTPS? Why is HTTPS preferred over HTTP?</div>
+          <div class="pred-reason">Present in 2023-Jul, 2024, and 2025. The 2023-24 (61N0403) paper adds "why prefer HTTPS over HTTP" — this extended phrasing is likely for 2026.</div>
+          <span class="pred-conf high">CERTAIN</span>
+        </div>
+
+        <!-- ── PART B ── -->
+        <div class="pred-card">
+          <div class="pred-part">📋 Part B — 4 marks (attempt 5 of 7)</div>
+          <div class="pred-q">Q1: Hill Cipher encryption + decryption (new key/message)</div>
+          <div class="pred-reason">Hill Cipher appeared in 2023-Jul and 2025 with the identical key [[3,2],[8,5]] and message "Code". For 2026, key and message will change — prepare the full matrix method, not just one set of values.</div>
+          <span class="pred-conf high">VERY HIGH confidence</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📋 Part B</div>
+          <div class="pred-q">Q2: Explain AES Key Expansion algorithm with suitable diagram</div>
+          <div class="pred-reason">Present in both 2024 and 2025 Part B — two consecutive years. Core AES concept involving SubWord, RotWord, and RCON operations. Unlikely to be dropped even in 2026.</div>
+          <span class="pred-conf high">HIGH confidence</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📋 Part B</div>
+          <div class="pred-q">Q3: ElGamal encryption/decryption numerical (new values: q=23, α=5, X<sub>A</sub>=4, M=11, k=3)</div>
+          <div class="pred-reason">ElGamal numerical is in 100% of all papers. Values changed in 2025 from q=71 to q=19. A new small prime q is expected again. Prepare the full 5-step algorithm for any given values.</div>
+          <span class="pred-conf high">CERTAIN</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📋 Part B</div>
+          <div class="pred-q">Q4: Explain Cipher-Based Message Authentication Code (CMAC) with diagram</div>
+          <div class="pred-reason">CMAC appeared in 2023-Jul, 2024, and 2025 for three consecutive years — the most consistent Part B question. Know subkey generation K1/K2, the CBC-MAC chaining structure, and the final block padding rules.</div>
+          <span class="pred-conf high">HIGH confidence</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📋 Part B</div>
+          <div class="pred-q">Q5: Explain SSL Record Protocol with suitable diagram</div>
+          <div class="pred-reason">SSL Record Protocol appeared in 2023-Jul and 2025 — every alternate year. Pattern firmly indicates 2026 is the next cycle. Cover the 4 steps: fragmentation, compression, MAC addition, encryption.</div>
+          <span class="pred-conf high">HIGH confidence</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📋 Part B</div>
+          <div class="pred-q">Q6: Explain the design principles of block cipher</div>
+          <div class="pred-reason">Asked in 2023-Jul, 2023-Aug, and 2024. Absent in 2025. Strong return candidate after one year absence. Cover confusion, diffusion, Feistel structure, and Shannon's principles.</div>
+          <span class="pred-conf high">HIGH confidence</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📋 Part B</div>
+          <div class="pred-q">Q7: Explain public-key certificate technique for distribution of public keys</div>
+          <div class="pred-reason">Public key distribution topic appeared in 2023-Jul and 2024. Not in 2025. May return in 2026. Alternate option: Diffie-Hellman key exchange (2023-Aug). Know both.</div>
+          <span class="pred-conf med">MEDIUM confidence</span>
+        </div>
+
+        <!-- ── PART C ── -->
+        <div class="pred-card">
+          <div class="pred-part">📖 Part C — 10 marks (attempt 3 of 5)</div>
+          <div class="pred-q">Q1: DES Algorithm — full structure with single round diagram</div>
+          <div class="pred-reason">DES appears in every ISS paper from 2022 to 2025 in some form (full algo or single round). The single most reliable Part C topic. Mandatory: draw the Feistel round with expansion, S-box, P-box, and key schedule.</div>
+          <span class="pred-conf high">CERTAIN</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📖 Part C</div>
+          <div class="pred-q">Q2: RSA Algorithm + Numerical (predicted: p=7, q=11, e=13, M=3)</div>
+          <div class="pred-reason">RSA numerical is present in every paper. Conspicuously absent from 2024 Part C, then returned in 2025 (p=5, q=31). Will certainly appear in 2026. New prime values will be used — master the key generation and encryption/decryption steps.</div>
+          <span class="pred-conf high">CERTAIN — every paper</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📖 Part C</div>
+          <div class="pred-q">Q3: Digital Signature Algorithm (DSA) with signing and verifying diagrams</div>
+          <div class="pred-reason">Digital Signature appeared in Part C in 2023-Aug, 2024, and 2025 — three consecutive years. The 2025 paper explicitly required "diagrams showing functions of signing and verifying" — use this exact format for 2026.</div>
+          <span class="pred-conf high">VERY HIGH confidence</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📖 Part C</div>
+          <div class="pred-q">Q4: AES encryption process with block diagram (all transformation steps)</div>
+          <div class="pred-reason">AES appeared in 2023-Jul Part C and 2024 Part C. Absent from 2025 Part C. After a one-year gap, 2026 is the natural return year. Cover SubBytes, ShiftRows, MixColumns, AddRoundKey in sequence with the round structure diagram.</div>
+          <span class="pred-conf high">HIGH confidence</span>
+        </div>
+
+        <div class="pred-card">
+          <div class="pred-part">📖 Part C</div>
+          <div class="pred-q">Q5: Kerberos Version 4 protocol with diagram (OR SHA-512 algorithm)</div>
+          <div class="pred-reason">Kerberos appeared in 2023-Jul but not in 2024 or 2025 — two consecutive absences make it strongly due. SHA-512 appeared in 2023-Jul and 2024 but not 2025 — also due. Prepare both; one of these will be Q5 in 2026.</div>
+          <span class="pred-conf med">MEDIUM-HIGH confidence</span>
+        </div>
+
+      </div>
+      <div class="tip note" style="margin-top:24px">
+        <div class="ti">✅</div>
+        <div class="tb">
+          <div class="ttl">Quick Preparation Strategy Based on Prediction</div>
+          <p><strong>Must prepare completely (Part B + C):</strong> RSA numerical, DES single round, ElGamal numerical (any values), Hill Cipher procedure, AES key expansion, AES encryption structure, Digital Signature Algorithm, SSL Record Protocol, CMAC, Kerberos v4 / SHA-512.<br><br><strong>Part A only (definitions, 25 words max):</strong> Active vs Passive attacks, Stream vs Block cipher, Avalanche effect, Confusion and Diffusion, Public key vs Private key, Hash function + 2 properties, MAC requirements, 4 means of authentication, HTTPS.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- UNIT 1 CONTENT -->
+<div class="section-wrap">
+
+  <div class="content-header">
+    <span class="cs-num">01</span>
+    <h2 class="cs-title">Course Objectives &amp; Overview</h2>
+    <span class="cs-pill hbadge hb-c">Foundation · Conceptual</span>
+  </div>
+  <div class="theory">
+    <h3>What This Course Covers</h3>
+    <p>Information Security Systems (6E7103 / 6CS4-03) is a core sixth-semester paper covering the mathematical and practical foundations of securing data and communications.</p>
+    <div class="layman">Think of this course as "how do banks keep your password safe, how WhatsApp encrypts your messages, and how websites prove they're real."</div>
+    <p><strong>By the end, you will understand:</strong></p>
+    <ol>
+      <li>Classical encryption (Caesar, Hill, Playfair) — the historical foundations (Unit 2)</li>
+      <li>Modern block ciphers — DES and AES — the workhorses of symmetric encryption (Unit 3)</li>
+      <li>Public key cryptosystems — RSA, ElGamal — how secure online banking works (Unit 4)</li>
+      <li>Hash functions, MACs, Digital Signatures — how to verify integrity and authenticity (Unit 5)</li>
+      <li>Key management, SSL, Kerberos — how real-world secure systems are deployed (Unit 6)</li>
+    </ol>
+  </div>
+
+  <hr class="divider">
+
+  <div class="content-header">
+    <span class="cs-num">02</span>
+    <h2 class="cs-title">CIA Triad — The Foundation of Security</h2>
+    <span class="cs-pill hbadge hb-o">Core Concept · Every Paper</span>
+  </div>
+  <div class="theory">
+    <h3>Three Pillars of Information Security</h3>
+    <div class="layman">CIA has nothing to do with the spy agency — it stands for the three things that keep your data safe: kept secret (C), not tampered (I), and always available (A).</div>
+    <table class="tbl">
+      <tr><th>Pillar</th><th>Formal Definition</th><th>Layman</th><th>Example of Violation</th></tr>
+      <tr><td><span class="hl">Confidentiality (C)</span></td><td>Only authorized parties can access the information</td><td>"Your secret stays secret"</td><td>Eavesdropper reads your encrypted message</td></tr>
+      <tr><td><span class="hl-g">Integrity (I)</span></td><td>Data is accurate and has not been tampered with</td><td>"What you receive is exactly what was sent"</td><td>Hacker modifies your bank transfer amount</td></tr>
+      <tr><td><span class="hl-b">Availability (A)</span></td><td>Systems and data are accessible when needed</td><td>"The service is up when you need it"</td><td>DOS attack takes down a hospital's servers</td></tr>
+    </table>
+    <h4>Additional Security Properties</h4>
+    <ul>
+      <li><span class="hl">Authentication:</span> Proving who you claim to be (your password, OTP, fingerprint)</li>
+      <li><span class="hl">Non-repudiation:</span> Sender cannot deny having sent a message — digital signatures provide this</li>
+      <li><span class="hl">Authorization:</span> Controlling what authenticated users can do</li>
+    </ul>
+    <div class="tip trick">
+      <div class="ti">⚡</div>
+      <div class="tb">
+        <div class="ttl">Exam Trick — "Three Security Principles" Question</div>
+        <p>2023-Aug Part A Q1 asks "Explain the three security principles." Always answer: C (Confidentiality), I (Integrity), A (Availability) + define each in 1 line + give 1 real-world example of each. This gives you perfect 2 marks. The 2023-24 paper has "Describe security goals in detail" as 10-mark — same CIA structure but expand each with algorithms that enforce them.</p>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="content-header">
+    <span class="cs-num">03</span>
+    <h2 class="cs-title">Security Services &amp; Mechanisms</h2>
+    <span class="cs-pill hbadge hb-v">Core Theory · Part A/B</span>
+  </div>
+  <div class="theory">
+    <h3>Security Services (What we want)</h3>
+    <p>A <span class="hl">security service</span> is a processing or communication service that enhances the security of data processing and information transfer. Defined by ITU-T X.800:</p>
+    <table class="tbl">
+      <tr><th>Service</th><th>What it provides</th><th>Algorithm/Mechanism</th></tr>
+      <tr><td><span class="hl">Authentication</span></td><td>Assurance of identity of communicating entities</td><td>Passwords, digital signatures, Kerberos</td></tr>
+      <tr><td><span class="hl">Access Control</span></td><td>Prevents unauthorized use of resources</td><td>ACLs, Firewalls</td></tr>
+      <tr><td><span class="hl">Data Confidentiality</span></td><td>Protection of transmitted data from passive attacks</td><td>DES, AES, RSA encryption</td></tr>
+      <tr><td><span class="hl">Data Integrity</span></td><td>Assurance that received data has not been altered</td><td>Hash functions, MACs</td></tr>
+      <tr><td><span class="hl">Non-Repudiation</span></td><td>Prevents sender/receiver denying a transmitted message</td><td>Digital signatures</td></tr>
+      <tr><td><span class="hl">Availability</span></td><td>System resources accessible when needed</td><td>IDS, redundant systems</td></tr>
+    </table>
+    <h3 style="margin-top:20px">Security Mechanisms (How we achieve services)</h3>
+    <p>Mechanisms are techniques that implement security services. Key mechanisms include:</p>
+    <ul>
+      <li><strong>Encipherment:</strong> Transforming data using encryption algorithms (DES, AES, RSA)</li>
+      <li><strong>Digital Signature:</strong> Data appended to message that proves authenticity</li>
+      <li><strong>Access Control:</strong> Rights, permissions, and capabilities</li>
+      <li><strong>Data Integrity:</strong> Hash functions to detect modification</li>
+      <li><strong>Authentication Exchange:</strong> Protocols to verify identity (Kerberos)</li>
+      <li><strong>Traffic Padding:</strong> Inserting dummy bits to defeat traffic analysis</li>
+      <li><strong>Routing Control:</strong> Selecting physically secure routes</li>
+      <li><strong>Notarization:</strong> Trusted third party for non-repudiation</li>
+    </ul>
+  </div>
+
+  <hr class="divider">
+
+  <div class="content-header">
+    <span class="cs-num">04</span>
+    <h2 class="cs-title">Security Attacks — Active vs Passive</h2>
+    <span class="cs-pill hbadge hb-r">🔥 Every Paper — Must Know</span>
+  </div>
+  <div class="theory">
+    <h3>Two Categories of Attacks</h3>
+    <div class="layman">A passive attacker is like someone secretly reading your diary — they don't change anything, just spy. An active attacker is like someone breaking into your house and rearranging furniture — they actively interfere.</div>
+    <table class="tbl">
+      <tr><th>Aspect</th><th>Passive Attack</th><th>Active Attack</th></tr>
+      <tr><td>Nature</td><td>Eavesdropping; monitoring transmissions</td><td>Modifying, replaying, or creating messages</td></tr>
+      <tr><td>Goal</td><td>Obtain information being transmitted</td><td>Disrupt or corrupt communication</td></tr>
+      <tr><td>Detection</td><td>Very hard — leaves no trace</td><td>Easier — disrupts communication flow</td></tr>
+      <tr><td>Prevention</td><td>Encryption (confidentiality)</td><td>Authentication, integrity checks</td></tr>
+      <tr><td>CIA target</td><td>Confidentiality</td><td>Integrity, Availability, Authentication</td></tr>
+    </table>
+    <h4>Types of Passive Attacks</h4>
+    <ul>
+      <li><span class="hl">Release of message contents:</span> Reading unencrypted messages — like reading someone's open postcard</li>
+      <li><span class="hl">Traffic Analysis:</span> Even if encrypted, attacker can observe who talks to whom, how often, message length — patterns reveal information</li>
+    </ul>
+    <h4>Types of Active Attacks</h4>
+    <ul>
+      <li><span class="hl">Masquerade:</span> Pretending to be someone else — like using a fake ID</li>
+      <li><span class="hl">Replay:</span> Capturing a valid transmission and re-sending it later — like replaying a login request</li>
+      <li><span class="hl">Modification:</span> Altering message content — changing "Transfer ₹100" to "Transfer ₹10000"</li>
+      <li><span class="hl">Denial of Service (DOS):</span> Preventing legitimate access — flooding a server with requests</li>
+    </ul>
+    <div class="formula">
+      <span class="lbl">Key Distinction (2-mark answer format)</span>
+      Passive Attack: Intercepts but does NOT modify data. Goal = confidentiality breach.<br>
+      Prevention: Encryption → makes intercepted data unreadable<br><br>
+      Active Attack: Intercepts AND modifies/injects/deletes data. Goal = integrity/availability breach.<br>
+      Prevention: Authentication + integrity checks (MACs, digital signatures)
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="content-header">
+    <span class="cs-num">05</span>
+    <h2 class="cs-title">Exam Strategy — How to Score 60+</h2>
+    <span class="cs-pill hbadge hb-g">Strategy · RTU Format</span>
+  </div>
+  <div class="theory">
+    <h3>Paper Structure (70 Marks, 3 Hours)</h3>
+    <table class="tbl">
+      <tr><th>Part</th><th>Questions</th><th>Marks</th><th>Total</th><th>Strategy</th></tr>
+      <tr><td><strong>Part A</strong></td><td>10 compulsory</td><td>2 each</td><td>20</td><td>≤25 words. Definition + 1 example. Never skip.</td></tr>
+      <tr><td><strong>Part B</strong></td><td>Attempt 5 of 7</td><td>4 each</td><td>20</td><td>Small diagram mandatory. Formula + 3-5 lines.</td></tr>
+      <tr><td><strong>Part C</strong></td><td>Attempt 3 of 5</td><td>10 each</td><td>30</td><td>Full structured answer. Large block diagram = 3-4 marks.</td></tr>
+    </table>
+    <h4>10-Mark Answer Template for ISS (Part C)</h4>
+    <ol>
+      <li><strong>Definition/Introduction</strong> — 2-3 lines. Include layman explanation.</li>
+      <li><strong>Key Formulas/Algorithm Steps</strong> — Numbered. Box the main formula.</li>
+      <li><strong>Block Diagram</strong> — Draw labeled diagram (encryption rounds, hash chain, SSL layers). Worth 3-4 marks alone.</li>
+      <li><strong>Numerical Example</strong> — For RSA/ElGamal/DES — show calculation step-by-step.</li>
+      <li><strong>Security Analysis</strong> — Strengths, weaknesses, applications.</li>
+    </ol>
+  </div>
+  <div class="tip trick">
+    <div class="ti">⚡</div>
+    <div class="tb">
+      <div class="ttl">The Diagram Rule for ISS</div>
+      <p>ISS instruction sheet says "Schematic diagrams must be shown wherever necessary." For <strong>DES</strong>: draw the Feistel round structure. For <strong>AES</strong>: draw the 4 transformation functions in sequence. For <strong>RSA</strong>: draw encryption/decryption flow diagram. For <strong>Digital Signature</strong>: draw signing (private key) + verifying (public key) separately. For <strong>SSL</strong>: draw the 4-layer protocol stack. A labelled diagram in Part C earns 3-4 marks even if your text is brief.</p>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="content-header">
+    <span class="cs-num">06</span>
+    <h2 class="cs-title">Solved PYQs — Introduction Topics</h2>
+    <span class="cs-pill hbadge hb-gold">Part A · All Years</span>
+  </div>
+
+  <div class="pyq-q">
+    <div class="q-meta"><span>📋 2024 + 2023 PAPERS · PART A Q1</span><span>Topic: Active vs Passive Attacks</span><span>2 Marks</span></div>
+    <div class="q-text">Differentiate between active and passive attacks.</div>
+    <div class="q-ans">
+      <strong>Passive Attack:</strong> Attacker monitors/eavesdrops on transmissions without modifying data. Goal is confidentiality breach. Hard to detect. Examples: traffic analysis, message interception. Prevention: encryption.<br><br>
+      <strong>Active Attack:</strong> Attacker modifies, replays, or creates false data. Goal is integrity/availability breach. Easier to detect. Examples: masquerade, replay, DOS. Prevention: authentication + MACs.
+    </div>
+  </div>
+
+  <div class="pyq-q">
+    <div class="q-meta"><span>📋 2023-AUG · PART A Q1</span><span>Topic: Three Security Principles</span><span>2 Marks</span></div>
+    <div class="q-text">Explain the three security principles.</div>
+    <div class="q-ans">
+      The three security principles are the <strong>CIA Triad</strong>:<br><br>
+      <strong>1. Confidentiality:</strong> Only authorized parties can access information. Ensured by: encryption (DES, AES, RSA).<br>
+      <strong>2. Integrity:</strong> Data is accurate and unaltered in transit. Ensured by: hash functions, MACs, digital signatures.<br>
+      <strong>3. Availability:</strong> Systems and data accessible when needed. Ensured by: redundancy, IDS, firewall.
+    </div>
+  </div>
+
+  <div class="pyq-q">
+    <div class="q-meta"><span>📋 ALL PAPERS · PART A</span><span>Topic: Stream vs Block Cipher</span><span>2 Marks</span></div>
+    <div class="q-text">Differentiate between stream cipher and block cipher.</div>
+    <div class="q-ans">
+      <strong>Stream Cipher:</strong> Encrypts plaintext one bit/byte at a time. Uses a keystream generator. Faster, simpler. Example: RC4, A5/1 (used in GSM). Suitable for real-time communication.<br><br>
+      <strong>Block Cipher:</strong> Encrypts plaintext in fixed-size blocks (64 or 128 bits). Processes entire block together. More widely used. Example: DES (64-bit blocks), AES (128-bit blocks).<br><br>
+      <strong>Key difference:</strong> Stream → operates bit-by-bit; Block → operates on fixed blocks.
+    </div>
+  </div>
+
+  <div class="pyq-q">
+    <div class="q-meta"><span>📋 2025 PAPER · PART A Q1</span><span>Topic: Cryptography vs Cryptanalysis</span><span>2 Marks</span></div>
+    <div class="q-text">What is the difference between Cryptography and Cryptanalysis?</div>
+    <div class="q-ans">
+      <strong>Cryptography:</strong> The science of designing methods to protect information — creating ciphers, keys, and protocols that make data unreadable to unauthorized parties. (Making locks)<br><br>
+      <strong>Cryptanalysis:</strong> The science of breaking cryptographic systems — analyzing ciphers to recover plaintext without the key. (Breaking locks)<br><br>
+      Together, they form <strong>Cryptology</strong>. Cryptography makes secure systems; Cryptanalysis tests and breaks them to find weaknesses.
+    </div>
+  </div>
+
+  <div class="pyq-q">
+    <div class="q-meta"><span>📋 2023 PAPERS · PART A</span><span>Topic: Avalanche Effect</span><span>2 Marks</span></div>
+    <div class="q-text">What is avalanche effect?</div>
+    <div class="q-ans">
+      The <strong>avalanche effect</strong> is a desirable property of cryptographic algorithms: a small change in input (plaintext or key) causes a large, unpredictable change in the output (ciphertext).<br><br>
+      <div class="layman" style="margin:8px 0">Like an avalanche — you disturb one small snowflake and the entire mountain shifts. Change 1 bit of your password, and your encrypted message looks completely different.</div>
+      <strong>Quantified:</strong> Ideally, changing 1 bit in input should change ~50% of output bits. DES and AES both exhibit strong avalanche effect. This property prevents attackers from predicting ciphertext changes, making the cipher resistant to cryptanalysis.
+    </div>
+  </div>
+
+</div><!-- /section-wrap -->
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="brand-title">ISS RTU Study Guide</div>
+        <div class="brand-sub">
+          A comprehensive, free exam preparation resource for Information Security Systems
+          (6E7103 / 6CS4-03 / 6CAI4-03) under Rajasthan Technical University, Kota.
+          Covers all 6 units with PYQ solutions, numericals, and diagrams.
+        </div>
+        <div class="footer-tag-row">
+          <span class="ftag">B.Tech VI Sem</span>
+          <span class="ftag">RTU Kota</span>
+          <span class="ftag">CS / IT / AID / CAI</span>
+          <span class="ftag">2022–2025 PYQs</span>
+          <span class="ftag">2026 Prediction</span>
+        </div>
+      </div>
+      <div class="footer-links">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="index.html">🏠 Home — Intro</a></li>
+          <li><a href="unit2.html">⚔️ Unit 2 — Attacks &amp; Classical</a></li>
+          <li><a href="unit3.html">🔴 Unit 3 — Block Ciphers (DES/AES)</a></li>
+          <li><a href="unit4.html">🔮 Unit 4 — Public Key (RSA/ElGamal)</a></li>
+          <li><a href="unit5.html">🔐 Unit 5 — Hash/MACs/Signatures</a></li>
+          <li><a href="unit6.html">🌐 Unit 6 — Key Mgmt/SSL/Kerberos</a></li>
+          <li><a href="pyq.html">📋 Solved PYQs — All Years</a></li>
+        </ul>
+      </div>
+      <div class="footer-dev">
+        <h4>Created by</h4>
+        <div class="dev-card">
+          <div class="dev-name">Mahansh Gaur</div>
+          <div class="dev-role">Developed &amp; Maintained · B.Tech RTU Kota</div>
+          <div class="dev-social">
+            <a class="social-btn" href="https://github.com/mahanshstarktech" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+              GitHub
+            </a>
+            <a class="social-btn" href="https://www.instagram.com/mahaanshgaur_6513" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+              Instagram
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Mahansh Gaur · ISS RTU Study Guide · Educational use only.</div>
+      <div class="footer-legal"><span>All Rights Reserved</span><span>Free for RTU Exam Prep</span></div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
