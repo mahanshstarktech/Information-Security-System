@@ -1,0 +1,1491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISS Unit 6 — Key Management, SSL & Web Security | RTU Exam Prep</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@300;400;500;600&family=Outfit:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:#060a0d; --bg2:#091018; --surface:#0f1c26; --surface2:#152432;
+  --border:#1e3040; --border2:#122030;
+  --u1:#22d3ee; --u2:#f97316; --u3:#ef4444; --u4:#a78bfa; --u5:#10b981; --u6:#3b82f6;
+  --upred:#f59e0b; --gold:#fbbf24; --text:#dde8f0; --dim:#3d5a70; --dim2:#6a8fa8;
+  --mono:'JetBrains Mono',monospace; --head:'Fraunces',serif; --body:'Outfit',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.8;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* TOP NAV */
+.topnav{position:sticky;top:0;z-index:100;background:rgba(6,10,13,0.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);padding:0 20px;display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none;}
+.topnav::-webkit-scrollbar{display:none;}
+.tnlabel{font-family:var(--mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--u1);padding:14px 12px 14px 0;border-right:1px solid var(--border);margin-right:6px;white-space:nowrap;flex-shrink:0;}
+.tnlink{font-family:var(--mono);font-size:11px;padding:7px 12px;border-radius:6px;text-decoration:none;color:var(--dim2);white-space:nowrap;flex-shrink:0;transition:all .18s;border:1px solid transparent;}
+.tnlink:hover{color:var(--text);background:var(--surface2);}
+.tnlink.active{color:var(--u6);background:rgba(59,130,246,.1);border-color:rgba(59,130,246,.3);}
+.tnlink.pyq{color:var(--upred);background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.2);margin-left:4px;}
+
+/* CREDIT BAND */
+.credit-band{background:#080c12;border-bottom:1px solid var(--border2);padding:10px 32px;display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;}
+.credit-band-text{font-family:var(--mono);font-size:11px;color:var(--dim2);}
+.credit-band-text span{color:var(--upred);font-weight:600;}
+.credit-link{font-family:var(--mono);font-size:11px;padding:4px 12px;border-radius:4px;border:1px solid var(--border);color:var(--dim2);text-decoration:none;transition:all .2s;}
+.credit-link:hover{border-color:var(--u1);color:var(--u1);}
+
+/* HERO */
+.hero{position:relative;overflow:hidden;padding:52px 40px 44px;background:var(--bg);}
+.hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(59,130,246,.1) 1px,transparent 1px),radial-gradient(circle,rgba(16,185,129,.05) 1px,transparent 1px);background-size:40px 40px,80px 80px;background-position:0 0,20px 20px;animation:dotDrift 28s linear infinite;}
+@keyframes dotDrift{0%{transform:translate(0,0);}100%{transform:translate(40px,40px);}}
+.hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 15% 50%,rgba(59,130,246,.08) 0%,transparent 65%),radial-gradient(ellipse 50% 45% at 85% 15%,rgba(16,185,129,.07) 0%,transparent 60%);pointer-events:none;}
+.hero-inner{position:relative;z-index:1;max-width:1100px;margin:0 auto;}
+.hero-tag{font-family:var(--mono);font-size:11px;color:var(--u6);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.hero-dot{width:7px;height:7px;border-radius:50%;background:var(--u6);box-shadow:0 0 12px var(--u6);animation:blink 2.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+.hero h1{font-family:var(--head);font-weight:800;font-size:clamp(32px,5.5vw,62px);line-height:1.05;color:#fff;letter-spacing:-1px;}
+.hero h1 span{color:var(--u6);}
+.hero-sub{margin-top:14px;color:var(--dim2);font-size:clamp(15px,2vw,17px);max-width:640px;line-height:1.75;}
+.hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;}
+.badge{font-family:var(--mono);font-size:11px;padding:4px 12px;border-radius:4px;border:1px solid;}
+.badge-blue{color:var(--u6);border-color:rgba(59,130,246,.35);background:rgba(59,130,246,.08);}
+.badge-orange{color:var(--u2);border-color:rgba(249,115,22,.35);background:rgba(249,115,22,.08);}
+.badge-red{color:var(--u3);border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.08);}
+.badge-green{color:var(--u5);border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.08);}
+.badge-gold{color:var(--upred);border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.08);}
+
+/* LAYOUT */
+.layout{display:flex;max-width:1400px;margin:0 auto;}
+
+/* SIDEBAR */
+.sidebar{width:280px;min-width:280px;padding:28px 16px;border-right:1px solid var(--border);position:sticky;top:44px;height:calc(100vh - 44px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;transition:transform .3s ease;}
+.sidebar::-webkit-scrollbar{width:4px;}.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.sidebar-title{font-family:var(--mono);font-size:10px;color:var(--u6);letter-spacing:2px;text-transform:uppercase;}
+.sidebar-close{display:none;background:none;border:1px solid var(--border);border-radius:4px;color:var(--dim2);cursor:pointer;padding:2px 8px;font-family:var(--mono);font-size:11px;}
+.nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:6px;cursor:pointer;font-family:var(--head);font-size:13px;font-weight:600;color:var(--dim2);transition:all .2s;margin-bottom:2px;text-decoration:none;}
+.nav-item:hover,.nav-item.active{background:var(--surface2);color:var(--text);}
+.nav-item.active{color:var(--u6);border-left:2px solid var(--u6);}
+.nav-imp{margin-left:auto;font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:3px;background:var(--surface2);}
+.nav-imp.high{color:var(--u3);} .nav-imp.med{color:var(--upred);} .nav-imp.low{color:var(--u6);}
+
+/* SIDEBAR TOGGLE */
+.sidebar-toggle{display:none;position:fixed;bottom:20px;right:20px;z-index:1000;width:50px;height:50px;border-radius:50%;background:var(--u6);border:none;cursor:pointer;font-size:20px;color:#000;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(59,130,246,.4);transition:transform .2s;}
+.sidebar-toggle:hover{transform:scale(1.1);}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:98;backdrop-filter:blur(2px);}
+.sidebar-overlay.visible{display:block;}
+
+/* CONTENT */
+.content{flex:1;padding:36px 48px;max-width:calc(100% - 280px);overflow-x:hidden;}
+
+/* SECTION */
+.section{margin-bottom:64px;scroll-margin-top:60px;}
+.section-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.section-num{font-family:var(--mono);font-size:12px;color:var(--u6);background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.3);padding:4px 8px;border-radius:4px;min-width:36px;text-align:center;}
+.section-title{font-family:var(--head);font-size:clamp(20px,3vw,26px);font-weight:800;color:#fff;}
+.imp-pill{margin-left:auto;font-family:var(--mono);font-size:11px;padding:4px 12px;border-radius:20px;}
+
+/* THEORY BLOCK */
+.theory-block{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:20px;}
+.theory-block h3{font-family:var(--head);font-size:17px;font-weight:700;color:var(--upred);margin-bottom:12px;}
+.theory-block p{margin-bottom:12px;font-size:16px;}
+.theory-block p:last-child{margin-bottom:0;}
+.theory-block ul,.theory-block ol{padding-left:22px;margin:10px 0;}
+.theory-block li{margin-bottom:8px;font-size:16px;}
+
+/* LAYMAN BOX */
+.layman{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.25);border-left:3px solid var(--u6);border-radius:8px;padding:14px 18px;font-family:var(--mono);font-size:13px;color:#a5c8ff;margin:12px 0;line-height:1.7;}
+.layman::before{content:'💬 LAYMAN: ';color:var(--u6);font-weight:600;}
+
+/* FORMULA */
+.formula-box{background:#040c12;border:1px solid rgba(59,130,246,.25);border-left:3px solid var(--u6);border-radius:8px;padding:16px 20px;margin:16px 0;font-family:var(--mono);font-size:13px;color:#a5c8ff;overflow-x:auto;}
+.formula-box .label{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;display:block;}
+.formula-box .formula{color:#7dd3fc;}
+.formula-box .note{color:var(--dim2);font-size:12px;margin-top:8px;}
+
+/* TIPS */
+.tip-box{border-radius:8px;padding:16px 18px;margin:14px 0;display:flex;gap:12px;}
+.tip-box.trick{background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.25);}
+.tip-box.validate{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.25);}
+.tip-box.connect{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.25);}
+.tip-box.warning{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.25);}
+.tip-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
+.tip-content{flex:1;}
+.tip-title{font-family:var(--head);font-size:13px;font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;}
+.tip-box.trick .tip-title{color:var(--gold);}
+.tip-box.validate .tip-title{color:var(--u5);}
+.tip-box.connect .tip-title{color:var(--u6);}
+.tip-box.warning .tip-title{color:var(--u3);}
+.tip-content p{font-size:14px;color:var(--text);margin:0;line-height:1.65;}
+
+/* EXAMPLE BOX */
+.example-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:18px 22px;margin:14px 0;}
+.example-label{font-family:var(--mono);font-size:10px;color:var(--u3);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+
+/* TABLE */
+.comp-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px;display:block;overflow-x:auto;}
+.comp-table th{background:var(--surface2);padding:10px 14px;text-align:left;font-family:var(--head);font-weight:700;color:var(--u6);border-bottom:1px solid var(--border);white-space:nowrap;}
+.comp-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;}
+.comp-table tr:last-child td{border-bottom:none;}
+.comp-table tr:hover td{background:var(--surface2);}
+
+/* PYQ */
+.pyq-section{background:#070c12;border:1px solid rgba(245,158,11,.25);border-radius:12px;padding:22px 26px;margin-top:24px;}
+.pyq-header{font-family:var(--head);font-size:15px;font-weight:700;color:var(--upred);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.pyq-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:14px;}
+.pyq-q-text{font-family:var(--head);font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;}
+.pyq-meta{font-family:var(--mono);font-size:10px;color:var(--dim2);margin-bottom:12px;display:flex;gap:12px;flex-wrap:wrap;}
+.pyq-meta .topic-tag{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);color:var(--u6);padding:2px 8px;border-radius:3px;}
+.pyq-answer{font-size:15px;line-height:1.8;}
+.pyq-toggle{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--upred);margin-top:10px;transition:all .2s;}
+.pyq-toggle:hover{background:var(--upred);color:#000;}
+.answer-content{display:none;margin-top:14px;}
+.answer-content.open{display:block;}
+
+/* PREDICTED */
+.pred-banner{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(245,158,11,.03));border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:20px 24px;margin-bottom:24px;}
+.pred-badge{font-family:var(--mono);font-size:11px;color:var(--upred);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);padding:4px 12px;border-radius:20px;display:inline-block;margin-bottom:10px;}
+.pred-banner p{font-size:14px;color:var(--dim2);line-height:1.7;}
+
+/* IMP BAR */
+.imp-bar-wrap{margin-bottom:8px;}
+.imp-bar-label{font-family:var(--mono);font-size:12px;color:var(--dim2);margin-bottom:4px;display:flex;justify-content:space-between;}
+.imp-bar{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+.imp-bar-fill{height:100%;border-radius:3px;}
+.imp-high .imp-bar-fill{background:var(--u3);}
+.imp-med .imp-bar-fill{background:var(--upred);}
+.imp-low .imp-bar-fill{background:var(--u6);}
+
+/* DIAGRAM */
+.diagram-wrap{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;margin:16px 0;text-align:center;}
+.diagram-cap{font-family:var(--mono);font-size:11px;color:var(--dim2);margin-top:10px;text-align:center;}
+
+/* STEPS */
+.steps{margin:14px 0;}
+.step-item{display:flex;gap:14px;margin-bottom:12px;}
+.step-num{width:30px;height:30px;border-radius:50%;background:var(--u6);color:#000;font-family:var(--mono);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-text{font-size:16px;padding-top:4px;}
+
+code{font-family:var(--mono);background:var(--surface2);padding:2px 6px;border-radius:3px;font-size:13px;color:var(--u4);}
+pre{background:#070a10;border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto;font-family:var(--mono);font-size:13px;color:var(--u6);margin:12px 0;line-height:1.6;}
+ul,ol{padding-left:22px;margin:10px 0;}
+li{margin-bottom:6px;font-size:16px;}
+.hl{color:var(--u1);font-weight:600;} .hl-o{color:var(--u2);font-weight:600;} .hl-r{color:var(--u3);font-weight:600;} .hl-v{color:var(--u4);font-weight:600;} .hl-g{color:var(--u5);font-weight:600;} .hl-b{color:var(--u6);font-weight:600;} .hl-gold{color:var(--upred);font-weight:600;}
+h4{font-family:var(--head);font-size:16px;font-weight:700;color:var(--text);margin:16px 0 8px;}
+.divider{border:none;border-top:1px solid var(--border);margin:36px 0;}
+
+/* MOBILE */
+@media(max-width:768px){
+  .sidebar{position:fixed;top:0;left:0;height:100vh;z-index:99;background:var(--bg);transform:translateX(-100%);border-right:1px solid var(--border);transition:transform .3s ease;}
+  .sidebar.open{transform:translateX(0);box-shadow:4px 0 30px rgba(0,0,0,.8);}
+  .sidebar-close{display:block;}
+  .sidebar-toggle{display:flex;}
+  .content{max-width:100%;padding:20px 18px;}
+  .hero{padding:36px 18px 32px;}
+  .section-header{flex-direction:column;align-items:flex-start;gap:8px;}
+  .imp-pill{margin-left:0;}
+  .theory-block{padding:18px;}
+  .pyq-section{padding:16px;}
+}
+@media(max-width:768px) and (orientation:portrait){
+  body{font-size:18px;line-height:1.85;}
+  .theory-block p,.theory-block li,.step-text{font-size:18px;}
+  .layman{font-size:15px;}
+  h4{font-size:17px;}
+  .section-title{font-size:22px;}
+  .comp-table{font-size:15px;}
+  .comp-table th,.comp-table td{padding:10px 12px;}
+  .pyq-q-text{font-size:16px;}
+  .pyq-answer{font-size:16px;}
+}
+@media(min-width:769px){
+  .sidebar-toggle{display:none !important;}
+  .sidebar-overlay{display:none !important;}
+}
+@media(max-width:480px){
+  body{font-size:18px;}
+  .hero h1{font-size:clamp(28px,9vw,44px);}
+  .content{padding:16px 14px;}
+}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="topnav">
+  <span class="tnlabel">ISS · RTU</span>
+  <a class="tnlink" href="index.html">🏠 Home</a>
+  <a class="tnlink" href="unit2.html">⚔️ U2: Attacks</a>
+  <a class="tnlink" href="unit3.html">🔴 U3: Block Ciphers</a>
+  <a class="tnlink" href="unit4.html">🔮 U4: Public Key</a>
+  <a class="tnlink" href="unit5.html">🔐 U5: Hash/MAC/Sig</a>
+  <a class="tnlink active" href="unit6.html">🌐 U6: Key Mgmt/SSL</a>
+  <a class="tnlink pyq" href="pyq.html">📋 Solved PYQs</a>
+</nav>
+
+<!-- CREDIT BAND -->
+<div class="credit-band">
+  <div class="credit-band-text">Crafted by <span>Mahansh Gaur</span> · B.Tech CSE-IoT · RTU Jaipur</div>
+  <a class="credit-link" href="https://www.instagram.com/mahaanshgaur_6513" target="_blank">📸 @mahaanshgaur_6513</a>
+  <a class="credit-link" href="https://github.com/mahanshstarktech" target="_blank">🐙 GitHub</a>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag"><span class="hero-dot"></span>📚 B.Tech VI Sem · RTU Exam Prep · Information Security Systems</div>
+    <h1>Unit 6: Key Management,<br><span>SSL &amp; Web Security</span></h1>
+    <p class="hero-sub">Kerberos, X.509, PKI, SSL/TLS architecture, HTTPS, SSH — complete exam guide with all PYQ solutions 2022–2025 and 2026 predictions.</p>
+    <div class="hero-badges">
+      <span class="badge badge-red">🔥 High Priority</span>
+      <span class="badge badge-gold">🔮 2026 Predicted</span>
+      <span class="badge badge-blue">RTU PYQs Solved</span>
+      <span class="badge badge-green">Exam Tricks</span>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<div class="layout">
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">Unit 6 Topics</div>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <a class="nav-item active" href="#overview">📊 Overview &amp; Importance</a>
+  <a class="nav-item" href="#key-dist">🔑 Symmetric Key Distribution<span class="nav-imp high">80%</span></a>
+  <a class="nav-item" href="#pubkey-dist">📤 Public Key Distribution<span class="nav-imp high">85%</span></a>
+  <a class="nav-item" href="#x509">📜 X.509 Certificates<span class="nav-imp high">82%</span></a>
+  <a class="nav-item" href="#pki">🏛️ Public Key Infrastructure<span class="nav-imp high">82%</span></a>
+  <a class="nav-item" href="#kerberos">🎫 Kerberos Authentication<span class="nav-imp high">90%</span></a>
+  <a class="nav-item" href="#web-threats">🌐 Web Security Threats<span class="nav-imp med">70%</span></a>
+  <a class="nav-item" href="#ssl">🔒 SSL Architecture &amp; Protocol<span class="nav-imp high">95%</span></a>
+  <a class="nav-item" href="#tls">🛡️ Transport Layer Security<span class="nav-imp med">72%</span></a>
+  <a class="nav-item" href="#https-ssh">🔗 HTTPS &amp; SSH<span class="nav-imp high">85%</span></a>
+  <a class="nav-item" href="#predicted">🔮 2026 Predicted Topics</a>
+  <a class="nav-item" href="#pyq-master">📝 All PYQs Master List</a>
+</nav>
+
+<main class="content">
+
+<!-- ═══ SECTION 00: OVERVIEW ═══ -->
+<section class="section" id="overview">
+  <div class="section-header">
+    <span class="section-num">00</span>
+    <h2 class="section-title">Topic Importance Analysis</h2>
+  </div>
+  <div class="theory-block">
+    <p>Based on RTU PYQs 2022–2025 (6 papers analyzed), here is the importance of each Unit 6 topic:</p>
+    <div class="imp-bar-wrap imp-high" style="margin-top:16px">
+      <div class="imp-bar-label"><span>SSL Architecture &amp; Protocol</span><span style="color:#ef4444">95%</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:95%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-high" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Kerberos Version 4</span><span style="color:#ef4444">90%</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:90%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-high" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Public Key Distribution / X.509 Certificates</span><span style="color:#ef4444">85%</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:85%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-high" style="margin-top:10px">
+      <div class="imp-bar-label"><span>HTTPS &amp; SSH</span><span style="color:#ef4444">85%</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:85%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-high" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Public Key Infrastructure (PKI)</span><span style="color:#f59e0b">82%</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:82%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-high" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Symmetric Key Distribution</span><span style="color:#f59e0b">80%</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:80%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-med" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Transport Layer Security (TLS)</span><span style="color:#f59e0b">72%</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:72%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-med" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Web Security Threats</span><span style="color:#f59e0b">70%</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:70%"></div></div>
+    </div>
+  </div>
+  <div class="tip-box trick">
+    <div class="tip-icon">⚡</div>
+    <div class="tip-content">
+      <div class="tip-title">Exam Strategy — Unit 6</div>
+      <p>SSL + Kerberos = the two biggest Part C/B topics that appear in every ISS paper. <strong>SSL Architecture + Protocol appears in 100% of papers</strong> — NEVER skip it. Kerberos v4 appeared in 2023-Jul Part C and is predicted strongly for 2026. X.509/PKI and HTTPS appear as Part B questions consistently. Always draw diagrams for SSL (4-layer stack) and Kerberos (ticket exchange sequence).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 01: SYMMETRIC KEY DISTRIBUTION ═══ -->
+<section class="section" id="key-dist">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Symmetric Key Distribution</h2>
+    <span class="imp-pill badge badge-gold">80% · Part B/C</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>The Problem — Why is Key Distribution Hard?</h3>
+    <p><span class="hl">Symmetric encryption</span> (DES, AES) requires both sender and receiver to share the SAME secret key. But how do they securely exchange that key in the first place, without an attacker intercepting it?</p>
+    <div class="layman">Imagine two people who want to pass secret notes in class. They first need to secretly agree on a code — but how do they agree on the code without the teacher (attacker) hearing? That's the key distribution problem.</div>
+    <p>If 1000 people want to communicate securely with each other, we'd need <strong>n(n-1)/2 = ~500,000 secret keys!</strong> This is clearly unscalable — and delivering each key securely is itself a problem. This is called the <span class="hl-r">key distribution problem</span>.</p>
+  </div>
+
+  <div class="theory-block">
+    <h3>Solutions for Symmetric Key Distribution</h3>
+
+    <h4>1. Direct Physical Delivery (Courier)</h4>
+    <p>The key is delivered physically — on a secure courier, USB drive, or in person. Secure but <strong>impractical</strong> for large-scale or online communication.</p>
+    <p><em>Example:</em> Military organizations exchange codebooks physically before deployment.</p>
+
+    <h4>2. Key Distribution Center (KDC) — Most Important!</h4>
+    <p>A trusted third party called the <span class="hl">KDC</span> knows a long-term secret key for each user. When two users A and B want to communicate, they don't directly exchange keys. Instead:</p>
+
+    <div class="formula-box">
+      <span class="label">KDC Session Key Distribution (Needham-Schroeder Protocol)</span>
+      <div class="formula">1. A → KDC: "I want to talk to B" + request ID</div>
+      <div class="formula">2. KDC → A: {Session key KS, Ticket for B}encrypted with A's master key</div>
+      <div class="formula">   Ticket = {Session key KS, A's identity}encrypted with B's master key</div>
+      <div class="formula">3. A → B: Forwards the Ticket (B decrypts with B's master key to get KS)</div>
+      <div class="formula">4. A and B now communicate using Session key KS</div>
+      <div class="note">KDC only needs to store n master keys for n users. Session keys are temporary.</div>
+    </div>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 580 220" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+        <text x="10" y="18" fill="#3b82f6" font-family="JetBrains Mono" font-size="11">Key Distribution Center (KDC) Architecture</text>
+        <!-- KDC box -->
+        <rect x="220" y="30" width="140" height="60" rx="8" fill="#152432" stroke="#f59e0b" stroke-width="2"/>
+        <text x="290" y="57" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono" font-size="11" font-weight="bold">KDC</text>
+        <text x="290" y="74" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="9">Trusted Third Party</text>
+        <!-- A box -->
+        <rect x="30" y="140" width="100" height="50" rx="8" fill="#152432" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="80" y="162" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="12" font-weight="bold">User A</text>
+        <text x="80" y="180" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="9">key Ka</text>
+        <!-- B box -->
+        <rect x="450" y="140" width="100" height="50" rx="8" fill="#152432" stroke="#10b981" stroke-width="1.5"/>
+        <text x="500" y="162" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="12" font-weight="bold">User B</text>
+        <text x="500" y="180" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="9">key Kb</text>
+        <!-- A to KDC -->
+        <line x1="130" y1="150" x2="220" y2="80" stroke="#22d3ee" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="140" y="115" fill="#22d3ee" font-family="JetBrains Mono" font-size="8">① Request KS</text>
+        <!-- KDC to A -->
+        <line x1="220" y1="90" x2="130" y2="158" stroke="#f59e0b" stroke-width="2"/>
+        <text x="125" y="135" fill="#f59e0b" font-family="JetBrains Mono" font-size="8">② E(Ka)[KS+Ticket]</text>
+        <!-- A to B -->
+        <line x1="130" y1="162" x2="450" y2="162" stroke="#4ade80" stroke-width="2"/>
+        <text x="290" y="195" text-anchor="middle" fill="#4ade80" font-family="JetBrains Mono" font-size="8">③ A sends Ticket = E(Kb)[KS+A]</text>
+        <!-- KDC to B (pre-shared key) -->
+        <line x1="360" y1="80" x2="450" y2="148" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="3,3"/>
+        <text x="415" y="105" fill="#6a8fa8" font-family="JetBrains Mono" font-size="8">pre-shared Kb</text>
+        <!-- Session key -->
+        <text x="290" y="210" text-anchor="middle" fill="#a5c8ff" font-family="JetBrains Mono" font-size="9">④ Both use Session Key KS to encrypt further messages</text>
+      </svg>
+      <div class="diagram-cap">Fig 1.1 — KDC Architecture: Central trust authority distributes session keys</div>
+    </div>
+
+    <h4>3. Using Asymmetric Encryption (Hybrid Approach)</h4>
+    <p>User A encrypts the symmetric session key with B's <strong>public key</strong>. Only B can decrypt with B's private key. This solves the key distribution problem without a KDC!</p>
+    <div class="formula-box">
+      <div class="formula">A generates random symmetric key KS</div>
+      <div class="formula">A sends B: E(PUb, KS)  ← encrypted with B's public key</div>
+      <div class="formula">B decrypts: KS = D(PRb, E(PUb, KS))</div>
+      <div class="formula">Now A and B share KS and use symmetric encryption</div>
+      <div class="note">This is exactly how HTTPS/TLS works — RSA or DH to exchange symmetric key, then AES for data</div>
+    </div>
+  </div>
+
+  <div class="tip-box connect">
+    <div class="tip-icon">🔗</div>
+    <div class="tip-content">
+      <div class="tip-title">Connection — Unit 4 (RSA) + Unit 3 (AES) + Unit 6</div>
+      <p>Key distribution ties Units 4, 3, and 6 together! <strong>Unit 4 (RSA/DH)</strong> provides the mechanism to exchange keys securely. <strong>Unit 3 (AES/DES)</strong> is the symmetric cipher used once the key is shared. <strong>Unit 6 (SSL)</strong> = the real-world protocol that uses RSA key exchange + AES data encryption. This is called <em>hybrid encryption</em> — the most common pattern in real security systems.</p>
+    </div>
+  </div>
+
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — Key Distribution</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. What is Symmetric key distribution? How it can be achieved using symmetric and asymmetric encryptions?</div>
+      <div class="pyq-meta"><span>June 2022 · Part C Q3 · 15 marks ⭐</span><span class="topic-tag">Key Distribution</span></div>
+      <button class="pyq-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.nextElementSibling.classList.contains('open')?'▲ Hide Answer':'▼ Show Answer'">▼ Show Answer</button>
+      <div class="answer-content">
+        <div class="pyq-answer">
+          <strong>Symmetric Key Distribution — Definition:</strong><br>
+          Symmetric key distribution is the process of securely delivering a shared secret key to two or more parties who wish to communicate using symmetric encryption. The challenge is: how do you securely share the key without an eavesdropper intercepting it?<br><br>
+
+          <strong>The Problem:</strong><br>
+          If n parties need to communicate, n(n-1)/2 keys are needed. For 1000 users = ~500,000 keys. Managing and securely delivering this many keys is impractical — this is the key distribution problem.<br><br>
+
+          <strong>Method 1: Using Symmetric Encryption (KDC Approach):</strong><br>
+          A trusted Key Distribution Center (KDC) maintains a long-term secret key with each user (Ka with user A, Kb with user B, etc.).<br>
+          Steps:<br>
+          1. A sends request to KDC: "I want session key to talk to B"<br>
+          2. KDC generates session key KS and sends to A: E(Ka, [KS || E(Kb, [KS || ID_A])])<br>
+          3. A decrypts to get KS and the Ticket (encrypted with Kb)<br>
+          4. A forwards Ticket to B<br>
+          5. B decrypts Ticket with Kb to get KS<br>
+          6. Both A and B now use KS for further communication<br>
+          [Draw KDC diagram as shown above]<br><br>
+
+          <strong>Method 2: Using Asymmetric Encryption:</strong><br>
+          1. A generates a random session key KS<br>
+          2. A encrypts KS with B's public key: C = E(PUb, KS)<br>
+          3. A sends C to B<br>
+          4. B decrypts: KS = D(PRb, C)<br>
+          5. Both now share KS for symmetric encryption<br>
+          Advantage: No KDC needed. Only B's public key is required (publicly available).<br>
+          Disadvantage: RSA/public key encryption is slow — so only use it to exchange the symmetric key, not for actual data.<br><br>
+
+          <strong>Concept of Public Key Infrastructure:</strong><br>
+          PKI manages the public keys through Certificate Authorities (CAs) that issue X.509 digital certificates binding identities to public keys. This ensures you're using the correct public key and not an attacker's fake key.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 02: PUBLIC KEY DISTRIBUTION ═══ -->
+<section class="section" id="pubkey-dist">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Distribution of Public Keys</h2>
+    <span class="imp-pill badge badge-red">🔥 85% — Very Important</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>Why is Public Key Distribution a Problem?</h3>
+    <p>In asymmetric cryptography, public keys are supposed to be public — anyone can have them. But how do you know the key you received is really from the person you think it is? What if an attacker gives you their own fake public key while pretending to be your bank?</p>
+    <div class="layman">Imagine you want to send a secret letter to your bank using their "lock" (public key). But someone intercepts the delivery and substitutes THEIR own lock. You'd encrypt the letter with the attacker's lock — and they can open it! This is the man-in-the-middle attack on public key distribution.</div>
+
+    <h4>4 Methods of Public Key Distribution</h4>
+
+    <h4>1. Public Announcement</h4>
+    <p>User broadcasts their public key to everyone or posts it on a website/email signature. Simple but <span class="hl-r">insecure</span> — anyone can forge a public announcement claiming to be someone else.</p>
+
+    <h4>2. Publicly Available Directory</h4>
+    <p>Trusted public directory maintains {name, public key} pairs. Users register their public key with the directory authority. More trustworthy, but the <span class="hl-r">directory itself can be attacked/compromised</span>.</p>
+
+    <h4>3. Public Key Authority</h4>
+    <p>A central authority is responsible for distributing public keys on demand. When A wants B's public key, A requests it from the authority. The authority's response is signed with its own private key — A verifies with the authority's public key.</p>
+
+    <h4>4. Public Key Certificates (Best Solution!)</h4>
+    <p>A <span class="hl">Certificate Authority (CA)</span> issues digital certificates that bind a public key to an identity. The certificate is signed by the CA using the CA's private key. Anyone can verify the certificate using the CA's public key.</p>
+
+    <div class="formula-box">
+      <span class="label">Certificate Structure (simplified)</span>
+      <div class="formula">Certificate = {Subject Name, Subject Public Key, CA Name, Validity Period, Serial No.}</div>
+      <div class="formula">Signed with CA's private key: Cert_signed = E(CA_private, Hash(Certificate))</div>
+      <div class="note">Verification: Anyone can compute Hash(Certificate) and compare with D(CA_public, Cert_signed)</div>
+    </div>
+  </div>
+
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — Public Key Distribution</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain the distribution of public keys using the public-key certificate scheme.</div>
+      <div class="pyq-meta"><span>2023-Jul · Part B Q6 · 4 marks ⭐</span><span class="topic-tag">Public Key Distribution</span></div>
+      <button class="pyq-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.nextElementSibling.classList.contains('open')?'▲ Hide Answer':'▼ Show Answer'">▼ Show Answer</button>
+      <div class="answer-content">
+        <div class="pyq-answer">
+          <strong>Public Key Distribution using Certificates:</strong><br><br>
+
+          The certificate approach solves the man-in-the-middle problem in public key distribution. A trusted Certificate Authority (CA) issues certificates — digitally signed documents that bind a public key to an identity.<br><br>
+
+          <strong>Certificate Structure:</strong><br>
+          A public key certificate contains:<br>
+          • Subject's name (e.g., "www.sbi.co.in")<br>
+          • Subject's public key<br>
+          • CA's name (issuer)<br>
+          • Validity period (not before, not after)<br>
+          • Serial number<br>
+          • CA's digital signature on the above fields<br><br>
+
+          <strong>How Certificate Distribution Works:</strong><br>
+          1. User A registers with CA: submits identity + public key<br>
+          2. CA verifies A's identity (offline verification)<br>
+          3. CA creates certificate: CA_Cert_A = Sign(CA_private, {A's identity + A's public key + validity})<br>
+          4. A can now freely distribute CA_Cert_A to anyone<br>
+          5. When B receives A's certificate, B verifies: Verify(CA_public, CA_Cert_A) → extracts A's trusted public key<br><br>
+
+          [Draw: A → CA (registration) → A (certificate) → B (certificate) → CA (verify)]<br><br>
+
+          <strong>Advantage over other methods:</strong><br>
+          No need to contact the CA at the time of verification — the certificate can be verified offline using the CA's widely-distributed public key. This makes it scalable and efficient (used in HTTPS on all websites).
+        </div>
+      </div>
+    </div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain the public-key certificate technique for distribution of public keys.</div>
+      <div class="pyq-meta"><span>2024 · Part B Q7 · 4 marks ⭐</span><span class="topic-tag">Public Key Certificates</span></div>
+      <button class="pyq-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.nextElementSibling.classList.contains('open')?'▲ Hide Answer':'▼ Show Answer'">▼ Show Answer</button>
+      <div class="answer-content">
+        <div class="pyq-answer">
+          [Use the same answer as above — this question is identical to the 2023-Jul B6 question, just rephrased. RTU repeatedly tests this topic. Make sure to include the Certificate structure diagram and the 5-step verification process.]
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 03: X.509 ═══ -->
+<section class="section" id="x509">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">X.509 Certificates</h2>
+    <span class="imp-pill badge badge-red">82% · Part B/C</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>What is X.509?</h3>
+    <p><span class="hl">X.509</span> is an ITU-T standard that defines the format of public key certificates. It's the most widely used certificate format in the world — every HTTPS website uses X.509 certificates.</p>
+    <div class="layman">X.509 is like a standardized passport format. Just like all countries agree on what a passport must contain (photo, name, nationality, expiry), X.509 defines exactly what fields a digital certificate must have so that all computers can read and verify them the same way.</div>
+  </div>
+
+  <div class="theory-block">
+    <h3>X.509 Certificate Format — Must Know for Exams</h3>
+    <div class="formula-box">
+      <span class="label">X.509 v3 Certificate Fields</span>
+      <div class="formula">Version            : Version number (v1=0, v2=1, v3=2)</div>
+      <div class="formula">Serial Number      : Unique identifier assigned by CA</div>
+      <div class="formula">Signature Algorithm: Algorithm used to sign the cert (e.g., SHA256withRSA)</div>
+      <div class="formula">Issuer             : CA's Distinguished Name (who issued the cert)</div>
+      <div class="formula">Validity Period    : Not Before + Not After (expiry dates)</div>
+      <div class="formula">Subject            : Owner's Distinguished Name (who the cert is for)</div>
+      <div class="formula">Subject Public Key : The actual public key + algorithm</div>
+      <div class="formula">Extensions (v3)    : Additional info — key usage, subject alt name</div>
+      <div class="formula">Signature          : CA's digital signature over all above fields</div>
+      <div class="note">Notation: CA&lt;&lt;A&gt;&gt; = certificate for user A issued by CA</div>
+    </div>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 580 260" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+        <text x="10" y="18" fill="#3b82f6" font-family="JetBrains Mono" font-size="11">X.509 Certificate Chain of Trust</text>
+        <!-- Root CA -->
+        <rect x="220" y="30" width="140" height="50" rx="8" fill="#152432" stroke="#f59e0b" stroke-width="2"/>
+        <text x="290" y="53" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono" font-size="11" font-weight="bold">Root CA</text>
+        <text x="290" y="70" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="9">Self-signed cert</text>
+        <!-- Intermediate CA -->
+        <rect x="180" y="115" width="130" height="50" rx="8" fill="#152432" stroke="#f97316" stroke-width="1.5"/>
+        <text x="245" y="138" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="10">Intermediate CA</text>
+        <text x="245" y="155" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="9">Signed by Root CA</text>
+        <!-- End entity cert -->
+        <rect x="155" y="200" width="180" height="50" rx="8" fill="#152432" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="245" y="222" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="10">End-Entity Cert</text>
+        <text x="245" y="240" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="9">www.example.com</text>
+        <!-- Arrows -->
+        <line x1="280" y1="80" x2="255" y2="115" stroke="#4ade80" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="238" y="100" fill="#4ade80" font-family="JetBrains Mono" font-size="8">signs</text>
+        <line x1="245" y1="165" x2="245" y2="200" stroke="#4ade80" stroke-width="2" marker-end="url(#arr)"/>
+        <text x="250" y="185" fill="#4ade80" font-family="JetBrains Mono" font-size="8">signs</text>
+        <!-- Trust -->
+        <rect x="380" y="115" width="180" height="120" rx="8" fill="#0f1c26" stroke="#2a3040" stroke-width="1"/>
+        <text x="470" y="140" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono" font-size="10">Verification Path:</text>
+        <text x="390" y="160" fill="#dde8f0" font-family="JetBrains Mono" font-size="9">1. Check End-Entity cert</text>
+        <text x="390" y="177" fill="#dde8f0" font-family="JetBrains Mono" font-size="9">   signed by Intermediate</text>
+        <text x="390" y="194" fill="#dde8f0" font-family="JetBrains Mono" font-size="9">2. Check Intermediate cert</text>
+        <text x="390" y="211" fill="#dde8f0" font-family="JetBrains Mono" font-size="9">   signed by Root CA</text>
+        <text x="390" y="228" fill="#22d3ee" font-family="JetBrains Mono" font-size="9">3. Root CA trusted = DONE!</text>
+        <defs><marker id="arr" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#4ade80"/></marker></defs>
+      </svg>
+      <div class="diagram-cap">Fig 3.1 — X.509 Certificate Chain: Trust flows from Root CA down to end-entity</div>
+    </div>
+
+    <h4>Certificate Revocation</h4>
+    <p>What if a certificate needs to be cancelled before expiry (private key compromised, employee left)? The CA publishes a <span class="hl">Certificate Revocation List (CRL)</span> — a list of revoked certificate serial numbers. Before trusting a certificate, always check the CRL or use OCSP (Online Certificate Status Protocol).</p>
+  </div>
+
+  <div class="tip-box trick">
+    <div class="tip-icon">💡</div>
+    <div class="tip-content">
+      <div class="tip-title">X.509 Memory Trick — "VSS AVS-E"</div>
+      <p><strong>V</strong>ersion, <strong>S</strong>erial, <strong>S</strong>ignature Algorithm, <strong>A</strong>uthority (Issuer), <strong>V</strong>alidity, <strong>S</strong>ubject, (public) <strong>K</strong>ey, <strong>E</strong>xtensions, Signature. Just remember: "Very Secure Systems Always Verify Subject Keys Every Signature." Write these 9 fields in a table format in exams — it fills space and shows depth.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 04: PKI ═══ -->
+<section class="section" id="pki">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Public Key Infrastructure (PKI)</h2>
+    <span class="imp-pill badge badge-red">82% · Part B/C</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>What is PKI?</h3>
+    <p><span class="hl">Public Key Infrastructure (PKI)</span> is a comprehensive system of policies, procedures, hardware, software, and standards needed to create, manage, distribute, use, store, and revoke digital certificates. It's the backbone of trusted internet communication.</p>
+    <div class="layman">PKI is like the entire passport system of a country — not just the passport itself (certificate), but also the passport office (CA), the rules for issuing passports (policies), how to verify them at border control (certificate verification), and how to revoke cancelled passports (CRL). Without the system around it, a single passport is just a piece of paper.</div>
+  </div>
+
+  <div class="theory-block">
+    <h3>Components of PKI</h3>
+    <ul>
+      <li><span class="hl">Certification Authority (CA):</span> Issues, signs, and manages certificates. The most trusted entity in the system. Example: DigiCert, Let's Encrypt, VeriSign. Root CA's certificate is self-signed and pre-installed in browsers.</li>
+      <li><span class="hl">Registration Authority (RA):</span> Acts as intermediary between users and CA. Verifies user identity before CA issues certificate. Offloads CA's workload.</li>
+      <li><span class="hl">Certificate Repository:</span> Public database where certificates and CRLs are stored. Usually LDAP directory. Anyone can download certificates from here.</li>
+      <li><span class="hl">Certificate Revocation System:</span> CRL (Certificate Revocation List) or OCSP to invalidate compromised certificates.</li>
+      <li><span class="hl">Certificate Policy (CP) &amp; Certification Practice Statement (CPS):</span> Documents describing how the CA operates and what the certificate guarantees.</li>
+    </ul>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 580 200" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+        <text x="10" y="18" fill="#3b82f6" font-family="JetBrains Mono" font-size="11">PKI Architecture — Components</text>
+        <!-- CA -->
+        <rect x="225" y="30" width="130" height="50" rx="8" fill="#152432" stroke="#f59e0b" stroke-width="2.5"/>
+        <text x="290" y="53" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono" font-size="11" font-weight="bold">CA</text>
+        <text x="290" y="70" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="9">Certification Authority</text>
+        <!-- RA -->
+        <rect x="30" y="130" width="120" height="50" rx="8" fill="#152432" stroke="#f97316" stroke-width="1.5"/>
+        <text x="90" y="153" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="10">RA</text>
+        <text x="90" y="170" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="9">Registration Auth</text>
+        <!-- Repository -->
+        <rect x="165" y="130" width="125" height="50" rx="8" fill="#152432" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="227" y="150" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="10">Repository</text>
+        <text x="227" y="167" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="9">Certs + CRLs</text>
+        <!-- Revocation -->
+        <rect x="305" y="130" width="120" height="50" rx="8" fill="#152432" stroke="#ef4444" stroke-width="1.5"/>
+        <text x="365" y="150" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="10">Revocation</text>
+        <text x="365" y="167" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="9">CRL / OCSP</text>
+        <!-- User -->
+        <rect x="440" y="130" width="120" height="50" rx="8" fill="#152432" stroke="#10b981" stroke-width="1.5"/>
+        <text x="500" y="153" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="10">End Users</text>
+        <text x="500" y="170" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="9">Cert holders</text>
+        <!-- Lines -->
+        <line x1="230" y1="80" x2="130" y2="130" stroke="#f59e0b" stroke-width="1.5"/>
+        <line x1="270" y1="80" x2="227" y2="130" stroke="#f59e0b" stroke-width="1.5"/>
+        <line x1="305" y1="80" x2="365" y2="130" stroke="#f59e0b" stroke-width="1.5"/>
+        <line x1="350" y1="80" x2="500" y2="130" stroke="#f59e0b" stroke-width="1.5"/>
+      </svg>
+      <div class="diagram-cap">Fig 4.1 — PKI Architecture: CA at top manages all trust components</div>
+    </div>
+  </div>
+
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — PKI &amp; X.509</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain the Public-key certificates technique for distribution of public keys. (May 2025 Part C Q5)</div>
+      <div class="pyq-meta"><span>May 2025 · Part C Q5 · 10 marks ⭐⭐</span><span class="topic-tag">PKI + X.509</span><span class="badge-gold" style="font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:3px;background:rgba(245,158,11,.1);color:var(--upred);border:1px solid rgba(245,158,11,.3)">🔮 Predicted 2026</span></div>
+      <button class="pyq-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.nextElementSibling.classList.contains('open')?'▲ Hide Answer':'▼ Show Answer'">▼ Show Answer</button>
+      <div class="answer-content">
+        <div class="pyq-answer">
+          <strong>Introduction:</strong><br>
+          The public-key certificate technique is a solution to the problem of authenticating public keys — ensuring that a received public key genuinely belongs to the claimed entity and has not been tampered with.<br><br>
+
+          <strong>Core Idea:</strong><br>
+          A trusted Certificate Authority (CA) creates a digital certificate that binds together: (1) the user's identity and (2) the user's public key, then digitally signs this binding with the CA's own private key.<br><br>
+
+          <strong>X.509 Certificate Fields:</strong><br>
+          [List all 9 fields as described in Section 03 above — Version, Serial, Sig Algorithm, Issuer, Validity, Subject, Public Key, Extensions, CA Signature]<br><br>
+
+          <strong>Certificate Creation Process:</strong><br>
+          1. User A generates a key pair (public key PUa, private key PRa)<br>
+          2. A submits identity + PUa to Registration Authority (RA)<br>
+          3. RA verifies A's identity (physical/online verification)<br>
+          4. CA creates certificate: fields = {Version, Serial, A's name, A's PUa, CA name, validity, ...}<br>
+          5. CA signs: Signature = E(CA_private_key, Hash(certificate_fields))<br>
+          6. CA issues certificate to A<br><br>
+
+          <strong>Certificate Verification:</strong><br>
+          When B receives A's certificate:<br>
+          1. Extract CA signature from certificate<br>
+          2. Compute Hash(certificate_fields)<br>
+          3. Decrypt signature: H' = D(CA_public_key, CA_signature)<br>
+          4. If H = H' → certificate is valid and untampered<br>
+          5. Check validity period — not expired?<br>
+          6. Check CRL — not revoked?<br>
+          7. Extract A's public key → now B can trust PUa<br><br>
+
+          [Draw the chain of trust diagram: Root CA → Intermediate CA → End-entity Certificate]<br><br>
+
+          <strong>PKI Components:</strong><br>
+          CA, RA, Certificate Repository, CRL/OCSP, Certificate Policy<br><br>
+
+          <strong>Advantages:</strong><br>
+          • Scalable — certificates can be verified without contacting the CA each time<br>
+          • Decentralized — works across the entire internet (HTTPS uses this for every website)<br>
+          • Non-repudiation — CA's signature proves authenticity
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 05: KERBEROS ═══ -->
+<section class="section" id="kerberos">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Kerberos Authentication</h2>
+    <span class="imp-pill badge badge-red">🔥 90% — Very Important</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>What is Kerberos?</h3>
+    <p><span class="hl">Kerberos</span> is a network authentication protocol that uses <strong>symmetric key cryptography</strong> and a trusted third-party Authentication Server (AS) to authenticate users and services in a network. Designed by MIT's Project Athena, named after the three-headed dog guardian of Hades.</p>
+    <div class="layman">Kerberos is like a theme park ticketing system. When you arrive (login), you go to the ticket booth (Authentication Server) and show your ID. They give you a "master pass" (Ticket Granting Ticket). Whenever you want to ride an attraction (access a service), you show your master pass at the ride counter (Ticket Granting Server) to get a specific ride ticket. You show the ride ticket to the ride operator (service) to get in. The ride operator never needs to call the ticket booth — the tickets speak for themselves.</div>
+  </div>
+
+  <div class="theory-block">
+    <h3>Kerberos Version 4 — Protocol Steps ⭐⭐⭐</h3>
+    <p>Kerberos v4 involves three servers: <strong>Authentication Server (AS)</strong>, <strong>Ticket Granting Server (TGS)</strong>, and the <strong>Service Server (V)</strong>.</p>
+
+    <div class="formula-box">
+      <span class="label">Kerberos v4 — Complete Protocol (Memorize These 6 Steps!)</span>
+      <div class="formula">Step 1 — Authentication: C → AS: ID_C || ID_TGS || TS₁</div>
+      <div class="formula">Step 2 — AS Response:   AS → C: E(Kc, [Kc,TGS || ID_TGS || TS₂ || Lifetime₂ || Ticket_TGS])</div>
+      <div class="formula">           where Ticket_TGS = E(Ktgs, [Kc,TGS || ID_C || AD_C || ID_TGS || TS₂ || Lifetime₂])</div>
+      <div class="formula">Step 3 — TGS Request:   C → TGS: ID_V || Ticket_TGS || Authenticator_C</div>
+      <div class="formula">           where Authenticator_C = E(Kc,TGS, [ID_C || AD_C || TS₃])</div>
+      <div class="formula">Step 4 — TGS Response:  TGS → C: E(Kc,TGS, [Kc,V || ID_V || TS₄ || Ticket_V])</div>
+      <div class="formula">           where Ticket_V = E(Kv, [Kc,V || ID_C || AD_C || ID_V || TS₄ || Lifetime₄])</div>
+      <div class="formula">Step 5 — Service Request: C → V: Ticket_V || Authenticator_C2</div>
+      <div class="formula">           Authenticator_C2 = E(Kc,V, [ID_C || AD_C || TS₅])</div>
+      <div class="formula">Step 6 — Service Response: V → C: E(Kc,V, [TS₅ + 1])</div>
+      <div class="note">Kc = Key derived from user's password; TGS = Ticket Granting Server; TS = Timestamp; AD_C = Client address</div>
+    </div>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 580 280" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+        <text x="10" y="18" fill="#3b82f6" font-family="JetBrains Mono" font-size="11">Kerberos Version 4 — Protocol Flow</text>
+        <!-- Client -->
+        <rect x="10" y="40" width="80" height="50" rx="6" fill="#152432" stroke="#22d3ee" stroke-width="2"/>
+        <text x="50" y="62" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="10" font-weight="bold">Client</text>
+        <text x="50" y="78" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="8">User C</text>
+        <line x1="50" y1="90" x2="50" y2="275" stroke="#22d3ee" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- AS -->
+        <rect x="165" y="40" width="80" height="50" rx="6" fill="#152432" stroke="#f59e0b" stroke-width="2"/>
+        <text x="205" y="62" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono" font-size="10" font-weight="bold">AS</text>
+        <text x="205" y="78" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="8">Auth Server</text>
+        <line x1="205" y1="90" x2="205" y2="180" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- TGS -->
+        <rect x="320" y="40" width="80" height="50" rx="6" fill="#152432" stroke="#f97316" stroke-width="2"/>
+        <text x="360" y="62" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="10" font-weight="bold">TGS</text>
+        <text x="360" y="78" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="8">Ticket Server</text>
+        <line x1="360" y1="90" x2="360" y2="235" stroke="#f97316" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- Service -->
+        <rect x="475" y="40" width="90" height="50" rx="6" fill="#152432" stroke="#10b981" stroke-width="2"/>
+        <text x="520" y="60" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="10" font-weight="bold">Service V</text>
+        <text x="520" y="76" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="8">App Server</text>
+        <line x1="520" y1="90" x2="520" y2="275" stroke="#10b981" stroke-width="1" stroke-dasharray="3,3"/>
+        <!-- Step 1 -->
+        <line x1="50" y1="115" x2="195" y2="115" stroke="#4ade80" stroke-width="1.5" marker-end="url(#arrkrb)"/>
+        <text x="122" y="110" text-anchor="middle" fill="#4ade80" font-family="JetBrains Mono" font-size="8">①  ID_C, ID_TGS, TS₁</text>
+        <!-- Step 2 -->
+        <line x1="195" y1="135" x2="60" y2="135" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrkrb)"/>
+        <text x="122" y="148" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono" font-size="8">②  E(Kc)[KsTGS + Ticket_TGS]</text>
+        <!-- Step 3 -->
+        <line x1="60" y1="170" x2="350" y2="170" stroke="#4ade80" stroke-width="1.5" marker-end="url(#arrkrb)"/>
+        <text x="205" y="163" text-anchor="middle" fill="#4ade80" font-family="JetBrains Mono" font-size="8">③  ID_V + Ticket_TGS + Auth_C</text>
+        <!-- Step 4 -->
+        <line x1="350" y1="190" x2="60" y2="190" stroke="#f97316" stroke-width="1.5" marker-end="url(#arrkrb)"/>
+        <text x="205" y="205" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="8">④  E(KsTGS)[KsV + Ticket_V]</text>
+        <!-- Step 5 -->
+        <line x1="60" y1="225" x2="510" y2="225" stroke="#4ade80" stroke-width="1.5" marker-end="url(#arrkrb)"/>
+        <text x="285" y="218" text-anchor="middle" fill="#4ade80" font-family="JetBrains Mono" font-size="8">⑤  Ticket_V + Authenticator</text>
+        <!-- Step 6 -->
+        <line x1="510" y1="247" x2="60" y2="247" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrkrb)"/>
+        <text x="285" y="262" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="8">⑥  E(KsV)[TS₅+1]  — Mutual Auth!</text>
+        <defs><marker id="arrkrb" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#4ade80"/></marker></defs>
+      </svg>
+      <div class="diagram-cap">Fig 5.1 — Kerberos v4: 6-step protocol for secure network authentication</div>
+    </div>
+  </div>
+
+  <div class="theory-block">
+    <h3>Kerberos Phases Explained Simply</h3>
+    <h4>Phase 1: Authentication Service Exchange (Steps 1-2)</h4>
+    <p>Client identifies itself to AS. AS returns a <span class="hl">Ticket Granting Ticket (TGT)</span> encrypted with the client's password-derived key Kc, and a session key Kc,TGS. The client decrypts using their password — if wrong password, decryption fails and authentication fails.</p>
+
+    <h4>Phase 2: Ticket Granting Service Exchange (Steps 3-4)</h4>
+    <p>Client presents TGT to TGS along with an Authenticator (proves client recently created this — prevents replay). TGS returns a Service Ticket encrypted with TGS-session key Kc,TGS.</p>
+
+    <h4>Phase 3: Client/Server Authentication Exchange (Steps 5-6)</h4>
+    <p>Client presents Service Ticket to target service. Service decrypts ticket, extracts service session key Kc,V. Step 6 is optional mutual authentication — service proves it can decrypt the authenticator.</p>
+
+    <h4>Why Timestamps?</h4>
+    <p>Tickets are time-limited (typically 8 hours). This prevents <span class="hl-r">replay attacks</span> — if an attacker captures a ticket, it will expire and become useless. Requires all clocks in the network to be synchronized (usually via NTP).</p>
+  </div>
+
+  <div class="theory-block">
+    <h3>Kerberos Advantages &amp; Limitations</h3>
+    <table class="comp-table">
+      <tr><th>Advantages</th><th>Limitations</th></tr>
+      <tr><td>Single sign-on (SSO) — authenticate once, access multiple services</td><td>Single point of failure — if KDC goes down, no one can authenticate</td></tr>
+      <tr><td>Passwords never sent over network — only tickets</td><td>Requires synchronized clocks (within 5 minutes)</td></tr>
+      <tr><td>Replay attack protection via timestamps</td><td>Susceptible to offline dictionary attacks on weak passwords</td></tr>
+      <tr><td>Mutual authentication — both client and server verified</td><td>Session keys stored at KDC — compromise = all sessions exposed</td></tr>
+      <tr><td>Scalable within an organization (used in Windows Active Directory)</td><td>Works within one realm — cross-realm authentication is complex</td></tr>
+    </table>
+  </div>
+
+  <div class="tip-box trick">
+    <div class="tip-icon">🧠</div>
+    <div class="tip-content">
+      <div class="tip-title">Kerberos Exam Trick — "3 Actors, 6 Messages"</div>
+      <p>Remember Kerberos with: <strong>3 servers</strong> (AS, TGS, Service), <strong>2 tickets</strong> (TGT and Service Ticket), <strong>6 messages</strong> (①request AS, ②TGT+session key, ③request TGS, ④service ticket, ⑤present to service, ⑥confirmation). For diagrams: draw 4 vertical lifelines (Client, AS, TGS, Service) with 6 horizontal arrows. RTU awards 3-4 marks just for the correct diagram with arrow labels.</p>
+    </div>
+  </div>
+
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — Kerberos</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain Kerberos version 4 protocol with suitable diagram.</div>
+      <div class="pyq-meta"><span>2023-Jul · Part C Q5 · 10 marks ⭐⭐⭐</span><span class="topic-tag">Kerberos</span><span style="font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:3px;background:rgba(245,158,11,.1);color:var(--upred);border:1px solid rgba(245,158,11,.3)">🔮 Predicted 2026</span></div>
+      <button class="pyq-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.nextElementSibling.classList.contains('open')?'▲ Hide Answer':'▼ Show Answer'">▼ Show Answer</button>
+      <div class="answer-content">
+        <div class="pyq-answer">
+          <strong>Kerberos Version 4 — Introduction:</strong><br>
+          Kerberos is a network authentication protocol developed at MIT that uses symmetric key cryptography and a trusted third party (Authentication Server) to authenticate users in a network. It provides single sign-on (SSO), meaning users authenticate once and access multiple services without re-entering passwords.<br><br>
+
+          <strong>Terminology:</strong><br>
+          • C = Client (user), AS = Authentication Server, TGS = Ticket Granting Server, V = Service Server<br>
+          • Kc = key derived from user's password, Ktgs = TGS's secret key, Kv = Service's secret key<br>
+          • Kc,tgs = session key between C and TGS, Kc,v = session key between C and Service V<br>
+          • TS = Timestamp, Lifetime = validity period of ticket<br><br>
+
+          <strong>Protocol Steps:</strong><br>
+          <em>Phase 1 — Authentication Service Exchange:</em><br>
+          Step 1: C → AS: ID_C || ID_TGS || TS₁<br>
+          (Client sends its ID and requests a TGT for TGS)<br>
+          Step 2: AS → C: E(Kc, [Kc,TGS || ID_TGS || TS₂ || Lifetime₂ || Ticket_TGS])<br>
+          where Ticket_TGS = E(Ktgs, [Kc,TGS || ID_C || AD_C || ID_TGS || TS₂ || Lifetime₂])<br>
+          (AS returns session key + TGT, encrypted with client's password key)<br><br>
+
+          <em>Phase 2 — Ticket Granting Service Exchange:</em><br>
+          Step 3: C → TGS: ID_V || Ticket_TGS || Authenticator_C<br>
+          Authenticator_C = E(Kc,TGS, [ID_C || AD_C || TS₃])<br>
+          (Client sends TGT + fresh Authenticator to prove identity to TGS)<br>
+          Step 4: TGS → C: E(Kc,TGS, [Kc,V || ID_V || TS₄ || Ticket_V])<br>
+          where Ticket_V = E(Kv, [Kc,V || ID_C || AD_C || ID_V || TS₄ || Lifetime₄])<br>
+          (TGS returns service session key + service ticket)<br><br>
+
+          <em>Phase 3 — Client/Server Authentication Exchange:</em><br>
+          Step 5: C → V: Ticket_V || E(Kc,V, [ID_C || AD_C || TS₅])<br>
+          (Client presents service ticket to service)<br>
+          Step 6 (optional): V → C: E(Kc,V, [TS₅ + 1])<br>
+          (Service proves it decrypted correctly — mutual authentication)<br><br>
+
+          [DRAW THE SEQUENCE DIAGRAM as shown above — 4 lifelines, 6 arrows]<br><br>
+
+          <strong>Advantages:</strong> Single Sign-On, no password sent over network, replay protection via timestamps, mutual authentication.<br><br>
+          <strong>Limitations:</strong> Single point of failure (KDC), clock synchronization required, weak against password attacks.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 06: WEB THREATS ═══ -->
+<section class="section" id="web-threats">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Web Security Threats &amp; Approaches</h2>
+    <span class="imp-pill badge badge-orange">70% · Part A/B</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>Why is Web Security Important?</h3>
+    <p>The web (HTTP) was designed for information sharing, not security. HTTP is <span class="hl-r">plaintext</span> — any data sent over HTTP can be read by anyone on the network. Web security threats exploit this and other vulnerabilities in web applications and protocols.</p>
+    <div class="layman">Sending data over HTTP is like sending a postcard — anyone who handles it (your ISP, network routers, hackers on public WiFi) can read it. Web security is about switching from postcards to sealed envelopes (HTTPS).</div>
+  </div>
+
+  <div class="theory-block">
+    <h3>Categories of Web Security Threats</h3>
+    <table class="comp-table">
+      <tr><th>Category</th><th>Threat</th><th>Description</th><th>Example</th></tr>
+      <tr><td rowspan="3"><strong>Integrity</strong></td><td>Data modification</td><td>Attacker alters data in transit</td><td>Changing bank transfer amount</td></tr>
+      <tr><td>Trojan horse</td><td>Malicious code embedded in software</td><td>Browser plugin that steals passwords</td></tr>
+      <tr><td>Memory exploitation</td><td>Buffer overflow attacks</td><td>Code injection via input fields</td></tr>
+      <tr><td rowspan="3"><strong>Confidentiality</strong></td><td>Eavesdropping</td><td>Passive interception of traffic</td><td>Packet sniffer on public WiFi</td></tr>
+      <tr><td>Theft of info</td><td>Data stolen from server/client</td><td>SQL injection to steal database</td></tr>
+      <tr><td>Network snooping</td><td>Monitoring traffic patterns</td><td>Traffic analysis even without decryption</td></tr>
+      <tr><td rowspan="2"><strong>Availability</strong></td><td>Denial of Service (DoS)</td><td>Flooding servers with requests</td><td>SYN flood attack on web server</td></tr>
+      <tr><td>DDoS</td><td>Coordinated DoS from many sources</td><td>Botnet attacking major websites</td></tr>
+      <tr><td rowspan="2"><strong>Authentication</strong></td><td>Impersonation</td><td>Pretending to be legitimate site</td><td>Phishing websites</td></tr>
+      <tr><td>Session hijacking</td><td>Stealing authenticated session</td><td>Cookie theft via XSS</td></tr>
+    </table>
+
+    <h4>Security Approaches for Web</h4>
+    <ul>
+      <li><span class="hl">Network Level:</span> IPSec — encrypts at IP layer (transparent to applications)</li>
+      <li><span class="hl">Transport Level:</span> SSL/TLS — encrypts at transport layer (used by HTTPS)</li>
+      <li><span class="hl">Application Level:</span> S-HTTP, PGP — specific to application protocols</li>
+    </ul>
+  </div>
+
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — Web Threats</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Write any four web security threats.</div>
+      <div class="pyq-meta"><span>June 2022 · Part A Q4 · 2 marks</span><span class="topic-tag">Web Security</span></div>
+      <button class="pyq-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.nextElementSibling.classList.contains('open')?'▲ Hide Answer':'▼ Show Answer'">▼ Show Answer</button>
+      <div class="answer-content">
+        <div class="pyq-answer">
+          Four web security threats:<br><br>
+          1. <strong>Eavesdropping:</strong> Attacker passively intercepts HTTP traffic on the network and reads sensitive data (passwords, credit card numbers) transmitted in plaintext.<br>
+          2. <strong>Data Modification:</strong> Man-in-the-middle attacker intercepts and modifies data in transit — e.g., changing a bank account number in a payment.<br>
+          3. <strong>Denial of Service (DoS):</strong> Attacker floods a web server with requests, consuming all resources and making the service unavailable to legitimate users.<br>
+          4. <strong>Session Hijacking:</strong> Attacker steals a user's authenticated session cookie (via XSS or packet sniffing) to impersonate that user without knowing their password.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 07: SSL ═══ -->
+<section class="section" id="ssl">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">SSL Architecture &amp; Protocol</h2>
+    <span class="imp-pill badge badge-red">🔥 95% — In Every Paper!</span>
+  </div>
+
+  <div class="pred-banner">
+    <div class="pred-badge">🔮 2026 Predicted — HIGH CONFIDENCE</div>
+    <p>SSL Record Protocol appeared in 2023-Jul Part B and 2025 Part B. SSL Architecture/Protocol appeared in 2022 Part B and 2024 Part C. Based on 5-year rotation pattern, <strong>SSL Architecture (Part C)</strong> is strongly predicted for 2026. Prepare the full 4-layer stack diagram AND the SSL Record Protocol diagram separately.</p>
+  </div>
+
+  <div class="theory-block">
+    <h3>What is SSL?</h3>
+    <p><span class="hl">Secure Sockets Layer (SSL)</span> is a cryptographic protocol developed by Netscape in 1994 that provides secure communication over a computer network. It has been succeeded by <span class="hl">TLS (Transport Layer Security)</span>, but the term "SSL" is still colloquially used. SSL provides confidentiality, integrity, and authentication between a client (browser) and server (website).</p>
+    <div class="layman">SSL is the lock icon in your browser address bar. When you see "https://" and the padlock, that means SSL/TLS is active — your browser and the website are speaking in a secret code that no one else can understand. Your credit card number travels through this encrypted tunnel safely.</div>
+  </div>
+
+  <div class="theory-block">
+    <h3>SSL Protocol Architecture — 4-Layer Stack ⭐⭐⭐</h3>
+    <p>SSL sits between the Application layer (HTTP, FTP) and the Transport layer (TCP). It consists of two layers:</p>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 580 300" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+        <text x="10" y="18" fill="#3b82f6" font-family="JetBrains Mono" font-size="11">SSL Protocol Architecture</text>
+        <!-- Layer labels -->
+        <text x="10" y="50" fill="#6a8fa8" font-family="JetBrains Mono" font-size="10">Application</text>
+        <text x="10" y="120" fill="#6a8fa8" font-family="JetBrains Mono" font-size="10">SSL</text>
+        <text x="10" y="240" fill="#6a8fa8" font-family="JetBrains Mono" font-size="10">Transport</text>
+        <text x="10" y="275" fill="#6a8fa8" font-family="JetBrains Mono" font-size="10">Network</text>
+        <!-- HTTP boxes -->
+        <rect x="90" y="30" width="100" height="40" rx="4" fill="#152432" stroke="#f97316" stroke-width="1.5"/>
+        <text x="140" y="55" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="11">HTTP</text>
+        <rect x="200" y="30" width="80" height="40" rx="4" fill="#152432" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="240" y="55" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono" font-size="11">FTP</text>
+        <rect x="290" y="30" width="80" height="40" rx="4" fill="#152432" stroke="#10b981" stroke-width="1.5"/>
+        <text x="330" y="55" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="11">SMTP</text>
+        <!-- SSL Upper Layer -->
+        <rect x="90" y="80" width="95" height="40" rx="4" fill="#152432" stroke="#3b82f6" stroke-width="2"/>
+        <text x="137" y="104" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="10">Handshake</text>
+        <rect x="193" y="80" width="80" height="40" rx="4" fill="#152432" stroke="#3b82f6" stroke-width="2"/>
+        <text x="233" y="96" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="9">Change</text>
+        <text x="233" y="111" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="9">CipherSpec</text>
+        <rect x="281" y="80" width="70" height="40" rx="4" fill="#152432" stroke="#3b82f6" stroke-width="2"/>
+        <text x="316" y="104" text-anchor="middle" fill="#3b82f6" font-family="JetBrains Mono" font-size="10">Alert</text>
+        <rect x="359" y="80" width="90" height="40" rx="4" fill="#152432" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="404" y="100" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="9">Application</text>
+        <text x="404" y="115" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="9">Data</text>
+        <!-- SSL Record Layer -->
+        <rect x="90" y="130" width="360" height="50" rx="4" fill="#0f1c26" stroke="#22d3ee" stroke-width="2.5"/>
+        <text x="270" y="155" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="12" font-weight="bold">SSL Record Protocol</text>
+        <text x="270" y="172" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="9">Fragment · Compress · MAC · Encrypt · Add Header</text>
+        <!-- TCP -->
+        <rect x="90" y="195" width="360" height="40" rx="4" fill="#152432" stroke="#ef4444" stroke-width="1.5"/>
+        <text x="270" y="220" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="11">TCP (Transport Layer)</text>
+        <!-- IP -->
+        <rect x="90" y="250" width="360" height="35" rx="4" fill="#152432" stroke="#4d7090" stroke-width="1"/>
+        <text x="270" y="272" text-anchor="middle" fill="#4d7090" font-family="JetBrains Mono" font-size="11">IP (Network Layer)</text>
+        <!-- Labels -->
+        <text x="90" y="298" fill="#6a8fa8" font-family="JetBrains Mono" font-size="8">← SSL Upper Layer: 4 protocols (Handshake, CipherSpec, Alert, AppData)</text>
+      </svg>
+      <div class="diagram-cap">Fig 7.1 — SSL Protocol Stack: 4 sub-protocols at upper layer + Record Protocol at lower layer</div>
+    </div>
+
+    <h4>The 4 SSL Sub-protocols (Upper Layer)</h4>
+    <ul>
+      <li><span class="hl">Handshake Protocol:</span> Negotiates cipher suite, authenticates server (and optionally client), establishes session keys. The most complex sub-protocol — occurs ONCE per session.</li>
+      <li><span class="hl">Change Cipher Spec Protocol:</span> Single byte message (0x01). Signals: "I'm switching from unencrypted to encrypted mode NOW!" Sent by both client and server during handshake.</li>
+      <li><span class="hl">Alert Protocol:</span> Reports errors and warnings. Each alert has a level (warning or fatal) and a description code (e.g., bad_certificate, handshake_failure). Fatal alerts terminate the connection.</li>
+      <li><span class="hl">Application Data Protocol:</span> Carries HTTP data (webpage content, form data) through the SSL Record layer.</li>
+    </ul>
+  </div>
+
+  <div class="theory-block">
+    <h3>SSL Record Protocol — Processing Steps ⭐⭐⭐</h3>
+    <p>The SSL Record Protocol is the foundation — it carries all other protocols. It processes outgoing data through these 4 steps:</p>
+
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 580 160" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+        <text x="10" y="18" fill="#22d3ee" font-family="JetBrains Mono" font-size="10">SSL Record Protocol — 4 Processing Steps</text>
+        <!-- Data input -->
+        <rect x="10" y="35" width="80" height="50" rx="4" fill="#152432" stroke="#4d7090" stroke-width="1"/>
+        <text x="50" y="58" text-anchor="middle" fill="#dde8f0" font-family="JetBrains Mono" font-size="9">App Data</text>
+        <text x="50" y="74" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="8">(HTTP etc)</text>
+        <polygon points="93,60 107,53 107,67" fill="#4ade80"/>
+        <!-- Fragment -->
+        <rect x="110" y="35" width="85" height="50" rx="4" fill="#152432" stroke="#22d3ee" stroke-width="1.5"/>
+        <text x="152" y="55" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="9">① Fragment</text>
+        <text x="152" y="70" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="8">≤ 16KB blocks</text>
+        <text x="152" y="82" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="8">per block</text>
+        <polygon points="198,60 212,53 212,67" fill="#4ade80"/>
+        <!-- Compress -->
+        <rect x="215" y="35" width="85" height="50" rx="4" fill="#152432" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="257" y="55" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono" font-size="9">② Compress</text>
+        <text x="257" y="70" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="8">(optional, often</text>
+        <text x="257" y="82" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="8">NULL in TLS)</text>
+        <polygon points="303,60 317,53 317,67" fill="#4ade80"/>
+        <!-- MAC -->
+        <rect x="320" y="35" width="85" height="50" rx="4" fill="#152432" stroke="#f59e0b" stroke-width="2"/>
+        <text x="362" y="55" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono" font-size="9">③ MAC</text>
+        <text x="362" y="70" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="8">HMAC-SHA</text>
+        <text x="362" y="82" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="8">integrity check</text>
+        <polygon points="408,60 422,53 422,67" fill="#4ade80"/>
+        <!-- Encrypt -->
+        <rect x="425" y="35" width="85" height="50" rx="4" fill="#152432" stroke="#ef4444" stroke-width="2"/>
+        <text x="467" y="55" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="9">④ Encrypt</text>
+        <text x="467" y="70" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="8">AES/RC4</text>
+        <text x="467" y="82" text-anchor="middle" fill="#6a8fa8" font-family="JetBrains Mono" font-size="8">+ Add Header</text>
+        <!-- Output -->
+        <text x="280" y="135" text-anchor="middle" fill="#4ade80" font-family="JetBrains Mono" font-size="9">Output: SSL Record = [Header (5 bytes) | Encrypted(Compressed Data + MAC)]</text>
+      </svg>
+      <div class="diagram-cap">Fig 7.2 — SSL Record Protocol: 4 steps to process application data before sending</div>
+    </div>
+
+    <div class="formula-box">
+      <span class="label">SSL Record Header Format</span>
+      <div class="formula">Content Type (1 byte): 20=ChangeCipherSpec, 21=Alert, 22=Handshake, 23=AppData</div>
+      <div class="formula">Version (2 bytes):     Major.Minor (SSL 3.0 = 0x03 0x00; TLS 1.0 = 0x03 0x01)</div>
+      <div class="formula">Length (2 bytes):      Length of the following compressed+MAC+padded data</div>
+      <div class="note">Total header = 5 bytes. Maximum record size = 2^14 bytes (16,384 bytes)</div>
+    </div>
+  </div>
+
+  <div class="theory-block">
+    <h3>SSL Handshake Protocol — Establishing a Session</h3>
+    <p>The handshake negotiates all cryptographic parameters before data can be exchanged. Simplified flow:</p>
+
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><div class="step-text"><strong>ClientHello:</strong> Client sends SSL version, random number (client_random), list of supported cipher suites (e.g., TLS_RSA_WITH_AES_128_CBC_SHA256), compression methods.</div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>ServerHello:</strong> Server selects best cipher suite from client's list, sends its own random number (server_random), session ID.</div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>Certificate:</strong> Server sends its X.509 certificate. Client verifies it with CA's public key.</div></div>
+      <div class="step-item"><div class="step-num">4</div><div class="step-text"><strong>ServerHelloDone:</strong> Server indicates it's done with the negotiation phase.</div></div>
+      <div class="step-item"><div class="step-num">5</div><div class="step-text"><strong>ClientKeyExchange:</strong> Client generates a pre-master secret, encrypts it with server's public key (RSA), sends to server.</div></div>
+      <div class="step-item"><div class="step-num">6</div><div class="step-text"><strong>Both derive session keys:</strong> From pre-master secret + client_random + server_random → derive master_secret → derive 4 keys: client write key, server write key, client MAC key, server MAC key.</div></div>
+      <div class="step-item"><div class="step-num">7</div><div class="step-text"><strong>ChangeCipherSpec:</strong> Both sides signal "switching to encrypted mode now."</div></div>
+      <div class="step-item"><div class="step-num">8</div><div class="step-text"><strong>Finished:</strong> Both sides send a MAC of all handshake messages to verify the handshake was not tampered with. If MACs match, handshake is complete!</div></div>
+    </div>
+
+    <div class="tip-box trick">
+      <div class="tip-icon">💡</div>
+      <div class="tip-content">
+        <div class="tip-title">SSL Cipher Suite Format — How to Read It</div>
+        <p><strong>TLS_RSA_WITH_AES_128_CBC_SHA256</strong> means:<br>
+        • <strong>TLS</strong> = Protocol name<br>
+        • <strong>RSA</strong> = Key exchange algorithm (how we exchange the symmetric key)<br>
+        • <strong>AES_128_CBC</strong> = Bulk encryption (data encryption algorithm, key size, mode)<br>
+        • <strong>SHA256</strong> = MAC algorithm (for integrity)<br>
+        RTU may ask you to interpret a cipher suite — use this breakdown format!</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — SSL</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain SSL record protocol with suitable diagram.</div>
+      <div class="pyq-meta"><span>2023-Jul · Part B Q7 · 4 marks ⭐⭐</span><span class="topic-tag">SSL Record Protocol</span></div>
+      <button class="pyq-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.nextElementSibling.classList.contains('open')?'▲ Hide Answer':'▼ Show Answer'">▼ Show Answer</button>
+      <div class="answer-content">
+        <div class="pyq-answer">
+          <strong>SSL Record Protocol — Introduction:</strong><br>
+          The SSL Record Protocol is the lower sub-layer of SSL that provides the fundamental security services to all SSL protocols (Handshake, Alert, ChangeCipherSpec, and Application Data). It takes messages from the upper SSL sub-protocols, fragments them, optionally compresses them, applies a MAC for integrity, encrypts, and prepends an SSL record header.<br><br>
+
+          <strong>Processing Steps (with diagram):</strong><br>
+          1. <strong>Fragment:</strong> Application data is fragmented into blocks of maximum 2^14 (16,384) bytes each.<br>
+          2. <strong>Compress:</strong> Optionally compress the fragment (Note: TLS 1.3 removes this step as compression caused vulnerabilities like CRIME attack).<br>
+          3. <strong>MAC (Message Authentication Code):</strong> Compute HMAC over the compressed data, sequence number, and other fields. Append MAC to the compressed fragment for integrity verification.<br>
+          4. <strong>Encrypt:</strong> Encrypt the compressed data + MAC using the negotiated bulk cipher (AES in CBC mode, RC4 stream cipher). Then add the SSL Record Header.<br><br>
+
+          <strong>SSL Record Header (5 bytes):</strong><br>
+          • Content Type (1 byte): 20=ChangeCipherSpec, 21=Alert, 22=Handshake, 23=ApplicationData<br>
+          • Protocol Version (2 bytes)<br>
+          • Length of payload (2 bytes)<br><br>
+
+          [DRAW THE 4-STEP PIPELINE DIAGRAM: AppData → Fragment → Compress → +MAC → Encrypt → SSL Record]<br><br>
+
+          <strong>SSL Record provides two services:</strong><br>
+          • <em>Confidentiality:</em> Payload is encrypted with shared symmetric key<br>
+          • <em>Message Integrity:</em> MAC ensures payload hasn't been tampered with
+        </div>
+      </div>
+    </div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain SSL architecture and protocols with suitable diagrams.</div>
+      <div class="pyq-meta"><span>2024 Part C Q5 + June 2022 Part B Q6 · 10 marks ⭐⭐⭐</span><span class="topic-tag">SSL Architecture</span><span style="font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:3px;background:rgba(245,158,11,.1);color:var(--upred);border:1px solid rgba(245,158,11,.3)">🔮 Predicted 2026</span></div>
+      <button class="pyq-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.nextElementSibling.classList.contains('open')?'▲ Hide Answer':'▼ Show Answer'">▼ Show Answer</button>
+      <div class="answer-content">
+        <div class="pyq-answer">
+          <strong>SSL — Introduction:</strong><br>
+          SSL (Secure Sockets Layer) is a cryptographic protocol providing secure communication over the internet. Developed by Netscape in 1994; succeeded by TLS (Transport Layer Security) in 1999. It provides:<br>
+          • Confidentiality (symmetric encryption of data)<br>
+          • Authentication (X.509 certificate verification)<br>
+          • Integrity (HMAC for each record)<br><br>
+
+          <strong>SSL Architecture — 4-Layer Protocol Stack:</strong><br>
+          SSL sits between Application Layer (HTTP, FTP, SMTP) and Transport Layer (TCP).<br>
+          Upper SSL Layer contains 4 sub-protocols:<br>
+          [DRAW: 4 boxes: Handshake | ChangeCipherSpec | Alert | AppData — all above Record Protocol box]<br>
+          Lower SSL Layer = Record Protocol (handles all data transmission)<br><br>
+
+          <strong>1. SSL Handshake Protocol:</strong><br>
+          Most complex protocol. Establishes session by negotiating:<br>
+          • Protocol version, Session ID<br>
+          • Cipher suite (e.g., TLS_RSA_WITH_AES_128_CBC_SHA256)<br>
+          • Compression method<br>
+          • Authenticates server (and optionally client) via X.509 certificate<br>
+          • Derives shared session keys from pre-master secret<br>
+          [DRAW 8-step handshake: ClientHello → ServerHello → Certificate → ServerHelloDone → ClientKeyExchange → ChangeCipherSpec × 2 → Finished × 2]<br><br>
+
+          <strong>2. Change Cipher Spec Protocol:</strong><br>
+          Simplest — single byte (0x01). Signals transition from pending cipher state to active. Both client and server send this message.<br><br>
+
+          <strong>3. Alert Protocol:</strong><br>
+          Two fields: Level (warning=1 or fatal=2) + Description code<br>
+          Fatal alerts immediately terminate the connection.<br>
+          Examples: close_notify (normal closure), bad_certificate (cert verification failed), handshake_failure<br><br>
+
+          <strong>4. SSL Record Protocol:</strong><br>
+          Fragments, compresses, adds MAC, encrypts, adds 5-byte header.<br>
+          [DRAW the 4-step record processing pipeline]<br><br>
+
+          <strong>Session vs Connection:</strong><br>
+          • SSL Session: Created by handshake, shared state between client and server (session ID, master secret, cipher suite). Can be used by multiple connections.<br>
+          • SSL Connection: Transport link using session parameters. Short-lived, uses session's keys but different IVs/sequence numbers.<br><br>
+
+          <strong>Applications:</strong> HTTPS (HTTP over SSL), FTPS, SMTP over SSL, online banking, e-commerce.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 08: TLS ═══ -->
+<section class="section" id="tls">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2 class="section-title">Transport Layer Security (TLS)</h2>
+    <span class="imp-pill badge badge-orange">72% · Part A/B</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>TLS — The Successor to SSL</h3>
+    <p><span class="hl">TLS (Transport Layer Security)</span> is the standardized, improved version of SSL. Defined by IETF (Internet Engineering Task Force). Current version is TLS 1.3 (2018). All modern browsers use TLS 1.2 or TLS 1.3 — the name "SSL" still sticks colloquially.</p>
+    <div class="layman">TLS is like SSL 2.0 — a fixed, improved version released after security researchers found flaws in SSL. When your browser shows a lock icon, it's using TLS (not SSL), but everyone still calls it SSL. It's like how people say "Google it" but might be using Bing — the name stuck even after the thing changed.</div>
+  </div>
+
+  <div class="theory-block">
+    <h3>TLS vs SSL — Key Differences</h3>
+    <table class="comp-table">
+      <tr><th>Aspect</th><th>SSL 3.0</th><th>TLS 1.2</th><th>TLS 1.3</th></tr>
+      <tr><td>Status</td><td>Deprecated (insecure)</td><td>Widely used</td><td>Recommended</td></tr>
+      <tr><td>MAC</td><td>MD5/SHA-1 based</td><td>HMAC</td><td>HMAC / AEAD</td></tr>
+      <tr><td>Alert</td><td>Some alerts not encrypted</td><td>Alerts encrypted</td><td>All encrypted</td></tr>
+      <tr><td>Key Exchange</td><td>RSA or DH</td><td>RSA, DH, ECDH</td><td>Only ECDHE/DHE</td></tr>
+      <tr><td>Handshake RTTs</td><td>2 RTTs</td><td>2 RTTs</td><td>1 RTT (0-RTT resumption)</td></tr>
+      <tr><td>PRF</td><td>Custom (MD5 + SHA-1)</td><td>SHA-256 based HMAC-PRF</td><td>HKDF</td></tr>
+      <tr><td>Vulnerabilities</td><td>POODLE, BEAST</td><td>RC4 issues (if used)</td><td>Forward secrecy built-in</td></tr>
+    </table>
+
+    <h4>TLS Improvements over SSL (for 4-mark answer)</h4>
+    <ul>
+      <li><strong>HMAC instead of MAC:</strong> TLS uses HMAC (Hash-based MAC) which is stronger than SSL's MAC.</li>
+      <li><strong>No export ciphers:</strong> TLS removed intentionally weakened "export grade" ciphers from SSL.</li>
+      <li><strong>Better PRF:</strong> TLS uses a separate Pseudo-Random Function (PRF) based on HMAC for key material generation, instead of SSL's MD5+SHA1 combination.</li>
+      <li><strong>Alert improvements:</strong> TLS adds new alert codes and clarifies existing ones.</li>
+      <li><strong>Certificate verify:</strong> TLS changes how the certificate verify message is computed.</li>
+    </ul>
+  </div>
+
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — TLS/SSL</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. In SSL and TLS, why is there a separate change cipher spec protocol rather than including a change-cipher-spec message in the handshake protocol?</div>
+      <div class="pyq-meta"><span>2023-24 (61N0403) · Part B Q6 · 4 marks</span><span class="topic-tag">SSL/TLS</span></div>
+      <button class="pyq-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.nextElementSibling.classList.contains('open')?'▲ Hide Answer':'▼ Show Answer'">▼ Show Answer</button>
+      <div class="answer-content">
+        <div class="pyq-answer">
+          <strong>Reason for Separate ChangeCipherSpec Protocol:</strong><br><br>
+
+          The Change Cipher Spec (CCS) Protocol is intentionally separate from the Handshake Protocol for these reasons:<br><br>
+
+          1. <strong>Clean state machine transition:</strong> SSL/TLS uses a state machine internally. The CCS message explicitly signals a clean transition between the "pending" cipher state (being negotiated) and the "current" (active) cipher state. Embedding this in the handshake would complicate the state machine significantly.<br><br>
+
+          2. <strong>Ordering guarantee:</strong> CCS ensures that all handshake messages (including the Finished message that immediately follows) are processed in the correct order. The CCS acts as a barrier — everything before it uses old cipher parameters, everything after uses new parameters.<br><br>
+
+          3. <strong>Flexibility:</strong> By separating CCS from the handshake, SSL/TLS allows for renegotiation — a new handshake can be initiated within an existing encrypted session, with CCS marking the transition point.<br><br>
+
+          4. <strong>Error isolation:</strong> If the CCS message fails (e.g., network error), it's clearly identified as a cipher spec problem, separate from a handshake failure.<br><br>
+
+          <strong>Note:</strong> TLS 1.3 effectively eliminated the CCS message as a functional component — it sends a dummy CCS for backward compatibility with TLS 1.2 middleboxes, but it has no actual effect in TLS 1.3.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 09: HTTPS & SSH ═══ -->
+<section class="section" id="https-ssh">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2 class="section-title">HTTPS &amp; SSH</h2>
+    <span class="imp-pill badge badge-red">🔥 85% — Every Paper!</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>HTTPS — HTTP over SSL/TLS</h3>
+    <p><span class="hl">HTTPS (HTTP Secure)</span> is HTTP running over SSL/TLS. It provides secure communication between a web browser and web server by encrypting all data exchanged. The default port is <strong>443</strong> (HTTP uses port 80).</p>
+    <div class="layman">HTTPS = HTTP + a security layer. Imagine HTTP is speaking in English in a crowded room — anyone can hear. HTTPS is speaking the same content but in a secret code that only you and the website know. Even if someone records your conversation (network traffic), they can't understand it.</div>
+
+    <h4>Why Prefer HTTPS over HTTP?</h4>
+    <table class="comp-table">
+      <tr><th>Aspect</th><th>HTTP</th><th>HTTPS</th></tr>
+      <tr><td>Encryption</td><td>None — plaintext</td><td>SSL/TLS encryption</td></tr>
+      <tr><td>Authentication</td><td>No server verification</td><td>Server authenticated via X.509 cert</td></tr>
+      <tr><td>Integrity</td><td>No protection — data can be modified</td><td>HMAC protects against tampering</td></tr>
+      <tr><td>Port</td><td>80</td><td>443</td></tr>
+      <tr><td>URL prefix</td><td>http://</td><td>https://</td></tr>
+      <tr><td>Use case</td><td>Public non-sensitive information</td><td>All sensitive operations (banking, login, payment)</td></tr>
+      <tr><td>SEO Impact</td><td>Google ranks HTTP lower</td><td>HTTPS gets SEO boost from Google</td></tr>
+    </table>
+  </div>
+
+  <div class="theory-block">
+    <h3>SSH — Secure Shell</h3>
+    <p><span class="hl">SSH (Secure Shell)</span> is a cryptographic network protocol that allows secure remote login and other network services over an unsecured network. It replaces insecure protocols like Telnet (plaintext remote login), rlogin, rsh, and FTP. Default port: <strong>22</strong>.</p>
+    <div class="layman">Before SSH, logging into a remote computer over the internet was like shouting your password across a crowded street — anyone could hear. SSH is like having a private secure phone call with the remote computer where everything is encrypted. Your password, commands, and responses — all private.</div>
+
+    <h4>SSH Protocol Architecture — 3 Layers</h4>
+    <ul>
+      <li><span class="hl">Transport Layer Protocol:</span> Provides server authentication, confidentiality, and integrity. Uses public key cryptography. Runs over TCP. Establishes an encrypted channel with the server.</li>
+      <li><span class="hl">User Authentication Protocol:</span> Authenticates the client to the server. Methods: password, public key (SSH key pair), keyboard-interactive, GSSAPI/Kerberos.</li>
+      <li><span class="hl">Connection Protocol:</span> Multiplexes the encrypted tunnel into multiple logical channels (terminal sessions, port forwarding, X11 forwarding, SFTP).</li>
+    </ul>
+
+    <div class="formula-box">
+      <span class="label">SSH Connection Flow</span>
+      <div class="formula">1. Client connects to server on port 22</div>
+      <div class="formula">2. Version exchange: both sides announce SSH protocol version</div>
+      <div class="formula">3. Algorithm negotiation: agree on encryption, MAC, key exchange algorithms</div>
+      <div class="formula">4. Key exchange (DH or ECDH): establish shared session key</div>
+      <div class="formula">5. Server authentication: server sends host key (public key); client verifies</div>
+      <div class="formula">6. User authentication: password or public key auth</div>
+      <div class="formula">7. Channel open: client requests terminal/shell; server grants access</div>
+      <div class="note">SSH-2 (current) supports multiple simultaneous channels (SFTP, port forwarding) over one connection</div>
+    </div>
+
+    <h4>SSH Key-based Authentication (No Password!)</h4>
+    <p>The most secure SSH authentication method:</p>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><div class="step-text">Generate key pair: <code>ssh-keygen -t ed25519</code> → produces id_ed25519 (private) and id_ed25519.pub (public)</div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-text">Copy public key to server: <code>ssh-copy-id user@server</code> → appends to ~/.ssh/authorized_keys</div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-text">During login: server sends a challenge encrypted with client's public key. Only client's private key can decrypt it → proves identity without sending password!</div></div>
+    </div>
+  </div>
+
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — HTTPS &amp; SSH</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. What is HTTPS? Why is HTTPS preferred over HTTP?</div>
+      <div class="pyq-meta"><span>All Papers 2022–2025 · Part A Q10 · 2 marks ⭐⭐⭐ (Appears Every Year!)</span><span class="topic-tag">HTTPS</span></div>
+      <button class="pyq-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.nextElementSibling.classList.contains('open')?'▲ Hide Answer':'▼ Show Answer'">▼ Show Answer</button>
+      <div class="answer-content">
+        <div class="pyq-answer">
+          <strong>HTTPS (HyperText Transfer Protocol Secure)</strong> is HTTP running over the SSL/TLS protocol. It provides a secure, encrypted channel between a web browser and web server over port 443.<br><br>
+
+          <strong>Why HTTPS is preferred over HTTP:</strong><br>
+          1. <strong>Confidentiality:</strong> HTTPS encrypts all data between browser and server (using AES/SSL). HTTP sends data in plaintext — anyone on the network can read it.<br>
+          2. <strong>Authentication:</strong> HTTPS verifies the server's identity via X.509 digital certificate. HTTP has no server verification — you could be talking to a fake website (phishing).<br>
+          3. <strong>Integrity:</strong> HTTPS uses HMAC to ensure data has not been modified in transit. HTTP has no protection against man-in-the-middle modification.<br>
+          4. <strong>Trust indicator:</strong> Browsers show padlock icon for HTTPS — users trust it. Google also ranks HTTPS sites higher in search results.
+        </div>
+      </div>
+    </div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain the following in detail: (a) HTTPS and SSH (b) SSL architecture and protocol</div>
+      <div class="pyq-meta"><span>June 2022 · Part B Q6 · 10 marks ⭐</span><span class="topic-tag">HTTPS + SSH + SSL</span></div>
+      <button class="pyq-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.textContent=this.nextElementSibling.classList.contains('open')?'▲ Hide Answer':'▼ Show Answer'">▼ Show Answer</button>
+      <div class="answer-content">
+        <div class="pyq-answer">
+          <strong>(a) HTTPS:</strong><br>
+          [Use the Part A answer above + add diagram showing HTTP vs HTTPS traffic flow]<br>
+          HTTPS = HTTP + SSL/TLS. Port 443. All HTTP messages encrypted. Server authenticated via X.509 certificate. Client and server negotiate cipher suite during SSL handshake. After handshake, all HTTP requests/responses travel encrypted inside SSL records.<br><br>
+
+          <strong>SSH (Secure Shell):</strong><br>
+          SSH is a cryptographic protocol for secure remote administration and file transfer over insecure networks. Replaces: Telnet (unencrypted remote login), rsh, rlogin, FTP. Port 22.<br><br>
+          Architecture — 3 layers:<br>
+          1. Transport Layer: Establishes encrypted channel, server authentication<br>
+          2. User Authentication Layer: Verifies client identity (password or public key)<br>
+          3. Connection Layer: Multiplexes encrypted tunnel into channels (shell, SFTP, port forwarding)<br><br>
+          SSH provides: Confidentiality (AES encryption), Integrity (HMAC), Authentication (key pair or password)<br>
+          Usage: <code>ssh user@server</code> — logs in securely to remote Linux/Unix server<br><br>
+
+          <strong>(b) SSL Architecture and Protocol:</strong><br>
+          [Combine the SSL Architecture answer from Section 07 above — include the 4-layer stack diagram and the Record Protocol processing steps diagram]
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 10: 2026 PREDICTED ═══ -->
+<section class="section" id="predicted">
+  <div class="section-header">
+    <span class="section-num">🔮</span>
+    <h2 class="section-title">2026 Predicted Topics — Unit 6</h2>
+    <span class="imp-pill badge badge-gold">Based on 5-year PYQ Pattern</span>
+  </div>
+
+  <div class="pred-banner">
+    <div class="pred-badge">🔮 AI-Powered Pattern Analysis</div>
+    <p>Cross-referencing 5 ISS papers (2022–2025) with the 2026 DIP and ML exam patterns from RTU shows consistent rotation every 2 years. Topics absent from 2025 are strongly predicted to return in 2026. Topics present in every paper are certain to appear again.</p>
+  </div>
+
+  <div class="theory-block">
+    <h3>Unit 6 Predicted Questions for 2026</h3>
+
+    <h4>CERTAIN — Will Appear (100% confidence)</h4>
+    <table class="comp-table">
+      <tr><th>Part</th><th>Predicted Question</th><th>Reason</th></tr>
+      <tr><td>Part A Q10</td><td>What is HTTPS? Why preferred over HTTP?</td><td>Present in ALL 5 papers (2022–2025) without exception</td></tr>
+      <tr><td>Part A Q9</td><td>Write four general means of authenticating a user's identity</td><td>Present in 2023-Jul, 2024, 2025 verbatim — 3 consecutive papers</td></tr>
+      <tr><td>Part B</td><td>SSL Record Protocol with diagram</td><td>Every alternate year — 2023-Jul, 2025. 2026 = return year</td></tr>
+      <tr><td>Part C</td><td>SSL Architecture and Protocols with diagrams</td><td>In 2022 and 2024. 2026 = every alternate year return</td></tr>
+    </table>
+
+    <h4>VERY HIGH — Almost Certain (85%+ confidence)</h4>
+    <table class="comp-table">
+      <tr><th>Part</th><th>Predicted Question</th><th>Reason</th></tr>
+      <tr><td>Part B or C</td><td>Kerberos Version 4 with diagram</td><td>In 2023-Jul Part C. Absent 2024, 2025. Due for return.</td></tr>
+      <tr><td>Part B</td><td>Public-key certificate technique for distribution</td><td>In 2023-Jul B6, 2024 B7 — 2 consecutive years. 2025 had Part C version. Core topic.</td></tr>
+      <tr><td>Part C</td><td>Symmetric key distribution (KDC + asymmetric hybrid)</td><td>In 2022 Part C Q3 only. Core topic, absent 2023–2025. Overdue.</td></tr>
+    </table>
+
+    <h4>MEDIUM — Likely (65-80% confidence)</h4>
+    <table class="comp-table">
+      <tr><th>Part</th><th>Predicted Question</th><th>Reason</th></tr>
+      <tr><td>Part A</td><td>What is SSL/TLS? Differentiate SSL and TLS</td><td>Related to SSL main topic; appeared as part of larger questions</td></tr>
+      <tr><td>Part B</td><td>X.509 certificate format and fields</td><td>Sub-topic of PKI/certificate questions</td></tr>
+      <tr><td>Part A</td><td>What is SSH? How does it differ from Telnet?</td><td>SSH appeared in 2022 B6. New phrasing likely for 2026.</td></tr>
+    </table>
+  </div>
+
+  <div class="tip-box warning">
+    <div class="tip-icon">⚠️</div>
+    <div class="tip-content">
+      <div class="tip-title">Prediction Disclaimer</div>
+      <p>These predictions are based on historical patterns and may not perfectly reflect the actual 2026 paper. RTU occasionally introduces new questions. Use these predictions to <strong>prioritize</strong> your study time, not to skip topics entirely. Master SSL, Kerberos, HTTPS, and PKI fully — they have proven multi-year consistency.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ MASTER PYQ LIST ═══ -->
+<section class="section" id="pyq-master">
+  <div class="section-header">
+    <span class="section-num">✦</span>
+    <h2 class="section-title">All RTU PYQs — Master List (Unit 6)</h2>
+    <span class="imp-pill badge badge-red">Complete Reference</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>Part A Questions — Unit 6</h3>
+    <table class="comp-table">
+      <tr><th>Year</th><th>Question</th><th>Topic</th></tr>
+      <tr><td>2025</td><td>What is HTTPS?</td><td>HTTPS ⭐⭐⭐</td></tr>
+      <tr><td>2025</td><td>Write four general means of authenticating a user's identity</td><td>Authentication ⭐⭐</td></tr>
+      <tr><td>2025</td><td>Requirements of Message Authentication Codes</td><td>MACs (Unit 5)</td></tr>
+      <tr><td>2024</td><td>Write four general means of authenticating a user's identity</td><td>Authentication ⭐⭐</td></tr>
+      <tr><td>2024</td><td>What is HTTPS?</td><td>HTTPS ⭐⭐⭐</td></tr>
+      <tr><td>2023-Jul</td><td>What is HTTPS?</td><td>HTTPS ⭐⭐⭐</td></tr>
+      <tr><td>2023-Jul</td><td>Write four general means of authenticating a user's identity</td><td>Authentication ⭐⭐</td></tr>
+      <tr><td>2023-Aug</td><td>List different modes of operation</td><td>Block cipher modes (Unit 3)</td></tr>
+      <tr><td>2023-24</td><td>Why should we prefer HTTPS over HTTP?</td><td>HTTPS ⭐⭐⭐</td></tr>
+      <tr><td>2023-24</td><td>What is the role of firewall in system security?</td><td>Firewall</td></tr>
+      <tr><td>2022</td><td>Write down the name of five web security threats</td><td>Web Threats</td></tr>
+    </table>
+
+    <h3 style="margin-top:20px">Part B Questions — Unit 6</h3>
+    <table class="comp-table">
+      <tr><th>Year</th><th>Question</th><th>Topic</th></tr>
+      <tr><td>2025</td><td>SSL Record Protocol with diagram</td><td>SSL Record ⭐⭐⭐</td></tr>
+      <tr><td>2025</td><td>Application of cryptographic hash function for digital signature</td><td>Hash (Unit 5)</td></tr>
+      <tr><td>2024</td><td>Public-key certificate technique for distribution of public keys</td><td>PKI ⭐⭐</td></tr>
+      <tr><td>2024</td><td>CMAC with diagram</td><td>MAC (Unit 5)</td></tr>
+      <tr><td>2023-Jul</td><td>Distribution of public keys, using public-key certificate scheme</td><td>PKI ⭐⭐</td></tr>
+      <tr><td>2023-Jul</td><td>SSL record protocol with suitable diagram</td><td>SSL Record ⭐⭐⭐</td></tr>
+      <tr><td>2023-Aug</td><td>SSL Certificate and how it works; SSL certificates for websites</td><td>SSL Certs ⭐</td></tr>
+      <tr><td>2023-24</td><td>In SSL and TLS, why separate ChangeCipherSpec protocol?</td><td>TLS</td></tr>
+      <tr><td>2022</td><td>HTTPS and SSH; SSL architecture and protocol</td><td>HTTPS + SSH + SSL ⭐</td></tr>
+    </table>
+
+    <h3 style="margin-top:20px">Part C Questions — Unit 6</h3>
+    <table class="comp-table">
+      <tr><th>Year</th><th>Question</th><th>Topic</th></tr>
+      <tr><td>2025</td><td>Public-key certificates technique for distribution of public keys</td><td>PKI ⭐⭐</td></tr>
+      <tr><td>2024</td><td>SSL architecture and protocols with diagrams</td><td>SSL ⭐⭐⭐</td></tr>
+      <tr><td>2023-Jul</td><td>Kerberos version 4 protocol with diagram</td><td>Kerberos ⭐⭐</td></tr>
+      <tr><td>2023-24</td><td>Digital signature requirements; DSA signature compromise</td><td>DSA (Unit 5)</td></tr>
+      <tr><td>2023-24</td><td>Services provided by IPsec; ESP padding field</td><td>IPsec</td></tr>
+      <tr><td>2022</td><td>Symmetric key distribution (symmetric + asymmetric + PKI)</td><td>Key Dist ⭐⭐</td></tr>
+    </table>
+  </div>
+
+  <div class="tip-box trick">
+    <div class="tip-icon">🏆</div>
+    <div class="tip-content">
+      <div class="tip-title">Top 5 Must-Prepare for Unit 6 (Priority Order)</div>
+      <p>
+        <strong>1.</strong> SSL Architecture — 4-layer stack diagram + Handshake steps + Record Protocol pipeline<br>
+        <strong>2.</strong> HTTPS (2 marks) — confidentiality + authentication + integrity vs HTTP, port 443<br>
+        <strong>3.</strong> Kerberos v4 — 6-step protocol + 4-lifeline sequence diagram + advantages/limitations<br>
+        <strong>4.</strong> Public Key Certificate + PKI — X.509 format, CA hierarchy, chain of trust<br>
+        <strong>5.</strong> Symmetric Key Distribution — KDC approach (Needham-Schroeder) + Asymmetric approach
+      </p>
+    </div>
+  </div>
+
+  <div class="tip-box validate">
+    <div class="tip-icon">📋</div>
+    <div class="tip-content">
+      <div class="tip-title">Answer Framework for 10-mark Unit 6 Questions</div>
+      <p>
+        <strong>Para 1:</strong> Definition + Layman explanation (2-3 lines)<br>
+        <strong>Diagram 1:</strong> Architecture/structure diagram (3-4 marks alone!)<br>
+        <strong>Para 2:</strong> Component-by-component explanation with sub-headings<br>
+        <strong>Diagram 2:</strong> Protocol flow / sequence diagram if applicable<br>
+        <strong>Para 3:</strong> Key properties / services provided<br>
+        <strong>Para 4:</strong> Advantages, Limitations, Real-world Applications<br>
+        Always aim 1.5-2 pages. For SSL: draw BOTH the 4-layer stack AND the Record processing pipeline — 6-8 marks guaranteed.
+      </p>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<button class="sidebar-toggle" id="sidebarToggle" onclick="openSidebar()">☰</button>
+
+<script>
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('sidebarOverlay').classList.add('visible');document.getElementById('sidebarToggle').textContent='✕';}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('visible');document.getElementById('sidebarToggle').textContent='☰';}
+const sections=document.querySelectorAll('.section');
+const navItems=document.querySelectorAll('.nav-item');
+window.addEventListener('scroll',()=>{
+  let current='';
+  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-80)current=s.id;});
+  navItems.forEach(n=>{n.classList.remove('active');if(n.getAttribute('href')==='#'+current)n.classList.add('active');});
+});
+</script>
+
+</body>
+</html>
