@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISS Unit 3 — Modern Block Ciphers: DES, AES & Modes | RTU Exam Prep</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@300;400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --bg:       #050d10;
+  --bg2:      #071520;
+  --surface:  #0c1e28;
+  --surface2: #102534;
+  --border:   #1a3545;
+  --border2:  #0e2030;
+  --u1: #22d3ee;   /* cyan — primary */
+  --u2: #f97316;   /* orange */
+  --u3: #ef4444;   /* red */
+  --u4: #a78bfa;   /* violet */
+  --u5: #10b981;   /* green */
+  --u6: #3b82f6;   /* blue */
+  --upred: #f59e0b; /* amber — predictions */
+  --gold: #fbbf24;
+  --text: #dde8f2;
+  --dim:  #3a5868;
+  --dim2: #6090a8;
+  --mono: 'JetBrains Mono', monospace;
+  --head: 'Fraunces', serif;
+  --body: 'Outfit', sans-serif;
+  --sidebar-w: 290px;
+  --content-max: 1400px;
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 18px; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  line-height: 1.82;
+  overflow-x: hidden;
+}
+
+/* Scale up base font on large screens */
+@media(min-width: 1400px) { html { font-size: 19px; } }
+@media(min-width: 1800px) { html { font-size: 20px; } }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ══════════════ TOP NAV ══════════════ */
+.topnav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(5,13,16,0.95);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid var(--border2);
+  padding: 0 28px;
+  display: flex; align-items: center; gap: 4px;
+  overflow-x: auto; scrollbar-width: none;
+}
+.topnav::-webkit-scrollbar { display: none; }
+.tnlabel {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--u3);
+  padding: 15px 14px 15px 0;
+  border-right: 1px solid var(--border); margin-right: 8px;
+  white-space: nowrap; flex-shrink: 0;
+}
+.tnlink {
+  font-family: var(--mono); font-size: 11.5px;
+  padding: 8px 14px; border-radius: 6px;
+  text-decoration: none; color: var(--dim2);
+  white-space: nowrap; flex-shrink: 0;
+  transition: all .18s; border: 1px solid transparent;
+}
+.tnlink:hover { color: var(--text); background: var(--surface2); }
+.tnlink.active { color: var(--u3); background: rgba(239,68,68,.1); border-color: rgba(239,68,68,.3); }
+.tnlink.pyq { color: var(--upred); background: rgba(245,158,11,.07); border-color: rgba(245,158,11,.22); }
+.tnlink.pred { color: var(--upred); background: rgba(245,158,11,.1); border-color: rgba(245,158,11,.35); font-weight: 600; }
+
+/* ══════════════ CREDIT BAND ══════════════ */
+.credit-band {
+  background: #060e14; border-bottom: 1px solid var(--border2);
+  padding: 11px 32px;
+  display: flex; align-items: center; justify-content: center; gap: 24px; flex-wrap: wrap;
+}
+.credit-text { font-family: var(--mono); font-size: 11.5px; color: var(--dim2); }
+.credit-text span { color: var(--u3); font-weight: 600; }
+.credit-link {
+  font-family: var(--mono); font-size: 11px;
+  padding: 4px 14px; border-radius: 5px;
+  border: 1px solid var(--border); color: var(--dim2);
+  text-decoration: none; transition: all .2s;
+}
+.credit-link:hover { border-color: var(--u3); color: var(--u3); }
+
+/* ══════════════ HERO ══════════════ */
+.hero {
+  position: relative; overflow: hidden;
+  padding: 64px 5vw 56px;
+  background: var(--bg);
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(239,68,68,.1) 1px, transparent 1px),
+    radial-gradient(circle, rgba(34,211,238,.05) 1px, transparent 1px);
+  background-size: 44px 44px, 88px 88px;
+  background-position: 0 0, 22px 22px;
+  animation: dotDrift 30s linear infinite;
+}
+.hero::after {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 55% 55% at 10% 50%, rgba(239,68,68,.08) 0%, transparent 65%),
+    radial-gradient(ellipse 45% 50% at 85% 15%, rgba(34,211,238,.06) 0%, transparent 60%);
+  pointer-events: none;
+}
+@keyframes dotDrift { 0%{transform:translate(0,0);} 100%{transform:translate(44px,44px);} }
+.hero-inner {
+  position: relative; z-index: 1;
+  max-width: var(--content-max); margin: 0 auto;
+}
+.hero-tag {
+  font-family: var(--mono); font-size: 12px; color: var(--u3);
+  letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+}
+.hero-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--u3); box-shadow: 0 0 14px var(--u3);
+  animation: blink 2.5s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.4;transform:scale(.7);} }
+.hero h1 {
+  font-family: var(--head); font-weight: 800;
+  font-size: clamp(34px, 5.5vw, 72px);
+  line-height: 1.02; color: #fff; letter-spacing: -1.5px;
+  margin-bottom: 18px;
+}
+.hero h1 span { color: var(--u3); }
+.hero h1 em { color: var(--u1); font-style: normal; }
+.hero-sub {
+  color: var(--dim2); font-size: clamp(16px, 1.6vw, 19px);
+  max-width: 700px; line-height: 1.8; margin-bottom: 22px;
+}
+.hero-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.badge {
+  font-family: var(--mono); font-size: 12px;
+  padding: 5px 14px; border-radius: 5px; border: 1px solid;
+}
+.badge-r { color: var(--u3); border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.08); }
+.badge-c { color: var(--u1); border-color: rgba(34,211,238,.35); background: rgba(34,211,238,.08); }
+.badge-v { color: var(--u4); border-color: rgba(167,139,250,.35); background: rgba(167,139,250,.08); }
+.badge-o { color: var(--u2); border-color: rgba(249,115,22,.35); background: rgba(249,115,22,.08); }
+.badge-gold { color: var(--upred); border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.08); }
+.badge-g { color: var(--u5); border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.08); }
+
+/* ══════════════ LAYOUT ══════════════ */
+.layout {
+  display: flex;
+  max-width: 100%; /* full width */
+}
+
+/* ══════════════ SIDEBAR ══════════════ */
+.sidebar {
+  width: var(--sidebar-w); min-width: var(--sidebar-w);
+  padding: 28px 18px;
+  border-right: 1px solid var(--border);
+  position: sticky; top: 44px;
+  height: calc(100vh - 44px);
+  overflow-y: auto; scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+  transition: transform .3s ease;
+  flex-shrink: 0;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.sidebar-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 18px; padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-title { font-family: var(--mono); font-size: 10px; color: var(--u3); letter-spacing: 2px; text-transform: uppercase; }
+.sidebar-close {
+  display: none; background: none;
+  border: 1px solid var(--border); border-radius: 4px;
+  color: var(--dim2); cursor: pointer;
+  padding: 2px 9px; font-family: var(--mono); font-size: 11px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 12px; border-radius: 7px; cursor: pointer;
+  font-family: var(--head); font-size: 13.5px; font-weight: 600;
+  color: var(--dim2); transition: all .2s; margin-bottom: 3px;
+  text-decoration: none; line-height: 1.3;
+}
+.nav-item:hover, .nav-item.active { background: var(--surface2); color: var(--text); }
+.nav-item.active { color: var(--u3); border-left: 2px solid var(--u3); padding-left: 10px; }
+.nav-imp {
+  margin-left: auto; font-family: var(--mono); font-size: 10px;
+  padding: 2px 7px; border-radius: 3px; background: var(--surface2);
+  white-space: nowrap;
+}
+.nav-imp.high { color: var(--u3); }
+.nav-imp.med { color: var(--upred); }
+.nav-imp.low { color: var(--u5); }
+
+/* Floating toggle button */
+.sidebar-toggle {
+  display: none; position: fixed; bottom: 22px; right: 22px; z-index: 1000;
+  width: 52px; height: 52px; border-radius: 50%;
+  background: var(--u3); border: none; cursor: pointer;
+  font-size: 22px; color: #fff; align-items: center; justify-content: center;
+  box-shadow: 0 4px 24px rgba(239,68,68,.45); transition: transform .2s;
+}
+.sidebar-toggle:hover { transform: scale(1.1); }
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.75); z-index: 98; backdrop-filter: blur(3px);
+}
+.sidebar-overlay.visible { display: block; }
+
+/* ══════════════ CONTENT ══════════════ */
+.content {
+  flex: 1;
+  padding: 44px clamp(24px, 4vw, 80px);
+  max-width: calc(100% - var(--sidebar-w));
+  overflow-x: hidden;
+  min-width: 0;
+}
+
+/* ══════════════ SECTION ══════════════ */
+.section { margin-bottom: 80px; scroll-margin-top: 64px; }
+.section-header {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 28px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--border); flex-wrap: wrap;
+}
+.section-num {
+  font-family: var(--mono); font-size: 12px;
+  color: var(--u3); background: rgba(239,68,68,.1);
+  border: 1px solid rgba(239,68,68,.3);
+  padding: 5px 10px; border-radius: 5px; min-width: 40px; text-align: center;
+}
+.section-title {
+  font-family: var(--head); font-size: clamp(22px, 2.8vw, 30px);
+  font-weight: 800; color: #fff;
+}
+.imp-pill { margin-left: auto; }
+
+/* ══════════════ THEORY BLOCKS ══════════════ */
+.theory-block {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px 32px; margin-bottom: 22px;
+}
+.theory-block h3 {
+  font-family: var(--head); font-size: clamp(17px, 1.8vw, 21px);
+  font-weight: 700; color: var(--u2); margin-bottom: 14px;
+}
+.theory-block h3.red { color: var(--u3); }
+.theory-block h3.cyan { color: var(--u1); }
+.theory-block p { margin-bottom: 14px; font-size: 1rem; line-height: 1.85; }
+.theory-block p:last-child { margin-bottom: 0; }
+.theory-block ul, .theory-block ol { padding-left: 24px; margin: 12px 0; }
+.theory-block li { margin-bottom: 9px; font-size: 1rem; line-height: 1.75; }
+h4 { font-family: var(--head); font-size: 1.05rem; font-weight: 700; color: var(--text); margin: 18px 0 10px; }
+
+/* ══════════════ LAYMAN BOX ══════════════ */
+.layman {
+  background: rgba(239,68,68,.06);
+  border: 1px solid rgba(239,68,68,.2);
+  border-left: 3px solid var(--u3);
+  border-radius: 8px; padding: 16px 20px;
+  font-family: var(--mono); font-size: 0.78rem;
+  color: #fca5a5; margin: 14px 0; line-height: 1.75;
+}
+.layman::before { content: '💬 LAYMAN: '; color: var(--u3); font-weight: 700; font-size: 0.8rem; }
+
+/* ══════════════ FORMULA BOX ══════════════ */
+.formula-box {
+  background: #030c14;
+  border: 1px solid rgba(34,211,238,.22);
+  border-left: 3px solid var(--u1);
+  border-radius: 9px; padding: 18px 22px;
+  margin: 18px 0;
+  font-family: var(--mono); font-size: 0.78rem;
+  color: #67e8f9; overflow-x: auto; line-height: 1.7;
+}
+.formula-box .label {
+  font-size: 0.65rem; color: var(--dim);
+  text-transform: uppercase; letter-spacing: 2px;
+  margin-bottom: 10px; display: block;
+}
+.formula-box .formula { color: #a5f3fc; font-size: 0.82rem; }
+.formula-box .note { color: var(--dim2); font-size: 0.73rem; margin-top: 8px; display: block; font-style: italic; }
+
+/* ══════════════ TIP BOXES ══════════════ */
+.tip-box {
+  border-radius: 9px; padding: 18px 20px;
+  margin: 16px 0; display: flex; gap: 14px;
+}
+.tip-box.trick { background: rgba(251,191,36,.07); border: 1px solid rgba(251,191,36,.25); }
+.tip-box.validate { background: rgba(16,185,129,.07); border: 1px solid rgba(16,185,129,.25); }
+.tip-box.connect { background: rgba(167,139,250,.07); border: 1px solid rgba(167,139,250,.25); }
+.tip-box.warning { background: rgba(239,68,68,.07); border: 1px solid rgba(239,68,68,.25); }
+.tip-box.pred { background: rgba(245,158,11,.07); border: 1px solid rgba(245,158,11,.25); }
+.tip-icon { font-size: 21px; flex-shrink: 0; margin-top: 3px; }
+.tip-content { flex: 1; }
+.tip-title {
+  font-family: var(--head); font-size: 0.8rem;
+  font-weight: 700; margin-bottom: 5px;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+.tip-box.trick .tip-title { color: var(--gold); }
+.tip-box.validate .tip-title { color: var(--u5); }
+.tip-box.connect .tip-title { color: var(--u4); }
+.tip-box.warning .tip-title { color: var(--u3); }
+.tip-box.pred .tip-title { color: var(--upred); }
+.tip-content p { font-size: 0.88rem; color: var(--text); margin: 0; line-height: 1.75; }
+
+/* ══════════════ TABLES ══════════════ */
+.comp-table {
+  width: 100%; border-collapse: collapse;
+  margin: 18px 0; font-size: 0.88rem;
+  display: block; overflow-x: auto;
+}
+.comp-table th {
+  background: var(--surface2); padding: 12px 16px;
+  text-align: left; font-family: var(--head);
+  font-weight: 700; color: var(--u1);
+  border-bottom: 1px solid var(--border); white-space: nowrap;
+}
+.comp-table td { padding: 11px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.comp-table tr:last-child td { border-bottom: none; }
+.comp-table tr:hover td { background: var(--surface2); }
+
+/* ══════════════ IMPORTANCE BARS ══════════════ */
+.imp-bar-wrap { margin-bottom: 12px; }
+.imp-bar-label {
+  font-family: var(--mono); font-size: 0.73rem;
+  color: var(--dim2); margin-bottom: 5px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.imp-bar { height: 7px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.imp-bar-fill { height: 100%; border-radius: 4px; }
+.imp-high .imp-bar-fill { background: var(--u3); }
+.imp-med .imp-bar-fill { background: var(--upred); }
+.imp-low .imp-bar-fill { background: var(--u5); }
+
+/* ══════════════ STEPS ══════════════ */
+.steps { margin: 16px 0; }
+.step-item { display: flex; gap: 16px; margin-bottom: 14px; }
+.step-num {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--u3); color: #fff;
+  font-family: var(--mono); font-weight: 700; font-size: 0.78rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.step-text { font-size: 1rem; padding-top: 6px; line-height: 1.75; }
+
+/* ══════════════ DIAGRAM WRAP ══════════════ */
+.diagram-wrap {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 22px; margin: 18px 0; text-align: center;
+  overflow-x: auto;
+}
+.diagram-cap {
+  font-family: var(--mono); font-size: 0.72rem;
+  color: var(--dim2); margin-top: 12px; text-align: center;
+}
+
+/* ══════════════ PREDICTION BANNER ══════════════ */
+.pred-banner {
+  background: linear-gradient(135deg, rgba(245,158,11,.09), rgba(245,158,11,.03));
+  border: 1px solid rgba(245,158,11,.35);
+  border-left: 3px solid var(--upred);
+  border-radius: 9px; padding: 14px 18px;
+  margin: 16px 0; font-family: var(--mono);
+  font-size: 0.78rem; color: var(--upred);
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.pred-banner .pb-icon { flex-shrink: 0; font-size: 18px; }
+.pred-banner .pb-text { line-height: 1.7; }
+
+/* ══════════════ PYQ SECTION ══════════════ */
+.pyq-section {
+  background: #060f18; border: 1px solid rgba(245,158,11,.25);
+  border-radius: 12px; padding: 24px 28px; margin-top: 26px;
+}
+.pyq-header {
+  font-family: var(--head); font-size: 1rem;
+  font-weight: 700; color: var(--upred);
+  margin-bottom: 18px; display: flex; align-items: center; gap: 10px;
+}
+.pyq-item {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 9px; padding: 18px 20px; margin-bottom: 16px;
+}
+.pyq-q-text {
+  font-family: var(--head); font-size: 1rem;
+  font-weight: 700; color: #fff; margin-bottom: 6px; line-height: 1.45;
+}
+.pyq-meta {
+  font-family: var(--mono); font-size: 0.68rem; color: var(--dim2);
+  margin-bottom: 12px; display: flex; gap: 12px; flex-wrap: wrap;
+}
+.topic-tag {
+  background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25);
+  color: var(--u3); padding: 2px 9px; border-radius: 4px;
+  font-family: var(--mono); font-size: 0.68rem;
+}
+.pred-tag {
+  background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.25);
+  color: var(--upred); padding: 2px 9px; border-radius: 4px;
+  font-family: var(--mono); font-size: 0.68rem;
+}
+.pyq-answer { font-size: 0.93rem; line-height: 1.85; }
+.pyq-toggle {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 7px 16px; cursor: pointer;
+  font-family: var(--mono); font-size: 0.73rem; color: var(--upred);
+  margin-top: 12px; transition: all .2s;
+}
+.pyq-toggle:hover { background: var(--upred); color: #000; }
+.answer-content { display: none; margin-top: 16px; }
+.answer-content.open { display: block; }
+
+/* Highlights */
+code { font-family: var(--mono); background: var(--surface2); padding: 2px 7px; border-radius: 4px; font-size: 0.78rem; color: var(--u4); }
+.hl { color: var(--u1); font-weight: 600; }
+.hl-o { color: var(--u2); font-weight: 600; }
+.hl-r { color: var(--u3); font-weight: 600; }
+.hl-v { color: var(--u4); font-weight: 600; }
+.hl-g { color: var(--u5); font-weight: 600; }
+.hl-b { color: var(--u6); font-weight: 600; }
+.hl-gold { color: var(--upred); font-weight: 600; }
+.divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+/* ══════════════ PREDICTED PAPER SECTION ══════════════ */
+.predicted-section {
+  max-width: var(--content-max); margin: 0 auto 60px;
+  padding: 0 clamp(24px, 4vw, 80px);
+}
+.pred-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 16px; margin-top: 24px; }
+.pred-card {
+  background: var(--surface); border: 1px solid rgba(245,158,11,.2);
+  border-radius: 12px; padding: 20px 22px;
+  border-top: 3px solid var(--upred);
+}
+.pred-part { font-family: var(--mono); font-size: 0.72rem; color: var(--dim2); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.pred-q { font-family: var(--head); font-size: 0.95rem; font-weight: 700; color: #fff; margin-bottom: 8px; line-height: 1.4; }
+.pred-reason { font-size: 0.82rem; color: var(--dim2); line-height: 1.7; margin-bottom: 10px; }
+.pred-conf { font-family: var(--mono); font-size: 0.7rem; padding: 3px 10px; border-radius: 4px; }
+.pred-conf.high { color: var(--u3); background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.25); }
+.pred-conf.med { color: var(--upred); background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.25); }
+.pred-badge {
+  display: inline-block; font-family: var(--mono); font-size: 0.78rem;
+  color: var(--upred); background: rgba(245,158,11,.1);
+  border: 1px solid rgba(245,158,11,.3); padding: 5px 14px;
+  border-radius: 5px; margin-bottom: 14px;
+}
+.sec-header h2 {
+  font-family: var(--head); font-size: clamp(22px, 2.8vw, 30px);
+  font-weight: 800; color: #fff; margin-bottom: 6px;
+}
+.sec-header .sub { font-family: var(--mono); font-size: 0.72rem; color: var(--dim2); letter-spacing: 1px; }
+
+/* ══════════════ FOOTER ══════════════ */
+.site-footer {
+  background: #030b10; border-top: 1px solid var(--border2);
+  padding: 28px 5vw; text-align: center;
+  font-family: var(--mono); font-size: 0.72rem; color: var(--dim);
+}
+.site-footer a { color: var(--dim2); text-decoration: none; margin: 0 14px; transition: color .2s; }
+.site-footer a:hover { color: var(--u3); }
+.site-footer .footer-links { margin-bottom: 12px; }
+
+/* ══════════════ RESPONSIVE ══════════════ */
+@media(max-width: 1100px) {
+  :root { --sidebar-w: 260px; }
+}
+@media(max-width: 900px) {
+  .sidebar {
+    position: fixed; top: 0; left: 0; height: 100vh;
+    z-index: 99; background: var(--bg);
+    transform: translateX(-100%);
+    border-right: 1px solid var(--border);
+    transition: transform .3s ease;
+  }
+  .sidebar.open { transform: translateX(0); box-shadow: 4px 0 40px rgba(0,0,0,.9); }
+  .sidebar-close { display: block; }
+  .sidebar-toggle { display: flex; }
+  .content { max-width: 100%; padding: 28px 22px; }
+}
+@media(max-width: 600px) {
+  html { font-size: 18px; }
+  .hero { padding: 44px 18px 40px; }
+  .theory-block { padding: 20px; }
+  .pyq-section { padding: 18px; }
+}
+@media(max-width: 480px) {
+  html { font-size: 17px; }
+  .hero h1 { font-size: clamp(30px, 10vw, 44px); }
+}
+/* Landscape mobile — wider feel */
+@media(max-width: 900px) and (orientation: landscape) {
+  .hero { padding: 30px 24px; }
+  .hero h1 { font-size: clamp(26px, 6vw, 40px); }
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOP NAV ── -->
+<nav class="topnav">
+  <span class="tnlabel">ISS · RTU</span>
+  <a class="tnlink" href="index.html">🏠 Home</a>
+  <a class="tnlink" href="unit2.html">⚔️ U2: Attacks</a>
+  <a class="tnlink active" href="unit3.html">🔴 U3: Block Ciphers</a>
+  <a class="tnlink" href="unit4.html">🔮 U4: Public Key</a>
+  <a class="tnlink" href="unit5.html">🔐 U5: Hash/MAC/Sig</a>
+  <a class="tnlink" href="unit6.html">🌐 U6: Key Mgmt/SSL</a>
+  <a class="tnlink pyq" href="pyq.html">📋 Solved PYQs</a>
+  <a class="tnlink pred" href="#predicted">🔮 2026 Predicted</a>
+</nav>
+
+<!-- ── CREDIT ── -->
+<div class="credit-band">
+  <div class="credit-text">Crafted by <span>Mahansh Gaur</span> · B.Tech RTU Jaipur</div>
+  <a class="credit-link" href="https://www.instagram.com/mahaanshgaur_6513" target="_blank">📸 @mahaanshgaur_6513</a>
+  <a class="credit-link" href="https://github.com/mahanshstarktech" target="_blank">🐙 GitHub</a>
+</div>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag"><span class="hero-dot"></span>📚 B.Tech VI Sem · RTU Exam Prep · ISS 6E7103</div>
+    <h1>Unit 3: Modern Block Ciphers<br><span>DES</span>, <em>AES</em> &amp; Cipher Modes</h1>
+    <p class="hero-sub">DES round diagrams, AES transformations, Triple DES, and all 5 cipher modes — explained from scratch with layman definitions, formulas, diagrams, and every RTU PYQ solved (2022–2025) + 2026 predictions.</p>
+    <div class="hero-badges">
+      <span class="badge badge-r">🔥 DES — Every Single Paper</span>
+      <span class="badge badge-gold">🔮 2026 Predicted Topics</span>
+      <span class="badge badge-c">AES Structure + Key Expansion</span>
+      <span class="badge badge-v">All 5 Cipher Modes</span>
+      <span class="badge badge-o">Diagrams = 3–4 Marks Each</span>
+      <span class="badge badge-g">RTU PYQs Solved 2022–2025</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── SIDEBAR OVERLAY ── -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+<!-- ── MAIN LAYOUT ── -->
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">Unit 3 Topics</div>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <a class="nav-item" href="#overview">📊 Overview &amp; Importance</a>
+  <a class="nav-item" href="#block-intro">🧱 Block Cipher — Basics<span class="nav-imp high">80%</span></a>
+  <a class="nav-item" href="#design">⚙️ Design Principles<span class="nav-imp high">82%</span></a>
+  <a class="nav-item" href="#des">🔴 DES — Full Algorithm<span class="nav-imp high">98%</span></a>
+  <a class="nav-item" href="#des-round">⚡ DES Single Round<span class="nav-imp high">95%</span></a>
+  <a class="nav-item" href="#des-strength">🛡️ DES Strength<span class="nav-imp med">72%</span></a>
+  <a class="nav-item" href="#triple-des">3️⃣ Triple DES (3DES)<span class="nav-imp med">68%</span></a>
+  <a class="nav-item" href="#aes">🟣 AES — Structure<span class="nav-imp high">90%</span></a>
+  <a class="nav-item" href="#aes-transforms">🔄 AES Transformations<span class="nav-imp high">88%</span></a>
+  <a class="nav-item" href="#aes-key">🔑 AES Key Expansion<span class="nav-imp high">90%</span></a>
+  <a class="nav-item" href="#modes">📡 Cipher Modes (ECB–CTR)<span class="nav-imp high">85%</span></a>
+  <a class="nav-item" href="#predicted">🔮 2026 Predicted Paper</a>
+  <a class="nav-item" href="#pyq-master">📝 All PYQs Master List</a>
+</nav>
+
+<!-- CONTENT -->
+<main class="content">
+
+<!-- ══════ SECTION 00: OVERVIEW ══════ -->
+<section class="section" id="overview">
+  <div class="section-header">
+    <span class="section-num">00</span>
+    <h2 class="section-title">Topic Importance — Unit 3</h2>
+  </div>
+  <div class="theory-block">
+    <p>Unit 3 is the <strong>highest-scoring unit</strong> in ISS. DES appears as a mandatory Part C question in <strong>every single paper from 2022 to 2025</strong>. AES key expansion appeared in 3 consecutive years in Part B. Cipher modes are a permanent Part C fixture. Together, DES + AES + Modes can earn you 20–30 marks if prepared well.</p>
+    <div class="imp-bar-wrap imp-high" style="margin-top:18px">
+      <div class="imp-bar-label"><span>DES — Full Structure / Single Round</span><span style="color:#ef4444">98% 🔮 CERTAIN 2026</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:98%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-high" style="margin-top:10px">
+      <div class="imp-bar-label"><span>AES Key Expansion Algorithm</span><span style="color:#ef4444">90% 🔮 CERTAIN 2026</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:90%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-high" style="margin-top:10px">
+      <div class="imp-bar-label"><span>AES Structure + Transformation Functions</span><span style="color:#ef4444">88%</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:88%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-high" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Cipher Modes (ECB, CBC, CFB, OFB, CTR)</span><span style="color:#ef4444">85% 🔮 HIGH confidence</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:85%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-high" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Design Principles of Block Cipher</span><span style="color:#ef4444">82% 🔮 Due return</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:82%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-high" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Block Cipher Intro / Stream vs Block</span><span style="color:#ef4444">80%</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:80%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-med" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Strength of DES / DES Weaknesses</span><span style="color:#f59e0b">72%</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:72%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-med" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Triple DES / Multiple Encryption</span><span style="color:#f59e0b">68%</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" style="width:68%"></div></div>
+    </div>
+  </div>
+  <div class="tip-box trick">
+    <div class="tip-icon">⚡</div>
+    <div class="tip-content">
+      <div class="tip-title">Exam Strategy — Unit 3</div>
+      <p><strong>DES is non-negotiable.</strong> In every paper from 2022–2025, DES appeared as a 10-mark Part C question — either "full structure" or "single round with block diagram." Learn to draw the DES single round diagram: IP → L₀R₀ → 16 rounds (expansion, XOR key, S-box, P-box) → IP⁻¹. This one diagram alone earns 4–5 marks. Then add AES key expansion (appeared Part B 2024 and 2025) and at least ECB + CBC modes (appeared Part C 2024). Three topics = 25–30 marks secured.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SECTION 01: BLOCK CIPHER INTRO ══════ -->
+<section class="section" id="block-intro">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Block Ciphers — Introduction</h2>
+    <span class="imp-pill badge badge-r">80%</span>
+  </div>
+  <div class="theory-block">
+    <h3>What is a Block Cipher?</h3>
+    <p>A <span class="hl-r">block cipher</span> is a symmetric encryption algorithm that operates on fixed-size blocks of plaintext at a time (e.g., 64 bits for DES, 128 bits for AES) and uses a <strong>secret key</strong> to produce a fixed-size block of ciphertext of the same length.</p>
+    <div class="layman">A block cipher is like a combination lock that takes your message, chops it into equally-sized pieces (blocks), and scrambles each piece using a secret key. Give the same block with the same key, you always get the same scrambled output. Change even one letter — the output is completely different.</div>
+    <div class="formula-box">
+      <span class="label">Block Cipher — Mathematical Model</span>
+      <div class="formula">C = E(K, P)    ← Encryption: Plaintext P + Key K → Ciphertext C</div>
+      <div class="formula">P = D(K, C)    ← Decryption: Ciphertext C + Key K → Plaintext P</div>
+      <div class="note">E and D are inverse functions: D(K, E(K, P)) = P for all P and K</div>
+      <div class="note">DES: block = 64 bits, key = 56 bits | AES: block = 128 bits, key = 128/192/256 bits</div>
+    </div>
+    <h4>Stream Cipher vs Block Cipher — RTU Part A Guaranteed Q2</h4>
+    <table class="comp-table">
+      <tr><th>Aspect</th><th>Stream Cipher</th><th>Block Cipher</th></tr>
+      <tr><td><strong>Unit of operation</strong></td><td>Bit by bit (or byte by byte)</td><td>Fixed-size blocks (64 or 128 bits)</td></tr>
+      <tr><td><strong>Key stream</strong></td><td>Generates a pseudo-random key stream, XOR'd with plaintext</td><td>Uses a complex permutation/substitution on each full block</td></tr>
+      <tr><td><strong>Speed</strong></td><td>Faster — simple XOR operation</td><td>Slower — complex rounds of operations</td></tr>
+      <tr><td><strong>Memory</strong></td><td>Low — no need to buffer full block</td><td>Higher — must buffer a full block</td></tr>
+      <tr><td><strong>Error propagation</strong></td><td>One bit error corrupts only that bit</td><td>One bit error corrupts entire block (and potentially more in CBC)</td></tr>
+      <tr><td><strong>Security</strong></td><td>Good for real-time (video calls)</td><td>Better structural security for stored data</td></tr>
+      <tr><td><strong>Examples</strong></td><td>RC4, ChaCha20, A5/1 (GSM)</td><td>DES, 3DES, AES, Blowfish</td></tr>
+      <tr><td><strong>Use case</strong></td><td>Wireless communication, streaming</td><td>File encryption, database encryption, SSL/TLS</td></tr>
+    </table>
+  </div>
+  <div class="theory-block">
+    <h3>Feistel Cipher — Foundation of DES</h3>
+    <p>The <span class="hl-o">Feistel Cipher</span> is a symmetric structure used in block cipher design. It splits the plaintext block into two halves (L and R) and applies multiple rounds of a round function F using subkeys. The beauty of Feistel is that <strong>the same structure is used for both encryption and decryption</strong> — only the key schedule is reversed.</p>
+    <div class="layman">Feistel is like a "shuffle and swap" machine. In each round, the right half goes through a blender (the round function F with a round key), and the result is XOR'd with the left half. Then the two halves swap sides. Repeat 16 times. To decrypt, just run the same machine backwards using the keys in reverse order.</div>
+    <div class="formula-box">
+      <span class="label">Feistel Cipher — One Round</span>
+      <div class="formula">Input:  (Lᵢ₋₁, Rᵢ₋₁)</div>
+      <div class="formula">Lᵢ = Rᵢ₋₁                    ← Right becomes new Left</div>
+      <div class="formula">Rᵢ = Lᵢ₋₁ ⊕ F(Rᵢ₋₁, Kᵢ)    ← Old Left XOR'd with F(Right, RoundKey)</div>
+      <div class="note">⊕ = XOR | F = Round function | Kᵢ = Round subkey</div>
+      <div class="note">Key insight: Decryption is identical structure — just use K₁₆, K₁₅, ..., K₁ (reverse key order)</div>
+    </div>
+    <div class="tip-box connect">
+      <div class="tip-icon">🔗</div>
+      <div class="tip-content">
+        <div class="tip-title">Connection — Unit 2 (Classical Ciphers) → Unit 3 (Modern Block Ciphers)</div>
+        <p>Classical ciphers (Caesar, Vigenère) operated on letters using simple shifts — vulnerable to frequency analysis. Modern block ciphers (DES, AES) apply two key principles from Unit 2 classical analysis: <strong>Confusion</strong> (make relationship between key and ciphertext complex — like S-boxes in DES) and <strong>Diffusion</strong> (spread influence of each plaintext bit — like P-boxes and MixColumns in AES). These are Shannon's principles, introduced in Unit 2 but applied massively in Unit 3.</p>
+      </div>
+    </div>
+  </div>
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — Block Cipher Intro</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. What is the difference between stream and block cipher?</div>
+      <div class="pyq-meta"><span>ALL PAPERS · Part A Q2 · 2 marks ⭐⭐⭐</span><span class="topic-tag">Stream vs Block</span><span class="pred-tag">🔮 CERTAIN 2026 Part A Q2</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        A <strong>stream cipher</strong> encrypts data bit by bit (or byte by byte) using a pseudo-random key stream XOR'd with plaintext. Fast, used for real-time data (voice, video). Example: RC4, A5/1.<br><br>
+        A <strong>block cipher</strong> encrypts data in fixed-size blocks (64 or 128 bits) at a time using a key. More secure for stored data. Example: DES (64-bit block), AES (128-bit block).<br><br>
+        <strong>Key differences:</strong> Stream cipher processes one bit/byte at a time; block cipher processes entire block. Stream cipher has no error propagation (1-bit error corrupts 1 bit); block cipher error propagates within the block. Block ciphers are more suitable for file/database encryption; stream ciphers for wireless/real-time communication.
+      </div></div>
+    </div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Define block ciphers.</div>
+      <div class="pyq-meta"><span>June 2022 Part A Q5 · 2 marks ⭐</span><span class="topic-tag">Block Cipher</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        A <strong>block cipher</strong> is a symmetric encryption algorithm that takes a fixed-size block of plaintext (e.g., 64 bits for DES, 128 bits for AES) and produces a ciphertext of the same fixed size using a secret key.<br><br>
+        Model: C = E(K, P) for encryption; P = D(K, C) for decryption.<br><br>
+        Block ciphers operate in rounds — each round applies substitution (S-boxes) and permutation (P-boxes) to mix the data. The same key schedule subkeys are applied in each round. Examples: DES, 3DES, AES, Blowfish.
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SECTION 02: DESIGN PRINCIPLES ══════ -->
+<section class="section" id="design">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Design Principles of Block Cipher</h2>
+    <span class="imp-pill badge badge-r">82% — 2026 Due Return</span>
+  </div>
+  <div class="pred-banner">
+    <span class="pb-icon">🔮</span>
+    <div class="pb-text"><strong>2026 Prediction — HIGH confidence:</strong> Design principles appeared in Part B in 2023-Jul Q2 and 2024 Q3. Absent from 2025 Part B. Based on the RTU rotation pattern (every other year), this is strongly due to return in 2026 Part B Q6. Cover confusion, diffusion, Feistel structure, avalanche effect, and Shannon's principles.</div>
+  </div>
+  <div class="theory-block">
+    <h3>Shannon's Principles — Confusion and Diffusion</h3>
+    <p>Claude Shannon (1949) identified two key properties that a strong block cipher must have:</p>
+    <table class="comp-table">
+      <tr><th>Property</th><th>Definition</th><th>Goal</th><th>How DES Achieves It</th><th>How AES Achieves It</th></tr>
+      <tr><td><span class="hl-r">Confusion</span></td><td>Make the relationship between key and ciphertext as complex as possible</td><td>Attacker cannot deduce key even with many plaintext-ciphertext pairs</td><td>S-boxes (non-linear substitution) in each round</td><td>SubBytes transformation (non-linear S-box)</td></tr>
+      <tr><td><span class="hl-o">Diffusion</span></td><td>Each bit of plaintext should influence many bits of ciphertext</td><td>Spread statistical structure of plaintext across ciphertext</td><td>P-box permutation and expansion E</td><td>ShiftRows + MixColumns spread bits across the state</td></tr>
+    </table>
+    <div class="layman">Confusion: make it impossible to guess the recipe (key) from the cake (ciphertext) — done by complex mixing. Diffusion: if you change one ingredient, the entire cake changes — done by spreading each bit's influence wide. DES and AES both use both principles in every round.</div>
+    <div class="formula-box">
+      <span class="label">Avalanche Effect — Key Principle</span>
+      <div class="formula">A small change in input (1 bit) → drastic change in output (≈ 50% of bits flip)</div>
+      <div class="note">DES: changing 1 plaintext bit → approximately 32 of 64 output bits change after full encryption</div>
+      <div class="note">Avalanche effect ensures: complete ciphertext change even for tiny plaintext/key variations</div>
+      <div class="note">This makes frequency analysis and differential attacks computationally infeasible</div>
+    </div>
+  </div>
+  <div class="theory-block">
+    <h3>Design Principles of Block Cipher — RTU Answer Structure</h3>
+    <ol>
+      <li><strong>Confusion (Substitution):</strong> Replace plaintext elements with complex ciphertext elements via non-linear S-boxes. Breaks statistical relationship between key and ciphertext.</li>
+      <li><strong>Diffusion (Permutation/Transposition):</strong> Rearrange/mix bits so each input bit affects many output bits. Eliminates statistical patterns from plaintext.</li>
+      <li><strong>Feistel Structure:</strong> Split block into L and R halves; apply round function to one half and XOR with other; swap. Same structure for encrypt and decrypt (only key schedule reversed).</li>
+      <li><strong>Round Number:</strong> Multiple rounds ensure cumulative confusion and diffusion. DES: 16 rounds. AES: 10/12/14 rounds depending on key size. More rounds = more security but slower.</li>
+      <li><strong>Key Schedule:</strong> Derive multiple round subkeys from a single master key. Each round uses a different subkey — prevents simple patterns across rounds.</li>
+      <li><strong>Avalanche Effect:</strong> Changing 1 bit of plaintext or key should change approximately half the ciphertext bits. Ensures sensitivity to small changes.</li>
+      <li><strong>Non-linearity:</strong> S-boxes must be non-linear to resist linear and differential cryptanalysis. DES S-boxes were carefully designed by IBM/NSA for this purpose.</li>
+      <li><strong>Completeness:</strong> Each ciphertext bit must depend on every plaintext bit and key bit after sufficient rounds.</li>
+    </ol>
+  </div>
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — Design Principles</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain design principles of block cipher.</div>
+      <div class="pyq-meta"><span>2023-Jul Part B Q2 · 2024 Part B Q3 · 4 marks ⭐⭐</span><span class="topic-tag">Design Principles</span><span class="pred-tag">🔮 HIGH confidence 2026 Part B Q6</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        <strong>Key Design Principles of Block Cipher:</strong><br><br>
+        <strong>1. Confusion:</strong> Makes the relationship between key and ciphertext as complex and unpredictable as possible. Achieved through non-linear S-boxes (Substitution Boxes). Even if an attacker has many plaintext-ciphertext pairs, they cannot determine the key.<br><br>
+        <strong>2. Diffusion:</strong> Spreading the influence of one plaintext bit over many ciphertext bits. A single bit change in plaintext should affect approximately half of the ciphertext bits (avalanche effect). Achieved through permutations (P-boxes) and mixing operations like MixColumns in AES.<br><br>
+        <strong>3. Feistel Structure:</strong> Split block into Left (L) and Right (R) halves. Each round: L_new = R_old, R_new = L_old XOR F(R_old, K_i). Decryption uses same structure but reversed key schedule.<br><br>
+        <strong>4. Number of Rounds:</strong> More rounds = more secure. DES uses 16 rounds, AES uses 10–14 rounds. Each round applies confusion and diffusion cumulatively.<br><br>
+        <strong>5. Avalanche Effect:</strong> Changing even 1 bit of input (plaintext or key) causes approximately 50% of output bits to change. This prevents statistical analysis.<br><br>
+        <strong>6. Key Schedule:</strong> Different subkeys are derived from the master key for each round, preventing simple patterns.<br><br>
+        [Draw a diagram showing the Feistel round structure with L, R, F, XOR, and subkey Kᵢ]
+      </div></div>
+    </div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. What is avalanche effect? Give an example.</div>
+      <div class="pyq-meta"><span>2024 Part A Q3 · 2023-Jul Part A Q3 · 2 marks ⭐⭐</span><span class="topic-tag">Avalanche Effect</span><span class="pred-tag">🔮 VERY HIGH 2026 Part A Q3</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        The <strong>Avalanche Effect</strong> states that a small change in input (plaintext or key) causes a drastic change in output — approximately 50% of ciphertext bits change when a single input bit is flipped.<br><br>
+        <strong>Example in DES:</strong><br>
+        Plaintext A: 0000000000000000 (all zeros)<br>
+        Plaintext B: 1000000000000000 (only 1 bit changed!)<br>
+        After DES encryption with the same key, the two ciphertexts differ in ~32 of 64 bits (50%).<br><br>
+        <strong>Why it matters:</strong> Without avalanche effect, an attacker could analyse small changes to deduce key bits (differential cryptanalysis). With strong avalanche effect, the output appears completely random even for minimal input differences.<br><br>
+        Achieved in DES through: P-boxes (permutation) and S-boxes (non-linear substitution) working together over 16 rounds.
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SECTION 03: DES ══════ -->
+<section class="section" id="des">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Data Encryption Standard (DES)</h2>
+    <span class="imp-pill badge badge-r">🔥 98% — Every Paper Guaranteed</span>
+  </div>
+  <div class="pred-banner">
+    <span class="pb-icon">🔮</span>
+    <div class="pb-text"><strong>2026 Prediction — CERTAIN:</strong> DES appeared in Part C in EVERY ISS paper from 2022 to 2025. Always 10 marks. The 2025 paper asked for "internal structure of single round" specifically. The 2024 paper asked for "DES algorithm with suitable diagrams." Always draw the round diagram — it earns 4–5 marks alone. Prepare both the full structure overview AND the single round detail.</div>
+  </div>
+  <div class="theory-block">
+    <h3 class="red">DES — Introduction</h3>
+    <p><span class="hl-r">DES (Data Encryption Standard)</span> was developed by IBM and adopted by NIST in 1977 as a US federal standard. It is a <strong>symmetric block cipher</strong> based on the Feistel structure, operating on <strong>64-bit blocks</strong> with a <strong>56-bit key</strong> (the actual key is 64 bits, but 8 bits are parity bits) and using <strong>16 rounds</strong> of transformation.</p>
+    <div class="layman">DES is like a complex combination lock from 1977. You feed your data (in 64-bit chunks) into the machine, it performs 16 rounds of shuffling and substituting, and out comes scrambled data. The key is 56 bits — meaning there are 2⁵⁶ ≈ 72 quadrillion possible keys. In 1977 this was unbreakable; today a powerful computer can crack it in hours (DES is now obsolete).</div>
+    <div class="formula-box">
+      <span class="label">DES Key Parameters</span>
+      <div class="formula">Block size:  64 bits (operates on 8 bytes of plaintext at a time)</div>
+      <div class="formula">Key size:    64 bits input → 56 effective bits (8 parity bits discarded via PC-1)</div>
+      <div class="formula">Rounds:      16 Feistel rounds</div>
+      <div class="formula">Round keys:  16 subkeys, each 48 bits (derived from 56-bit master key)</div>
+      <div class="note">Decryption: use same algorithm, same IP/IP⁻¹, but apply subkeys in REVERSE order K₁₆→K₁</div>
+    </div>
+  </div>
+  <div class="theory-block">
+    <h3 class="red">DES — Overall Structure (Steps 1–5)</h3>
+    <div class="steps">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-text"><strong>Initial Permutation (IP):</strong> The 64-bit plaintext block is permuted according to a fixed table (IP table). This reorders the 64 bits — bit 58 goes to position 1, bit 50 to position 2, etc. This doesn't add security — it was originally intended for hardware implementation ease. Output: 64 permuted bits.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-text"><strong>Split into L₀ and R₀:</strong> The 64-bit IP output is split into two 32-bit halves. <strong>L₀</strong> = leftmost 32 bits, <strong>R₀</strong> = rightmost 32 bits. These are the starting values for the 16 Feistel rounds.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-text"><strong>16 Feistel Rounds:</strong> For each round i (1 to 16): <br>
+        Lᵢ = Rᵢ₋₁<br>
+        Rᵢ = Lᵢ₋₁ ⊕ F(Rᵢ₋₁, Kᵢ)<br>
+        where F is the round function and Kᵢ is the 48-bit subkey for round i.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-text"><strong>32-bit Swap:</strong> After all 16 rounds, the two halves are swapped: the output is <strong>R₁₆ concatenated with L₁₆</strong> (note: right comes first). This swap ensures decryption works with the same algorithm.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">5</div>
+        <div class="step-text"><strong>Final Permutation (IP⁻¹):</strong> Apply the inverse of the Initial Permutation to the 64-bit (R₁₆ || L₁₆). This produces the 64-bit ciphertext. IP⁻¹ is the exact reverse permutation of IP.</div>
+      </div>
+    </div>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 580 320" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+        <text x="10" y="18" fill="#ef4444" font-family="JetBrains Mono" font-size="11" font-weight="bold">DES — Overall Structure (Draw this for 3–4 marks)</text>
+        <!-- Plaintext -->
+        <rect x="200" y="28" width="180" height="30" rx="5" fill="#0c1e28" stroke="#6090a8" stroke-width="1.5"/>
+        <text x="290" y="48" text-anchor="middle" fill="#6090a8" font-family="JetBrains Mono" font-size="10">64-bit Plaintext P</text>
+        <line x1="290" y1="58" x2="290" y2="78" stroke="#67e8f9" stroke-width="2"/>
+        <polygon points="286,75 290,85 294,75" fill="#67e8f9"/>
+        <!-- IP -->
+        <rect x="210" y="85" width="160" height="30" rx="5" fill="#102534" stroke="#22d3ee" stroke-width="2"/>
+        <text x="290" y="105" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="10">Initial Permutation (IP)</text>
+        <line x1="290" y1="115" x2="290" y2="132" stroke="#67e8f9" stroke-width="2"/>
+        <polygon points="286,129 290,139 294,129" fill="#67e8f9"/>
+        <!-- Split -->
+        <line x1="290" y1="139" x2="200" y2="139" stroke="#67e8f9" stroke-width="1.5"/>
+        <line x1="290" y1="139" x2="380" y2="139" stroke="#67e8f9" stroke-width="1.5"/>
+        <rect x="130" y="139" width="80" height="26" rx="4" fill="#152432" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="170" y="156" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono" font-size="9">L₀ (32 bits)</text>
+        <rect x="370" y="139" width="80" height="26" rx="4" fill="#152432" stroke="#f97316" stroke-width="1.5"/>
+        <text x="410" y="156" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">R₀ (32 bits)</text>
+        <!-- 16 Rounds box -->
+        <rect x="150" y="185" width="280" height="50" rx="6" fill="#0f1c26" stroke="#ef4444" stroke-width="2.5"/>
+        <text x="290" y="205" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="10" font-weight="bold">16 FEISTEL ROUNDS</text>
+        <text x="290" y="222" text-anchor="middle" fill="#6090a8" font-family="JetBrains Mono" font-size="9">Lᵢ = Rᵢ₋₁ | Rᵢ = Lᵢ₋₁ ⊕ F(Rᵢ₋₁, Kᵢ)</text>
+        <!-- Key schedule -->
+        <rect x="470" y="190" width="100" height="40" rx="5" fill="#152432" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="520" y="207" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono" font-size="9">Key Schedule</text>
+        <text x="520" y="222" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono" font-size="9">K₁…K₁₆ (48b)</text>
+        <line x1="470" y1="210" x2="430" y2="210" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <!-- Swap -->
+        <line x1="290" y1="235" x2="290" y2="252" stroke="#67e8f9" stroke-width="2"/>
+        <rect x="200" y="252" width="180" height="28" rx="5" fill="#102534" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="290" y="271" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono" font-size="9">Swap: R₁₆ ‖ L₁₆</text>
+        <!-- IP-1 -->
+        <line x1="290" y1="280" x2="290" y2="296" stroke="#67e8f9" stroke-width="2"/>
+        <rect x="205" y="296" width="170" height="28" rx="5" fill="#102534" stroke="#22d3ee" stroke-width="2"/>
+        <text x="290" y="315" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="10">Final Permutation (IP⁻¹)</text>
+        <!-- arrows -->
+        <line x1="170" y1="165" x2="170" y2="185" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <line x1="410" y1="165" x2="410" y2="185" stroke="#f97316" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <!-- Labels -->
+        <text x="10" y="212" fill="#ef4444" font-family="JetBrains Mono" font-size="9">← Same algo</text>
+        <text x="10" y="224" fill="#ef4444" font-family="JetBrains Mono" font-size="9">   for decrypt</text>
+        <text x="10" y="236" fill="#ef4444" font-family="JetBrains Mono" font-size="9">   (reverse Kᵢ)</text>
+      </svg>
+      <div class="diagram-cap">Fig 3.1 — DES Overall Structure: IP → 16 Feistel Rounds (with key schedule) → Swap → IP⁻¹ → Ciphertext</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SECTION 04: DES SINGLE ROUND ══════ -->
+<section class="section" id="des-round">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">DES — Internal Structure of Single Round</h2>
+    <span class="imp-pill badge badge-r">🔥 95% — Most Drawn Diagram</span>
+  </div>
+  <div class="pred-banner">
+    <span class="pb-icon">🔮</span>
+    <div class="pb-text"><strong>2026 Prediction — CERTAIN:</strong> The 2025 paper specifically asked "Explain the internal structure of single round of DES algorithm" (Part C Q2, 10 marks). This exact phrasing is likely to repeat. Draw every component: Expansion (E), XOR with 48-bit subkey, 8 S-boxes, P-box permutation. Each labeled component earns marks.</div>
+  </div>
+  <div class="theory-block">
+    <h3 class="red">The Round Function F — Step by Step</h3>
+    <p>The round function F takes a <strong>32-bit right half Rᵢ₋₁</strong> and a <strong>48-bit subkey Kᵢ</strong> as input, and produces a <strong>32-bit output</strong>. This output is XOR'd with Lᵢ₋₁ to form the new right half Rᵢ.</p>
+    <div class="steps">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-text"><strong>Expansion (E-box):</strong> The 32-bit right half Rᵢ₋₁ is expanded to <strong>48 bits</strong> using the Expansion Permutation table E. Some bits are repeated — 16 bits appear twice. This allows each output bit to depend on more input bits (diffusion) and also matches the key length for XOR.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-text"><strong>XOR with Subkey:</strong> The 48-bit expanded block is XOR'd with the <strong>48-bit round subkey Kᵢ</strong>. This is where the key mixes into the data. Result: 48 bits.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-text"><strong>Substitution (S-boxes):</strong> The 48-bit result is divided into <strong>8 groups of 6 bits</strong>. Each 6-bit group is fed into one of 8 different <strong>Substitution Boxes (S₁ through S₈)</strong>. Each S-box maps a 6-bit input to a 4-bit output using a lookup table. Output: 8×4 = <strong>32 bits</strong>. This is the <span class="hl-r">confusion</span> step — the non-linear heart of DES security.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">4</div>
+        <div class="step-text"><strong>Permutation (P-box):</strong> The 32-bit S-box output is permuted according to a fixed P-box table. This shuffles the bits to ensure each bit of the S-box output affects multiple bits in the next round — this is the <span class="hl-o">diffusion</span> step. Output: <strong>32 bits</strong>.</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">5</div>
+        <div class="step-text"><strong>XOR with Left Half:</strong> The 32-bit P-box output is XOR'd with <strong>Lᵢ₋₁</strong> (the left half from the previous round). This produces the new <strong>right half Rᵢ</strong>. The new left half Lᵢ is simply Rᵢ₋₁. The halves are ready for the next round.</div>
+      </div>
+    </div>
+    <div class="formula-box">
+      <span class="label">DES Round Function F — Formula Chain</span>
+      <div class="formula">Step 1: E_out   = E(Rᵢ₋₁)          [32 bits → 48 bits, Expansion]</div>
+      <div class="formula">Step 2: XOR_out = E_out ⊕ Kᵢ         [48 bits XOR 48-bit subkey]</div>
+      <div class="formula">Step 3: S_out   = S₁(b₁)‖S₂(b₂)‖...‖S₈(b₈) [48→32 bits, 8 S-boxes]</div>
+      <div class="formula">Step 4: P_out   = P(S_out)            [32 bits → 32 bits, P-box permutation]</div>
+      <div class="formula">Step 5: Rᵢ      = Lᵢ₋₁ ⊕ P_out       [New Right = Old Left XOR F output]</div>
+      <div class="formula">        Lᵢ      = Rᵢ₋₁                [New Left = Old Right]</div>
+      <div class="note">F(Rᵢ₋₁, Kᵢ) = P(S(E(Rᵢ₋₁) ⊕ Kᵢ)) — the complete round function</div>
+    </div>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 580 380" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+        <text x="10" y="18" fill="#ef4444" font-family="JetBrains Mono" font-size="11" font-weight="bold">DES — Single Round Internal Structure (Essential Exam Diagram)</text>
+        <!-- Left half -->
+        <rect x="20" y="32" width="110" height="28" rx="4" fill="#0c1e28" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="75" y="50" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono" font-size="9">Lᵢ₋₁ (32 bits)</text>
+        <!-- Right half -->
+        <rect x="210" y="32" width="110" height="28" rx="4" fill="#0c1e28" stroke="#f97316" stroke-width="1.5"/>
+        <text x="265" y="50" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">Rᵢ₋₁ (32 bits)</text>
+        <!-- Subkey -->
+        <rect x="420" y="32" width="140" height="28" rx="4" fill="#152432" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="490" y="50" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono" font-size="9">Subkey Kᵢ (48 bits)</text>
+        <!-- Arrow from R to E -->
+        <line x1="265" y1="60" x2="265" y2="88" stroke="#f97316" stroke-width="2"/>
+        <polygon points="261,85 265,95 269,85" fill="#f97316"/>
+        <!-- E-box -->
+        <rect x="200" y="95" width="130" height="30" rx="5" fill="#102534" stroke="#22d3ee" stroke-width="2"/>
+        <text x="265" y="115" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="9">Expansion E: 32→48 bits</text>
+        <!-- Arrow from E to XOR -->
+        <line x1="265" y1="125" x2="265" y2="152" stroke="#22d3ee" stroke-width="1.5"/>
+        <polygon points="261,149 265,159 269,149" fill="#22d3ee"/>
+        <!-- Arrow from Kᵢ to XOR -->
+        <line x1="420" y1="46" x2="350" y2="46" stroke="#f59e0b" stroke-width="1.5"/>
+        <line x1="350" y1="46" x2="350" y2="162" stroke="#f59e0b" stroke-width="1.5"/>
+        <polygon points="346,159 350,169 354,159" fill="#f59e0b"/>
+        <!-- XOR circle -->
+        <circle cx="265" cy="169" r="13" fill="#0f1c26" stroke="#ef4444" stroke-width="2"/>
+        <text x="265" y="174" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="14">⊕</text>
+        <circle cx="350" cy="169" r="13" fill="#0f1c26" stroke="#ef4444" stroke-width="2"/>
+        <text x="350" y="174" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="14">⊕</text>
+        <line x1="278" y1="169" x2="337" y2="169" stroke="#ef4444" stroke-width="1.5"/>
+        <text x="307" y="164" text-anchor="middle" fill="#6090a8" font-family="JetBrains Mono" font-size="8">XOR with Kᵢ</text>
+        <!-- Arrow to S-boxes -->
+        <line x1="307" y1="182" x2="307" y2="202" stroke="#ef4444" stroke-width="1.5"/>
+        <polygon points="303,199 307,209 311,199" fill="#ef4444"/>
+        <!-- S-boxes -->
+        <rect x="130" y="209" width="350" height="40" rx="5" fill="#0c1e28" stroke="#ef4444" stroke-width="2.5"/>
+        <text x="305" y="228" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="10" font-weight="bold">S₁ | S₂ | S₃ | S₄ | S₅ | S₆ | S₇ | S₈</text>
+        <text x="305" y="242" text-anchor="middle" fill="#6090a8" font-family="JetBrains Mono" font-size="9">8 × (6-bit input → 4-bit output) = 48 bits → 32 bits (CONFUSION)</text>
+        <!-- Arrow to P-box -->
+        <line x1="305" y1="249" x2="305" y2="272" stroke="#ef4444" stroke-width="1.5"/>
+        <polygon points="301,269 305,279 309,269" fill="#ef4444"/>
+        <!-- P-box -->
+        <rect x="195" y="279" width="220" height="30" rx="5" fill="#102534" stroke="#10b981" stroke-width="2"/>
+        <text x="305" y="299" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">P-box Permutation: 32→32 bits (DIFFUSION)</text>
+        <!-- XOR with L -->
+        <line x1="305" y1="309" x2="305" y2="334" stroke="#10b981" stroke-width="1.5"/>
+        <polygon points="301,331 305,341 309,331" fill="#10b981"/>
+        <circle cx="305" cy="349" r="13" fill="#0f1c26" stroke="#a78bfa" stroke-width="2"/>
+        <text x="305" y="354" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono" font-size="14">⊕</text>
+        <!-- L arrow to XOR -->
+        <line x1="75" y1="60" x2="75" y2="349" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <line x1="75" y1="349" x2="292" y2="349" stroke="#a78bfa" stroke-width="1.5"/>
+        <!-- Results -->
+        <rect x="20" y="362" width="110" height="28" rx="4" fill="#0c1e28" stroke="#f97316" stroke-width="1.5"/>
+        <text x="75" y="380" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">Lᵢ = Rᵢ₋₁</text>
+        <rect x="255" y="362" width="100" height="28" rx="4" fill="#0c1e28" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="305" y="380" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono" font-size="9">Rᵢ = Lᵢ₋₁ ⊕ F</text>
+        <line x1="305" y1="362" x2="305" y2="350" stroke="#a78bfa" stroke-width="1.5"/>
+        <line x1="265" y1="60" x2="75" y2="60" stroke="#f97316" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <line x1="75" y1="60" x2="75" y2="362" stroke="#f97316" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <polygon points="71,359 75,369 79,359" fill="#f97316"/>
+      </svg>
+      <div class="diagram-cap">Fig 4.1 — DES Single Round: Rᵢ₋₁ → Expansion (32→48) → XOR Kᵢ → 8 S-boxes (48→32) → P-box → XOR Lᵢ₋₁ = Rᵢ | Lᵢ = Rᵢ₋₁</div>
+    </div>
+  </div>
+  <div class="theory-block">
+    <h3>S-Boxes — The Heart of DES Security</h3>
+    <p>The 8 <span class="hl-r">Substitution Boxes (S-boxes)</span> are the only non-linear component in DES — they are what make DES secure against mathematical attacks. Each S-box takes <strong>6 bits of input</strong> and produces <strong>4 bits of output</strong> using a predefined lookup table.</p>
+    <div class="formula-box">
+      <span class="label">How to Use an S-Box (e.g., S₁)</span>
+      <div class="formula">Input:  6 bits = b₁b₂b₃b₄b₅b₆</div>
+      <div class="formula">Row:    determined by b₁ and b₆ (the outer bits) → row = 2×b₁ + b₆ (value 0–3)</div>
+      <div class="formula">Column: determined by b₂b₃b₄b₅ (the inner 4 bits) → col = binary value 0–15</div>
+      <div class="formula">Output: look up the table at (row, column) → read the 4-bit value</div>
+      <div class="note">Example: Input = 011011 → Row: b₁=0, b₆=1 → row = 01 = 1 | Col: b₂b₃b₄b₅ = 1101 = 13 → S₁[1][13] = 5 → Output = 0101</div>
+    </div>
+    <div class="tip-box trick">
+      <div class="tip-icon">⚡</div>
+      <div class="tip-content">
+        <div class="tip-title">S-Box Exam Trick — Row/Column Selection</div>
+        <p>Remember: <strong>outer bits = row (b₁ and b₆), inner bits = column (b₂b₃b₄b₅)</strong>. Many students mix this up. Write it as: "Row = first and last bit; Column = middle 4 bits." If given an S-box table in the exam, practice one look-up to verify you're reading row first then column.</p>
+      </div>
+    </div>
+    <h3>DES Key Schedule — Generating 16 Subkeys</h3>
+    <p>The 16 round subkeys (each 48 bits) are generated from the 64-bit key input using the following process:</p>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><div class="step-text"><strong>PC-1 (Permuted Choice 1):</strong> The 64-bit key → 56 bits (8 parity bits removed). The 56 bits are split into two 28-bit halves: C₀ and D₀.</div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>Circular Left Shift:</strong> For each round i (1–16), both Cᵢ₋₁ and Dᵢ₋₁ are shifted left by 1 or 2 positions according to a shift schedule (rounds 1,2,9,16 → shift 1; rest → shift 2).</div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>PC-2 (Permuted Choice 2):</strong> The shifted Cᵢ and Dᵢ (total 56 bits) are combined and 8 bits are discarded to produce Kᵢ = 48 bits. This is the round subkey for round i.</div></div>
+    </div>
+  </div>
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — DES</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain the internal structure of single round of DES algorithm.</div>
+      <div class="pyq-meta"><span>2025 Part C Q2 · 10 marks ⭐⭐⭐</span><span class="topic-tag">DES Single Round</span><span class="pred-tag">🔮 CERTAIN 2026 Part C</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        <strong>DES Single Round — Introduction:</strong><br>
+        DES (Data Encryption Standard) uses 16 Feistel rounds. Each round takes a 64-bit block split into L (32 bits) and R (32 bits), and a 48-bit subkey Kᵢ. The round function F is applied to produce the new halves.<br><br>
+        <strong>Round Equations:</strong><br>
+        Lᵢ = Rᵢ₋₁<br>
+        Rᵢ = Lᵢ₋₁ ⊕ F(Rᵢ₋₁, Kᵢ)<br><br>
+        <strong>Round Function F — 4 Steps:</strong><br><br>
+        <strong>Step 1 — Expansion (E-box):</strong><br>
+        Rᵢ₋₁ (32 bits) is expanded to 48 bits using Expansion Permutation table E. 16 bits are duplicated. This allows XOR with the 48-bit subkey and increases diffusion.<br><br>
+        <strong>Step 2 — XOR with Subkey:</strong><br>
+        The 48-bit expanded block is XOR'd with the 48-bit round subkey Kᵢ.<br>
+        Result: 48-bit XOR output.<br><br>
+        <strong>Step 3 — S-Box Substitution (Confusion):</strong><br>
+        The 48-bit result is divided into 8 groups of 6 bits. Each 6-bit group is fed into one of 8 S-boxes (S₁–S₈). Each S-box maps 6 bits → 4 bits via a lookup table.<br>
+        Row = first and last bit (bits 1,6); Column = middle 4 bits (bits 2,3,4,5).<br>
+        Total output: 8 × 4 = 32 bits.<br>
+        This is the ONLY non-linear step — providing confusion and security against linear attacks.<br><br>
+        <strong>Step 4 — P-box Permutation (Diffusion):</strong><br>
+        The 32-bit S-box output is permuted by a fixed P-box table (32→32 bits).<br>
+        This ensures each output bit of one round affects many bits in the next round.<br>
+        F output = 32 bits.<br><br>
+        <strong>Final XOR:</strong><br>
+        Rᵢ = Lᵢ₋₁ ⊕ F_output = Lᵢ₋₁ ⊕ P(S(E(Rᵢ₋₁) ⊕ Kᵢ))<br><br>
+        [DRAW the single round diagram showing: Rᵢ₋₁ → E-box → XOR Kᵢ → 8 S-boxes → P-box → XOR Lᵢ₋₁ = Rᵢ, and Lᵢ = Rᵢ₋₁]<br><br>
+        <strong>Purpose of each step:</strong><br>
+        E-box: Expansion for diffusion + key size match<br>
+        S-boxes: Non-linear substitution = Confusion (core security)<br>
+        P-box: Permutation = Diffusion (spread influence)<br>
+        XOR: Combine key with data
+      </div></div>
+    </div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain the Data Encryption Standard (DES) algorithm with suitable diagrams.</div>
+      <div class="pyq-meta"><span>2024 Part C Q1 · 2022 Part B Q2 · 10 marks ⭐⭐⭐</span><span class="topic-tag">DES Full</span><span class="pred-tag">🔮 CERTAIN 2026</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        <strong>DES — Introduction:</strong><br>
+        DES (Data Encryption Standard) was developed by IBM, adopted by NIST in 1977. It is a symmetric block cipher using 64-bit blocks, 56-bit key, and 16 Feistel rounds. Now considered insecure (key is too short) — replaced by AES.<br><br>
+        <strong>Key parameters:</strong><br>
+        Block size: 64 bits | Key: 64 bits (56 effective, 8 parity) | Rounds: 16 | Subkeys: 16 × 48 bits<br><br>
+        <strong>Overall Structure:</strong><br>
+        1. Initial Permutation (IP): Permute the 64-bit plaintext block<br>
+        2. Split: L₀ = leftmost 32 bits, R₀ = rightmost 32 bits<br>
+        3. 16 Feistel Rounds: Lᵢ = Rᵢ₋₁; Rᵢ = Lᵢ₋₁ ⊕ F(Rᵢ₋₁, Kᵢ)<br>
+        4. Swap: output = R₁₆ ‖ L₁₆<br>
+        5. Final Permutation (IP⁻¹): inverse of IP → 64-bit ciphertext<br><br>
+        <strong>Round Function F(Rᵢ₋₁, Kᵢ):</strong><br>
+        1. Expansion E: 32 → 48 bits<br>
+        2. XOR with 48-bit subkey Kᵢ<br>
+        3. S-box substitution: 48 → 32 bits (8 S-boxes, 6 bits each → 4 bits)<br>
+        4. P-box permutation: 32 → 32 bits<br><br>
+        <strong>Key Schedule:</strong><br>
+        PC-1: 64 → 56 bits (remove parity) → split into C₀, D₀ (28 bits each)<br>
+        For each round: Left shift C and D by 1 or 2 positions → PC-2: 56 → 48 bits = Kᵢ<br><br>
+        <strong>Decryption:</strong> Same algorithm but apply subkeys in reverse (K₁₆, K₁₅, ..., K₁)<br><br>
+        [DRAW BOTH: (1) Overall structure diagram showing IP → 16 rounds → swap → IP⁻¹ AND (2) Single round showing E → XOR Kᵢ → S-boxes → P-box → XOR L]
+      </div></div>
+    </div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain the single round of the DES algorithm with a neat block diagram. What is the purpose of S-boxes in DES?</div>
+      <div class="pyq-meta"><span>2023-Aug Part B Q2 · 4+4 = 8 marks ⭐⭐⭐</span><span class="topic-tag">DES S-boxes</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        [For the single round answer — use the content from the 2025 answer above]<br><br>
+        <strong>Purpose of S-boxes in DES:</strong><br><br>
+        S-boxes (Substitution Boxes) are the ONLY non-linear components in DES. They serve the following purposes:<br><br>
+        1. <strong>Confusion:</strong> S-boxes create a complex, non-linear relationship between the key and the ciphertext. Without non-linearity, DES would be vulnerable to linear cryptanalysis — an attacker could solve a system of linear equations to find the key.<br><br>
+        2. <strong>Non-linearity:</strong> Each S-box maps a 6-bit input to a 4-bit output in a non-linear fashion. This cannot be expressed as a simple XOR of input bits — the relationship is deliberately irregular.<br><br>
+        3. <strong>Data compression:</strong> S-boxes reduce 6-bit input to 4-bit output (reducing 48 bits back to 32 bits), which fits the Feistel structure.<br><br>
+        4. <strong>Security against differential cryptanalysis:</strong> The S-boxes in DES were carefully designed by IBM/NSA to resist differential cryptanalysis — they minimise the probability that a specific input difference leads to a predictable output difference.<br><br>
+        5. <strong>Key mixing amplification:</strong> S-boxes non-linearly mix the XOR'd key bits into the data, making it extremely difficult to work backwards from ciphertext to determine the key.
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SECTION 05: DES STRENGTH ══════ -->
+<section class="section" id="des-strength">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Strength and Weakness of DES</h2>
+    <span class="imp-pill badge badge-o">72%</span>
+  </div>
+  <div class="theory-block">
+    <h3>Strengths of DES</h3>
+    <ul>
+      <li><strong>Widely studied and tested:</strong> Used for 20+ years, no known algebraic attack has broken it — only brute force works.</li>
+      <li><strong>S-box design:</strong> The 8 non-linear S-boxes provide strong confusion; DES was designed to withstand differential cryptanalysis (which wasn't publicly known until 1990).</li>
+      <li><strong>Avalanche effect:</strong> Any 1-bit change in plaintext or key causes ~50% of output bits to change after full encryption.</li>
+      <li><strong>Implementation efficiency:</strong> Originally designed for efficient hardware implementation using the Feistel structure.</li>
+      <li><strong>Meets Shannon's criteria:</strong> Both confusion (S-boxes) and diffusion (P-boxes, expansion) are strongly achieved.</li>
+    </ul>
+    <h3>Weaknesses of DES</h3>
+    <ul>
+      <li><strong>Short key (56 bits):</strong> 2⁵⁶ ≈ 72 quadrillion key combinations — brute force in 22 hours with EFF's DES Cracker (1999). Unacceptable today.</li>
+      <li><strong>Weak keys:</strong> 4 "weak keys" exist where K₁=K₂=...=K₁₆ (encryption = decryption). Also 6 pairs of "semi-weak keys."</li>
+      <li><strong>Complementarity property:</strong> If C = E(K, P), then complement(C) = E(complement(K), complement(P)). This halves the brute-force effort from 2⁵⁶ to 2⁵⁵.</li>
+      <li><strong>64-bit block size:</strong> Small block size means birthday attack becomes practical for long messages (birthday bound at 2³² blocks ≈ 32 GB — short by modern standards).</li>
+      <li><strong>S-box controversy:</strong> IBM/NSA modified the original S-boxes without full disclosure — raised concerns about possible trapdoors (though none have been found).</li>
+    </ul>
+  </div>
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — DES Strength</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Write any two strengths of DES algorithm.</div>
+      <div class="pyq-meta"><span>2023-Jul Part A Q4 · 2 marks ⭐</span><span class="topic-tag">DES Strength</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        <strong>Two strengths of DES:</strong><br><br>
+        1. <strong>Strong S-box design:</strong> The 8 S-boxes provide non-linear substitution (confusion), making DES resistant to linear and differential cryptanalysis. Despite being designed in 1977, no algebraic attack has broken DES — only brute force works.<br><br>
+        2. <strong>Strong avalanche effect:</strong> A change of just 1 bit in plaintext or key causes approximately 32 of 64 ciphertext bits to change. This makes DES very sensitive to input changes and resistant to statistical pattern analysis.
+      </div></div>
+    </div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. How does key size strengthen DES algorithm?</div>
+      <div class="pyq-meta"><span>2023-24 (61N0403) Part B Q4 · 4 marks ⭐⭐</span><span class="topic-tag">DES Key Size</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        <strong>Key Size and DES Security:</strong><br><br>
+        DES uses a 56-bit effective key. The number of possible keys = 2⁵⁶ ≈ 72 × 10¹⁵ (72 quadrillion) combinations.<br><br>
+        <strong>How larger key size strengthens security:</strong><br><br>
+        1. <strong>Brute force resistance:</strong> For an attacker trying keys randomly, larger key space = exponentially more time required. DES with 56 bits took EFF's dedicated machine 22 hours (1999). With 128-bit key (AES), brute force would take longer than the age of the universe with all computers combined.<br><br>
+        2. <strong>Rule of thumb:</strong> Each additional bit DOUBLES the key space. 57 bits = 2× harder than 56. 128 bits = 2⁷² times harder than 56 bits.<br><br>
+        3. <strong>Multiple encryption (Triple DES):</strong> To extend DES, apply it 3 times with 2 or 3 keys → effective key length of 112 or 168 bits. Exponentially more difficult to brute-force.<br><br>
+        4. <strong>Current recommendation:</strong> Keys should be at least 128 bits for symmetric encryption. AES provides 128/192/256 bit keys — DES's 56-bit key is now considered insecure for any serious application.
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SECTION 06: TRIPLE DES ══════ -->
+<section class="section" id="triple-des">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Multiple Encryption &amp; Triple DES (3DES)</h2>
+    <span class="imp-pill badge badge-o">68%</span>
+  </div>
+  <div class="theory-block">
+    <h3>Why Multiple Encryption?</h3>
+    <p>Single DES is broken (56-bit key = 2⁵⁶ brute force, cracked in hours). Rather than redesigning from scratch, <span class="hl-o">multiple encryption</span> applies DES multiple times with different keys to increase security. The result is Triple DES (3DES), which extended DES's life until AES was standardised in 2001.</p>
+    <div class="layman">If one lock is not enough, add two more. Triple DES is like locking a suitcase with three combination locks in sequence. Even if someone can crack one lock, they face two more — making it 2¹¹² times harder than one.</div>
+    <div class="formula-box">
+      <span class="label">Triple DES (3DES) — Two Variants</span>
+      <div class="formula">3DES with 3 keys (168-bit key):  C = E(K₃, D(K₂, E(K₁, P)))</div>
+      <div class="formula">3DES with 2 keys (112-bit key):  C = E(K₁, D(K₂, E(K₁, P)))  [K₁=K₃]</div>
+      <div class="formula">Decryption (3 keys):  P = D(K₁, E(K₂, D(K₃, C)))</div>
+      <div class="note">Pattern: Encrypt-Decrypt-Encrypt (EDE). Backward compatibility: if K₁=K₂=K₃, it reduces to single DES.</div>
+      <div class="note">Why EDE not EEE? EDE allows backward compatibility with single DES when K₁=K₂=K₃</div>
+    </div>
+    <h3>Meet-in-the-Middle Attack (Why Double DES is Insecure)</h3>
+    <p>You might think applying DES twice (Double DES) with two keys gives 2⁵⁶ × 2⁵⁶ = 2¹¹² security. Wrong! The <span class="hl-r">meet-in-the-middle attack</span> breaks Double DES in 2⁵⁷ operations instead of 2¹¹².</p>
+    <div class="formula-box">
+      <span class="label">Meet-in-the-Middle Attack</span>
+      <div class="formula">C = E(K₂, E(K₁, P))  →  X = E(K₁, P) = D(K₂, C)</div>
+      <div class="formula">Attack: Encrypt P with all 2⁵⁶ values of K₁ → store all X values in table</div>
+      <div class="formula">        Decrypt C with all 2⁵⁶ values of K₂ → compare with table</div>
+      <div class="formula">Complexity: 2⁵⁶ + 2⁵⁶ = 2⁵⁷ ← much less than 2¹¹²!</div>
+      <div class="note">This attack works "in the middle" — finding X that matches from both sides simultaneously</div>
+    </div>
+    <table class="comp-table">
+      <tr><th>Scheme</th><th>Keys Used</th><th>Effective Key Bits</th><th>Security</th><th>Status</th></tr>
+      <tr><td>Single DES</td><td>1 key (56 bits)</td><td>56</td><td>Brute forceable (hours)</td><td>❌ Broken</td></tr>
+      <tr><td>Double DES</td><td>2 keys (112 bits)</td><td>57 (due to MITM)</td><td>Not much better than single</td><td>❌ Not used</td></tr>
+      <tr><td>3DES (2 keys)</td><td>K₁, K₂ (112 bits)</td><td>112</td><td>Resistant to brute force</td><td>⚠️ Legacy use</td></tr>
+      <tr><td>3DES (3 keys)</td><td>K₁, K₂, K₃ (168 bits)</td><td>168</td><td>Strong but slow</td><td>⚠️ Legacy use</td></tr>
+      <tr><td>AES-128</td><td>1 key (128 bits)</td><td>128</td><td>Extremely strong + fast</td><td>✅ Current standard</td></tr>
+    </table>
+  </div>
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — Triple DES</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Write advantages of multiple encryption and triple DES.</div>
+      <div class="pyq-meta"><span>2024 Part A Q4 · 2 marks ⭐⭐</span><span class="topic-tag">Triple DES</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        <strong>Advantages of Multiple Encryption / Triple DES:</strong><br><br>
+        1. <strong>Increased key size:</strong> 3DES with 2 keys = 112-bit effective key; with 3 keys = 168-bit key. Exponentially more resistant to brute-force than single DES (56 bits).<br><br>
+        2. <strong>Backward compatibility:</strong> If K₁=K₂=K₃ in 3DES, it reduces to single DES — making it deployable in systems designed for DES.<br><br>
+        3. <strong>No need for new algorithm design:</strong> Reuses well-studied, trusted DES hardware and software — lower deployment cost.<br><br>
+        4. <strong>Resistance to meet-in-the-middle attack:</strong> Unlike Double DES, Triple DES (EDE structure with 2 or 3 keys) is not practically vulnerable to meet-in-the-middle attacks at reasonable cost.<br><br>
+        5. <strong>Proven security:</strong> Three rounds of DES with different keys inherits DES's avalanche effect and confusion/diffusion properties multiplicatively.
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SECTION 07: AES ══════ -->
+<section class="section" id="aes">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">AES — Advanced Encryption Standard</h2>
+    <span class="imp-pill badge badge-r">🔥 90%</span>
+  </div>
+  <div class="pred-banner">
+    <span class="pb-icon">🔮</span>
+    <div class="pb-text"><strong>2026 Prediction:</strong> AES structure appeared in Part C in 2023-Jul and 2023-24 (61N0403). AES key expansion appeared in Part B in 2024 and 2025 — two consecutive years. Expect AES key expansion in Part B Q2 (CERTAIN) and possibly AES structure in Part C Q4 (HIGH). Know both the overall structure AND the key expansion SubWord/RotWord steps.</div>
+  </div>
+  <div class="theory-block">
+    <h3 class="cyan">AES — Introduction</h3>
+    <p><span class="hl">AES (Advanced Encryption Standard)</span> was selected by NIST in 2001 to replace DES. Based on the Rijndael cipher designed by Joan Daemen and Vincent Rijmen. AES is <strong>NOT a Feistel cipher</strong> — it uses a <strong>Substitution-Permutation Network (SPN)</strong> where all bits of the block are transformed in every round (unlike DES where only half the block changes per round).</p>
+    <div class="layman">AES is the modern, ultra-secure replacement for DES. While DES uses a 56-bit key and 16 rounds in a half-block Feistel structure, AES uses 128/192/256-bit keys and operates on the ENTIRE 128-bit block in every round. Think of DES as a tumbler lock from the 1970s; AES is a modern bank vault.</div>
+    <div class="formula-box">
+      <span class="label">AES Key Parameters</span>
+      <div class="formula">Block size:    128 bits (16 bytes) — ALWAYS, regardless of key size</div>
+      <div class="formula">Key size:      128 bits (AES-128) | 192 bits (AES-192) | 256 bits (AES-256)</div>
+      <div class="formula">Rounds:        10 (AES-128) | 12 (AES-192) | 14 (AES-256)</div>
+      <div class="formula">State:         4×4 matrix of bytes (the 128-bit block arranged in rows)</div>
+      <div class="note">Mnemonic: 128→10 rounds | 192→12 rounds | 256→14 rounds | Add 2 rounds per extra 64-bit key segment</div>
+    </div>
+    <div class="tip-box connect">
+      <div class="tip-icon">🔗</div>
+      <div class="tip-content">
+        <div class="tip-title">DES → AES: Key Differences to Remember</div>
+        <p>DES: Feistel structure (half block per round) | 64-bit block | 56-bit key | 16 rounds | S-boxes: non-linear (6→4 bits) | Designed in secret by IBM/NSA.<br>
+        AES: SPN structure (entire block per round) | 128-bit block | 128/192/256-bit key | 10/12/14 rounds | SubBytes: non-linear (8→8 bits) | Public competition and design.</p>
+      </div>
+    </div>
+  </div>
+  <div class="theory-block">
+    <h3 class="cyan">AES State — The 4×4 Byte Matrix</h3>
+    <p>AES operates on a <span class="hl">State</span> — a 4×4 array of bytes (16 bytes = 128 bits). The plaintext block is loaded into the state column by column, and all transformations operate on this state.</p>
+    <div class="formula-box">
+      <span class="label">AES State Structure (128-bit block = 4×4 bytes)</span>
+      <div class="formula">State = | a₀₀  a₀₁  a₀₂  a₀₃ |</div>
+      <div class="formula">        | a₁₀  a₁₁  a₁₂  a₁₃ |</div>
+      <div class="formula">        | a₂₀  a₂₁  a₂₂  a₂₃ |</div>
+      <div class="formula">        | a₃₀  a₃₁  a₃₂  a₃₃ |</div>
+      <div class="note">Each aᵣc = one byte (8 bits) | Input bytes loaded column by column: a₀₀,a₁₀,a₂₀,a₃₀ then a₀₁,a₁₁...</div>
+    </div>
+    <h3>AES — Overall Structure (One Round at a Time)</h3>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><div class="step-text"><strong>Initial Round Key Addition:</strong> XOR the 128-bit plaintext with the first round key (round 0 key). This ensures the output depends on the key from the very first step. AES always starts with a key XOR before any rounds.</div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>Rounds 1 to N-1 (e.g., rounds 1–9 for AES-128):</strong> Each full round applies four transformations in sequence: (1) <strong>SubBytes</strong>, (2) <strong>ShiftRows</strong>, (3) <strong>MixColumns</strong>, (4) <strong>AddRoundKey</strong>. All four transformations applied in every round.</div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-text"><strong>Final Round (round N, e.g., round 10 for AES-128):</strong> Same as regular rounds but <strong>MixColumns is OMITTED</strong>. Final round: SubBytes → ShiftRows → AddRoundKey. Omitting MixColumns makes encryption and decryption symmetric.</div></div>
+    </div>
+    <div class="formula-box">
+      <span class="label">AES Round Structure Summary</span>
+      <div class="formula">Round 0:           AddRoundKey(State, RoundKey[0])</div>
+      <div class="formula">Rounds 1 to N-1:   SubBytes → ShiftRows → MixColumns → AddRoundKey</div>
+      <div class="formula">Final Round N:     SubBytes → ShiftRows → AddRoundKey  (NO MixColumns!)</div>
+      <div class="note">Why no MixColumns in final round? To make AES decryption identical in structure to encryption (just different subkeys + inverse operations)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SECTION 08: AES TRANSFORMS ══════ -->
+<section class="section" id="aes-transforms">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2 class="section-title">AES Transformation Functions</h2>
+    <span class="imp-pill badge badge-r">🔥 88%</span>
+  </div>
+  <div class="theory-block">
+    <h3 class="cyan">1. SubBytes — Non-linear Substitution (Confusion)</h3>
+    <p><span class="hl">SubBytes</span> is the non-linear substitution step. Each byte of the State is replaced by another byte according to a fixed <strong>AES S-box</strong> (a 16×16 lookup table). The AES S-box is constructed using the multiplicative inverse in GF(2⁸) followed by an affine transformation — this makes it non-linear and immune to linear attacks.</p>
+    <div class="layman">SubBytes is like translating each letter using a secret codebook. Every one of the 16 bytes gets swapped for a completely different byte using the AES codebook (S-box). This is the confusion step — it makes the relationship between key and data complex.</div>
+    <div class="formula-box">
+      <span class="label">SubBytes — How It Works</span>
+      <div class="formula">Each byte b in state: b' = S(b) = AES_SBOX[b]</div>
+      <div class="formula">AES S-box: 256-entry lookup table (16×16 matrix, values 0x00 to 0xFF)</div>
+      <div class="formula">S-box construction: b' = b⁻¹ in GF(2⁸) followed by affine transformation</div>
+      <div class="note">The S-box is the SAME for all bytes — one table handles all 16 bytes of the state</div>
+      <div class="note">Inverse S-box (InvSubBytes) exists for decryption</div>
+    </div>
+    <div class="tip-box trick">
+      <div class="tip-icon">💡</div>
+      <div class="tip-content">
+        <div class="tip-title">SubBytes vs DES S-boxes — Key Difference for Exam</div>
+        <p>DES has 8 DIFFERENT S-boxes (S₁ to S₈), each 6→4 bits. AES has ONE S-box (8→8 bits), same table for all bytes. DES S-boxes: designed empirically by IBM/NSA. AES S-box: mathematically designed using GF(2⁸) inverse — provably non-linear with known algebraic structure.</p>
+      </div>
+    </div>
+  </div>
+  <div class="theory-block">
+    <h3 class="cyan">2. ShiftRows — Cyclic Shift for Diffusion</h3>
+    <p><span class="hl">ShiftRows</span> cyclically shifts the bytes in each row of the State by different amounts. Row 0 is not shifted; row 1 shifts left by 1; row 2 shifts left by 2; row 3 shifts left by 3 byte positions.</p>
+    <div class="layman">ShiftRows is like shuffling rows of a grid — each row gets slid left by a different amount. Row 0 stays, row 1 slides one step, row 2 slides two steps, row 3 slides three steps. This mixes bytes from different columns, spreading the influence of each byte across the entire state (diffusion).</div>
+    <div class="formula-box">
+      <span class="label">ShiftRows — Before and After</span>
+      <div class="formula">Before:  | a₀₀  a₀₁  a₀₂  a₀₃ |   (Row 0: no shift)</div>
+      <div class="formula">         | a₁₀  a₁₁  a₁₂  a₁₃ |   (Row 1: shift left 1)</div>
+      <div class="formula">         | a₂₀  a₂₁  a₂₂  a₂₃ |   (Row 2: shift left 2)</div>
+      <div class="formula">         | a₃₀  a₃₁  a₃₂  a₃₃ |   (Row 3: shift left 3)</div>
+      <div class="formula">After:   | a₀₀  a₀₁  a₀₂  a₀₃ |</div>
+      <div class="formula">         | a₁₁  a₁₂  a₁₃  a₁₀ |</div>
+      <div class="formula">         | a₂₂  a₂₃  a₂₀  a₂₁ |</div>
+      <div class="formula">         | a₃₃  a₃₀  a₃₁  a₃₂ |</div>
+      <div class="note">Inverse (InvShiftRows): shift right instead of left. Purpose: after SubBytes, bytes from different columns are now mixed.</div>
+    </div>
+  </div>
+  <div class="theory-block">
+    <h3 class="cyan">3. MixColumns — Mixing Within Each Column (Diffusion)</h3>
+    <p><span class="hl">MixColumns</span> multiplies each column of the State by a fixed 4×4 matrix over GF(2⁸). This ensures that each output byte depends on all 4 input bytes of the column — maximum diffusion within each column.</p>
+    <div class="layman">MixColumns takes each column of the 4×4 matrix and mixes all 4 bytes in that column together. After MixColumns, every output byte of the column has been influenced by every input byte of that column — like blending colours in a column so each result colour contains traces of all original colours.</div>
+    <div class="formula-box">
+      <span class="label">MixColumns — Matrix Multiplication</span>
+      <div class="formula">For each column c: [s'₀c, s'₁c, s'₂c, s'₃c]ᵀ = M × [s₀c, s₁c, s₂c, s₃c]ᵀ</div>
+      <div class="formula">     | 2 3 1 1 |   | s₀c |</div>
+      <div class="formula">M =  | 1 2 3 1 | × | s₁c |  (in GF(2⁸))</div>
+      <div class="formula">     | 1 1 2 3 |   | s₂c |</div>
+      <div class="formula">     | 3 1 1 2 |   | s₃c |</div>
+      <div class="note">All arithmetic in GF(2⁸) — multiplication by 2 = left shift + conditional XOR (not regular multiplication)</div>
+      <div class="note">MixColumns is OMITTED in the final round — only SubBytes, ShiftRows, AddRoundKey remain</div>
+    </div>
+    <div class="tip-box trick">
+      <div class="tip-icon">⚡</div>
+      <div class="tip-content">
+        <div class="tip-title">MixColumns Memory Trick — "The 2311 Matrix"</div>
+        <p>MixColumns uses the matrix [2,3,1,1 / 1,2,3,1 / 1,1,2,3 / 3,1,1,2]. Notice each row is the same set {2,3,1,1} but shifted one position right. In GF(2⁸), multiply by 2 = xtime operation (left shift + conditional XOR with 0x1B). For an exam: write the matrix, state it operates in GF(2⁸), and say "each output byte depends on all 4 input bytes of the column."</p>
+      </div>
+    </div>
+  </div>
+  <div class="theory-block">
+    <h3 class="cyan">4. AddRoundKey — XOR with Round Key</h3>
+    <p><span class="hl">AddRoundKey</span> XORs the 128-bit State with the 128-bit round key for that round. The round key is derived from the original key using the key expansion algorithm. This is where the key enters the transformation — without the correct key, the other three transformations cannot be reversed properly.</p>
+    <div class="layman">AddRoundKey is the simplest transformation — just XOR the state with the round key byte by byte. But it's critical: this is the ONLY step where the actual key influences the encryption. Without the correct key, an attacker cannot undo the other transformations even if they know SubBytes, ShiftRows, and MixColumns algorithms.</div>
+    <div class="formula-box">
+      <span class="label">AddRoundKey</span>
+      <div class="formula">State'[r][c] = State[r][c] ⊕ RoundKey[r][c]   for each byte position</div>
+      <div class="formula">Equivalently: State' = State ⊕ RoundKey[round]</div>
+      <div class="note">AddRoundKey is its own inverse: applying it twice restores the original (XOR is self-inverse)</div>
+      <div class="note">Used at round 0 (before any round), and at the end of each round 1..N</div>
+    </div>
+    <h3>Summary — All 4 AES Transformations</h3>
+    <table class="comp-table">
+      <tr><th>Transformation</th><th>Input → Output</th><th>Purpose</th><th>Type</th></tr>
+      <tr><td><span class="hl-r">SubBytes</span></td><td>State byte → S-box lookup → new byte</td><td>Confusion — non-linear substitution</td><td>Non-linear (like DES S-boxes)</td></tr>
+      <tr><td><span class="hl-o">ShiftRows</span></td><td>Row i shifted left by i positions</td><td>Diffusion across columns</td><td>Linear permutation</td></tr>
+      <tr><td><span class="hl">MixColumns</span></td><td>Column × 4×4 matrix in GF(2⁸)</td><td>Diffusion within columns (max mixing)</td><td>Linear mixing</td></tr>
+      <tr><td><span class="hl-g">AddRoundKey</span></td><td>State XOR RoundKey[i]</td><td>Key introduction (without key, decryption impossible)</td><td>Linear (XOR)</td></tr>
+    </table>
+    <div class="tip-box validate">
+      <div class="tip-icon">✅</div>
+      <div class="tip-content">
+        <div class="tip-title">AES Transformations — Exam Validation Checklist</div>
+        <p>1. Final round has NO MixColumns — write this explicitly.<br>
+        2. AddRoundKey appears at round 0 AND at end of every round.<br>
+        3. SubBytes = confusion (non-linear), ShiftRows + MixColumns = diffusion (linear).<br>
+        4. MixColumns uses GF(2⁸) arithmetic — mention this.<br>
+        5. AES is NOT Feistel — entire block transforms each round (unlike DES half-block).</p>
+      </div>
+    </div>
+  </div>
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — AES Transformations</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain the general structure of AES algorithm with suitable diagrams.</div>
+      <div class="pyq-meta"><span>2023-Jul Part C Q1 · 10 marks ⭐⭐⭐</span><span class="topic-tag">AES Structure</span><span class="pred-tag">🔮 HIGH 2026 Part C Q4</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        <strong>AES — Introduction:</strong><br>
+        AES (Advanced Encryption Standard) was selected by NIST in 2001 to replace DES. It is based on the Rijndael cipher. Unlike DES (Feistel), AES is a Substitution-Permutation Network (SPN) that transforms the ENTIRE block in every round.<br><br>
+        <strong>Parameters:</strong><br>
+        Block: 128 bits (4×4 byte state) | Key: 128/192/256 bits | Rounds: 10/12/14<br><br>
+        <strong>State:</strong> The 128-bit block is arranged as a 4×4 matrix of bytes.<br><br>
+        <strong>Overall Structure:</strong><br>
+        Round 0: AddRoundKey(State, RoundKey[0]) ← initial key whitening<br>
+        Rounds 1..9: SubBytes → ShiftRows → MixColumns → AddRoundKey<br>
+        Round 10 (final): SubBytes → ShiftRows → AddRoundKey (NO MixColumns)<br><br>
+        <strong>Four Transformations:</strong><br><br>
+        1. <strong>SubBytes:</strong> Each byte replaced using AES S-box (256-entry lookup table based on GF(2⁸) inverse). Provides NON-LINEAR confusion. Same S-box for all 16 bytes.<br><br>
+        2. <strong>ShiftRows:</strong> Row 0 unchanged; Row 1 shifted left 1; Row 2 shifted left 2; Row 3 shifted left 3 byte positions. Provides diffusion across columns.<br><br>
+        3. <strong>MixColumns:</strong> Each column multiplied by fixed matrix [2,3,1,1 / 1,2,3,1 / 1,1,2,3 / 3,1,1,2] in GF(2⁸). Every output byte depends on all 4 input bytes — maximum linear diffusion.<br><br>
+        4. <strong>AddRoundKey:</strong> State XOR'd with 128-bit round key. Only step where key participates. Without correct key, decryption is impossible.<br><br>
+        <strong>Why AES is better than DES:</strong><br>
+        128/192/256-bit key (vs 56-bit) | 128-bit block (vs 64-bit) | Full-block transformation (vs half-block Feistel) | Designed publicly with rigorous mathematical foundation<br><br>
+        [DRAW: Round structure diagram showing the 4 transformations in sequence, and the AES overall structure with rounds 0-10]
+      </div></div>
+    </div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain AES encryption process with block diagram.</div>
+      <div class="pyq-meta"><span>2023-24 (61N0403) Part C Q2 · 10 marks ⭐⭐⭐</span><span class="topic-tag">AES Structure</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        [Use the same structure as the 2023-Jul answer above. For full marks, draw the block diagram showing the 4×4 state matrix transforming through SubBytes → ShiftRows → MixColumns → AddRoundKey for 9 rounds, then SubBytes → ShiftRows → AddRoundKey for the final round.]<br><br>
+        Additionally emphasize: The State is the central data structure. All four transformations operate on this 4×4 byte matrix. The key schedule generates a different round key for each of the 11 (for AES-128) AddRoundKey operations (round 0 + 10 rounds).
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SECTION 09: AES KEY EXPANSION ══════ -->
+<section class="section" id="aes-key">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2 class="section-title">AES Key Expansion Algorithm</h2>
+    <span class="imp-pill badge badge-r">🔥 90% — 2 Consecutive Years Part B</span>
+  </div>
+  <div class="pred-banner">
+    <span class="pb-icon">🔮</span>
+    <div class="pb-text"><strong>2026 Prediction — CERTAIN for Part B:</strong> AES key expansion appeared in Part B in 2024 (Q2) and 2025 (Q2) — two consecutive years with identical question phrasing "Explain AES key expansion algorithm with suitable diagram." This is now a permanent Part B fixture. Know the SubWord, RotWord, and RCON operations cold.</div>
+  </div>
+  <div class="theory-block">
+    <h3>Why Key Expansion?</h3>
+    <p>AES needs 11 round keys (for AES-128) — one for the initial AddRoundKey and one for each of the 10 rounds. Each round key is 128 bits (16 bytes). The original key is only 128 bits. The <span class="hl">Key Expansion</span> algorithm expands 128 bits into 11×128 = 1408 bits of round key material.</p>
+    <div class="layman">You have one master key (128 bits = 16 bytes). But AES needs 11 round keys. The key expansion algorithm is like a copy machine that uses your master key to generate 11 different but mathematically related sub-keys. Any change in the master key completely changes all 11 sub-keys.</div>
+    <div class="formula-box">
+      <span class="label">Key Expansion — Data Structure</span>
+      <div class="formula">W[i] = 32-bit word (4 bytes)</div>
+      <div class="formula">For AES-128: 44 words W[0..43] generated from 4 words W[0..3] (the original key)</div>
+      <div class="formula">Round key for round r = W[4r], W[4r+1], W[4r+2], W[4r+3]</div>
+      <div class="note">Original 16-byte key → W[0]‖W[1]‖W[2]‖W[3] (four 32-bit words)</div>
+    </div>
+    <h3>Key Expansion — The Algorithm ⭐⭐⭐</h3>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><div class="step-text"><strong>Initialise:</strong> The first 4 words W[0..3] are directly from the original 128-bit key. W[0] = first 4 bytes of key, W[1] = next 4 bytes, etc.</div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-text"><strong>For i = 4 to 43 (for AES-128):</strong><br>
+        If i is NOT a multiple of 4 → W[i] = W[i-1] ⊕ W[i-4] (simple XOR with previous word and word 4 back)<br>
+        If i IS a multiple of 4 → W[i] = W[i-4] ⊕ SubWord(RotWord(W[i-1])) ⊕ Rcon[i/4]</div></div>
+    </div>
+    <div class="formula-box">
+      <span class="label">Three Helper Operations Used in Key Expansion</span>
+      <div class="formula">RotWord(a₀a₁a₂a₃): Rotate word left by 1 byte → returns (a₁a₂a₃a₀)</div>
+      <div class="formula">  Example: RotWord(09CF4F3C) = CF4F3C09</div>
+      <div class="formula"></div>
+      <div class="formula">SubWord(a₀a₁a₂a₃): Apply AES S-box to each of the 4 bytes individually</div>
+      <div class="formula">  Example: SubWord(CF4F3C09) → apply S-box to each byte separately</div>
+      <div class="formula"></div>
+      <div class="formula">Rcon[i]: Round constant for round i = (RC[i], 00, 00, 00)</div>
+      <div class="formula">  RC[1]=01, RC[2]=02, RC[3]=04, RC[4]=08, RC[5]=10, RC[6]=20, RC[7]=40...</div>
+      <div class="formula">  Each RC[i] = 2×RC[i-1] in GF(2⁸) (multiply by x in GF(2⁸))</div>
+      <div class="note">Rcon values in hex: 01,02,04,08,10,20,40,80,1B,36 for rounds 1–10</div>
+    </div>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 580 260" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+        <text x="10" y="18" fill="#22d3ee" font-family="JetBrains Mono" font-size="11" font-weight="bold">AES Key Expansion — Generating W[i] for Multiple of 4 Case</text>
+        <!-- W[i-4] -->
+        <rect x="10" y="40" width="90" height="32" rx="4" fill="#0c1e28" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="55" y="60" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono" font-size="9">W[i−4]</text>
+        <!-- W[i-1] path -->
+        <rect x="250" y="40" width="90" height="32" rx="4" fill="#0c1e28" stroke="#f97316" stroke-width="1.5"/>
+        <text x="295" y="60" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="9">W[i−1]</text>
+        <!-- RotWord -->
+        <line x1="295" y1="72" x2="295" y2="96" stroke="#f97316" stroke-width="1.5"/>
+        <polygon points="291,93 295,103 299,93" fill="#f97316"/>
+        <rect x="235" y="103" width="120" height="30" rx="4" fill="#102534" stroke="#22d3ee" stroke-width="2"/>
+        <text x="295" y="122" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="9">RotWord (shift left)</text>
+        <!-- SubWord -->
+        <line x1="295" y1="133" x2="295" y2="152" stroke="#22d3ee" stroke-width="1.5"/>
+        <polygon points="291,149 295,159 299,149" fill="#22d3ee"/>
+        <rect x="235" y="159" width="120" height="30" rx="4" fill="#102534" stroke="#22d3ee" stroke-width="2"/>
+        <text x="295" y="178" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="9">SubWord (AES S-box)</text>
+        <!-- Rcon -->
+        <rect x="440" y="159" width="120" height="30" rx="4" fill="#152432" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="500" y="178" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono" font-size="9">⊕ Rcon[i/4]</text>
+        <line x1="440" y1="174" x2="355" y2="174" stroke="#f59e0b" stroke-width="1.5"/>
+        <!-- XOR 1: SubWord result + Rcon -->
+        <circle cx="295" cy="210" r="14" fill="#0f1c26" stroke="#ef4444" stroke-width="2"/>
+        <text x="295" y="215" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="14">⊕</text>
+        <line x1="295" y1="189" x2="295" y2="196" stroke="#22d3ee" stroke-width="1.5"/>
+        <!-- XOR 2: result + W[i-4] -->
+        <circle cx="130" cy="210" r="14" fill="#0f1c26" stroke="#ef4444" stroke-width="2"/>
+        <text x="130" y="215" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="14">⊕</text>
+        <line x1="55" y1="72" x2="55" y2="210" stroke="#a78bfa" stroke-width="1.5"/>
+        <line x1="55" y1="210" x2="116" y2="210" stroke="#a78bfa" stroke-width="1.5"/>
+        <line x1="295" y1="210" x2="144" y2="210" stroke="#ef4444" stroke-width="1.5"/>
+        <!-- W[i] output -->
+        <line x1="130" y1="224" x2="130" y2="248" stroke="#10b981" stroke-width="2"/>
+        <polygon points="126,245 130,255 134,245" fill="#10b981"/>
+        <rect x="75" y="255" width="110" height="30" rx="4" fill="#0c1e28" stroke="#10b981" stroke-width="2.5"/>
+        <text x="130" y="274" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">W[i] = new word</text>
+        <!-- Simple case label -->
+        <rect x="10" y="159" width="200" height="55" rx="5" fill="#0c1e28" stroke="#6090a8" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="110" y="177" text-anchor="middle" fill="#6090a8" font-family="JetBrains Mono" font-size="9">Simple case (i NOT mult of 4):</text>
+        <text x="110" y="192" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono" font-size="9">W[i] = W[i−1] ⊕ W[i−4]</text>
+        <text x="110" y="207" text-anchor="middle" fill="#6090a8" font-family="JetBrains Mono" font-size="9">(just XOR, no Sub/Rot/Rcon)</text>
+      </svg>
+      <div class="diagram-cap">Fig 9.1 — AES Key Expansion: When i is multiple of 4, apply RotWord + SubWord + Rcon; otherwise just W[i-1] ⊕ W[i-4]</div>
+    </div>
+    <div class="tip-box trick">
+      <div class="tip-icon">⚡</div>
+      <div class="tip-content">
+        <div class="tip-title">AES Key Expansion Memory Trick — "RSR for multiples of 4"</div>
+        <p><strong>R</strong>otWord → <strong>S</strong>ubWord → <strong>R</strong>con XOR → then XOR with W[i-4] = result W[i].<br>
+        For non-multiples of 4: just W[i] = W[i-1] ⊕ W[i-4].<br>
+        Key facts: RotWord = 1-byte left rotation | SubWord = AES S-box on all 4 bytes | Rcon[1]=01, doubles each time in GF(2⁸).<br>
+        Rcon values 1–10: 01, 02, 04, 08, 10, 20, 40, 80, 1B, 36.</p>
+      </div>
+    </div>
+  </div>
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — AES Key Expansion</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain AES key expansion algorithm with suitable diagram.</div>
+      <div class="pyq-meta"><span>2024 Part B Q2 · 2025 Part B Q2 · 4 marks ⭐⭐⭐</span><span class="topic-tag">AES Key Expansion</span><span class="pred-tag">🔮 CERTAIN 2026 Part B Q2</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        <strong>AES Key Expansion — Introduction:</strong><br>
+        AES-128 requires 11 round keys (rounds 0–10), each 128 bits = 1408 bits total. The key expansion algorithm expands the 128-bit original key into 44 words W[0..43] of 32 bits each.<br><br>
+        <strong>Initialisation:</strong><br>
+        W[0], W[1], W[2], W[3] = original 128-bit key split into four 32-bit words.<br><br>
+        <strong>For i = 4 to 43:</strong><br>
+        Case 1: i is NOT a multiple of 4:<br>
+        &nbsp;&nbsp;W[i] = W[i-1] ⊕ W[i-4]<br>
+        &nbsp;&nbsp;(simple XOR — no extra operations)<br><br>
+        Case 2: i IS a multiple of 4 (i = 4, 8, 12, 16, 20, 24, 28, 32, 36, 40):<br>
+        &nbsp;&nbsp;temp = RotWord(W[i-1])          ← rotate W[i-1] left by 1 byte<br>
+        &nbsp;&nbsp;temp = SubWord(temp)             ← apply AES S-box to each byte<br>
+        &nbsp;&nbsp;temp = temp ⊕ Rcon[i/4]         ← XOR with round constant<br>
+        &nbsp;&nbsp;W[i] = W[i-4] ⊕ temp            ← XOR with 4-words-back<br><br>
+        <strong>Three Helper Operations:</strong><br>
+        • RotWord: [a₀,a₁,a₂,a₃] → [a₁,a₂,a₃,a₀] (1-byte left rotation)<br>
+        • SubWord: apply AES S-box to each of 4 bytes independently<br>
+        • Rcon[j]: round constant = (RC[j], 00, 00, 00) where RC[1]=01, RC[2]=02, RC[3]=04, RC[4]=08, RC[5]=10, RC[6]=20, RC[7]=40, RC[8]=80, RC[9]=1B, RC[10]=36<br><br>
+        <strong>Round keys:</strong><br>
+        Round 0 key = W[0]‖W[1]‖W[2]‖W[3]<br>
+        Round 1 key = W[4]‖W[5]‖W[6]‖W[7]<br>
+        ...Round r key = W[4r]‖W[4r+1]‖W[4r+2]‖W[4r+3]<br><br>
+        [DRAW the key expansion diagram showing W[i-4], W[i-1], and the RotWord → SubWord → Rcon XOR path leading to W[i]]
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ SECTION 10: CIPHER MODES ══════ -->
+<section class="section" id="modes">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <h2 class="section-title">Block Cipher Modes of Operation</h2>
+    <span class="imp-pill badge badge-r">🔥 85% — Part B &amp; C</span>
+  </div>
+  <div class="pred-banner">
+    <span class="pb-icon">🔮</span>
+    <div class="pb-text"><strong>2026 Prediction — HIGH confidence:</strong> Cipher modes appeared in Part C 2023-Jul Q2 (all modes), Part C 2024 Q2 (ECB+CBC), and Part B 2025 Q6 (ECB). Expect Part B Q6 or Part C on at least ECB and CBC. CBC is the most important mode — always draw the chaining diagram. Know ECB's weakness (same plaintext = same ciphertext) as it always earns comparison marks.</div>
+  </div>
+  <div class="theory-block">
+    <h3>Why Modes of Operation?</h3>
+    <p>A block cipher like AES encrypts exactly 128 bits at a time. Real messages are rarely exactly 128 bits — they can be megabytes long. <span class="hl">Modes of operation</span> define how to apply a block cipher repeatedly to encrypt messages of arbitrary length, while also adding properties like IV (Initialization Vector) and feedback to prevent identical blocks from producing identical ciphertext.</p>
+    <div class="layman">Modes of operation answer: "How do we use a cipher that works on 16-byte chunks to encrypt a 1MB file?" Different modes have different trade-offs — some are simple (ECB) but weak, others add chaining (CBC) for security, and some create stream-cipher-like behaviour (CTR, CFB, OFB) that can encrypt any length without padding.</div>
+  </div>
+  <div class="theory-block">
+    <h3>1. ECB — Electronic Code Book Mode (Simplest, Weakest)</h3>
+    <div class="formula-box">
+      <span class="label">ECB Mode</span>
+      <div class="formula">Encryption: Cᵢ = E(K, Pᵢ)    ← each block encrypted independently</div>
+      <div class="formula">Decryption: Pᵢ = D(K, Cᵢ)    ← each block decrypted independently</div>
+      <div class="note">CRITICAL WEAKNESS: Same plaintext block → same ciphertext block. Patterns in plaintext show up in ciphertext!</div>
+      <div class="note">Famous example: ECB-encrypted bitmap image — the picture's shape remains visible (like the Linux penguin outline)</div>
+    </div>
+    <table class="comp-table">
+      <tr><th>Property</th><th>ECB</th></tr>
+      <tr><td>Parallel encryption</td><td>✅ Yes — blocks independent</td></tr>
+      <tr><td>Random access</td><td>✅ Yes — decrypt any block without others</td></tr>
+      <tr><td>Error propagation</td><td>✅ Isolated — one corrupt block = one corrupt block</td></tr>
+      <tr><td>Patterns revealed</td><td>❌ YES — identical input blocks → identical output</td></tr>
+      <tr><td>IV needed</td><td>❌ No — but this is a weakness</td></tr>
+      <tr><td>Use case</td><td>Key encryption, rarely for data (NOT recommended)</td></tr>
+    </table>
+    <div class="tip-box warning">
+      <div class="tip-icon">⚠️</div>
+      <div class="tip-content">
+        <div class="tip-title">ECB Weakness — Always Write in Exam</div>
+        <p>"The fundamental weakness of ECB is that identical plaintext blocks produce identical ciphertext blocks. An attacker can identify patterns without decrypting — for example, the ECB-encrypted Linux Tux penguin image still shows the shape of the penguin. ECB should NEVER be used for encrypting large data or data with repeated patterns."</p>
+      </div>
+    </div>
+  </div>
+  <div class="theory-block">
+    <h3>2. CBC — Cipher Block Chaining Mode (Most Used, Recommended)</h3>
+    <p>CBC fixes ECB's weakness by XOR-ing each plaintext block with the previous ciphertext block before encryption. This means identical plaintext blocks produce different ciphertext blocks (because the previous ciphertext is different each time).</p>
+    <div class="formula-box">
+      <span class="label">CBC Mode — Formulas</span>
+      <div class="formula">Encryption: Cᵢ = E(K, Pᵢ ⊕ Cᵢ₋₁)     C₀ = IV (Initialization Vector)</div>
+      <div class="formula">Decryption: Pᵢ = D(K, Cᵢ) ⊕ Cᵢ₋₁     C₀ = IV (must be same as encryption)</div>
+      <div class="note">IV: Random, publicly shared, different for each message — prevents two identical messages from having identical ciphertext</div>
+    </div>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 580 200" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+        <text x="10" y="18" fill="#22d3ee" font-family="JetBrains Mono" font-size="11" font-weight="bold">CBC Mode — Encryption (Draw this for cipher mode questions)</text>
+        <!-- IV -->
+        <rect x="15" y="35" width="80" height="30" rx="4" fill="#0c1e28" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="55" y="55" text-anchor="middle" fill="#f59e0b" font-family="JetBrains Mono" font-size="9">IV (C₀)</text>
+        <!-- Block 1 -->
+        <rect x="15" y="100" width="80" height="30" rx="4" fill="#0c1e28" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="55" y="120" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono" font-size="9">P₁ (block 1)</text>
+        <!-- XOR 1 -->
+        <circle cx="120" cy="65" r="14" fill="#0f1c26" stroke="#ef4444" stroke-width="2"/>
+        <text x="120" y="70" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="14">⊕</text>
+        <line x1="95" y1="50" x2="106" y2="65" stroke="#f59e0b" stroke-width="1.5"/>
+        <line x1="55" y1="130" x2="55" y2="65" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <line x1="55" y1="65" x2="106" y2="65" stroke="#a78bfa" stroke-width="1.5"/>
+        <!-- E box 1 -->
+        <polygon points="134,65 144,60 144,70" fill="#22d3ee"/>
+        <rect x="147" y="50" width="70" height="30" rx="4" fill="#102534" stroke="#22d3ee" stroke-width="2"/>
+        <text x="182" y="69" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="9">E(K)</text>
+        <!-- C1 -->
+        <polygon points="217,65 227,60 227,70" fill="#22d3ee"/>
+        <rect x="230" y="50" width="80" height="30" rx="4" fill="#0c1e28" stroke="#10b981" stroke-width="2"/>
+        <text x="270" y="69" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">C₁ (output)</text>
+        <!-- C1 feedback up and right -->
+        <line x1="310" y1="65" x2="360" y2="65" stroke="#10b981" stroke-width="2"/>
+        <!-- Block 2 -->
+        <rect x="225" y="100" width="80" height="30" rx="4" fill="#0c1e28" stroke="#a78bfa" stroke-width="1.5"/>
+        <text x="265" y="120" text-anchor="middle" fill="#a78bfa" font-family="JetBrains Mono" font-size="9">P₂ (block 2)</text>
+        <!-- XOR 2 -->
+        <circle cx="360" cy="65" r="14" fill="#0f1c26" stroke="#ef4444" stroke-width="2"/>
+        <text x="360" y="70" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="14">⊕</text>
+        <line x1="265" y1="130" x2="265" y2="65" stroke="#a78bfa" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <line x1="265" y1="65" x2="346" y2="65" stroke="#a78bfa" stroke-width="1.5"/>
+        <!-- E box 2 -->
+        <polygon points="374,65 384,60 384,70" fill="#22d3ee"/>
+        <rect x="387" y="50" width="70" height="30" rx="4" fill="#102534" stroke="#22d3ee" stroke-width="2"/>
+        <text x="422" y="69" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="9">E(K)</text>
+        <!-- C2 -->
+        <polygon points="457,65 467,60 467,70" fill="#22d3ee"/>
+        <rect x="470" y="50" width="80" height="30" rx="4" fill="#0c1e28" stroke="#10b981" stroke-width="2"/>
+        <text x="510" y="69" text-anchor="middle" fill="#10b981" font-family="JetBrains Mono" font-size="9">C₂ (output)</text>
+        <!-- Labels -->
+        <text x="10" y="170" fill="#6090a8" font-family="JetBrains Mono" font-size="9">Cᵢ = E(K, Pᵢ ⊕ Cᵢ₋₁)   where C₀ = IV</text>
+        <text x="10" y="185" fill="#6090a8" font-family="JetBrains Mono" font-size="9">KEY: Each block's ciphertext depends on ALL previous ciphertext blocks → no pattern leakage</text>
+      </svg>
+      <div class="diagram-cap">Fig 10.1 — CBC Encryption: Each plaintext XOR'd with previous ciphertext before encryption. Identical plaintext blocks → different ciphertext.</div>
+    </div>
+    <table class="comp-table">
+      <tr><th>Property</th><th>CBC</th></tr>
+      <tr><td>Parallel encryption</td><td>❌ No — must have Cᵢ₋₁ first</td></tr>
+      <tr><td>Parallel decryption</td><td>✅ Yes — Cᵢ and Cᵢ₋₁ both available</td></tr>
+      <tr><td>Patterns revealed</td><td>✅ No — chaining prevents same plaintext → same ciphertext</td></tr>
+      <tr><td>Error propagation</td><td>Error in Cᵢ corrupts Pᵢ AND Pᵢ₊₁ (two blocks)</td></tr>
+      <tr><td>IV required</td><td>✅ Yes — must be random and unique per message</td></tr>
+      <tr><td>Use case</td><td>File encryption, TLS record encryption, disk encryption</td></tr>
+    </table>
+  </div>
+  <div class="theory-block">
+    <h3>3. CFB — Cipher Feedback Mode (Stream-like)</h3>
+    <p>CFB turns a block cipher into a self-synchronising stream cipher. Instead of encrypting the plaintext directly, it encrypts the previous ciphertext block and XORs the result with the plaintext.</p>
+    <div class="formula-box">
+      <span class="label">CFB Mode — Formulas</span>
+      <div class="formula">Encryption: Cᵢ = Pᵢ ⊕ E(K, Cᵢ₋₁)      C₀ = IV</div>
+      <div class="formula">Decryption: Pᵢ = Cᵢ ⊕ E(K, Cᵢ₋₁)      (Note: ENCRYPT on decryption side too!)</div>
+      <div class="note">Key difference from CBC: In CFB, the block cipher E(K) encrypts the CIPHERTEXT (not plaintext) to generate a keystream</div>
+      <div class="note">Advantage: Can encrypt less than a full block (stream behaviour). No padding needed. Self-synchronising.</div>
+    </div>
+    <div class="tip-box trick">
+      <div class="tip-icon">💡</div>
+      <div class="tip-content">
+        <div class="tip-title">CFB vs CBC — Key Difference for Exam</div>
+        <p>CBC: encrypt the XOR of plaintext and previous ciphertext → C = E(K, P⊕C_prev)<br>
+        CFB: encrypt the previous ciphertext, then XOR with plaintext → C = P ⊕ E(K, C_prev)<br>
+        In CBC, E(K) takes plaintext-XOR as input. In CFB, E(K) takes ciphertext as input. Both use same IV as C₀. CFB's decryption also uses E (not D), making it simpler to implement if only the encryption primitive is available.</p>
+      </div>
+    </div>
+  </div>
+  <div class="theory-block">
+    <h3>4. OFB — Output Feedback Mode (Fully Parallel Keystream)</h3>
+    <p>OFB generates a keystream independently of the plaintext and ciphertext by repeatedly encrypting the IV. This makes OFB a <strong>synchronous stream cipher</strong> — the keystream can be pre-computed before the message arrives.</p>
+    <div class="formula-box">
+      <span class="label">OFB Mode — Formulas</span>
+      <div class="formula">Keystream: Oᵢ = E(K, Oᵢ₋₁)        O₀ = IV</div>
+      <div class="formula">Encryption: Cᵢ = Pᵢ ⊕ Oᵢ</div>
+      <div class="formula">Decryption: Pᵢ = Cᵢ ⊕ Oᵢ</div>
+      <div class="note">Oᵢ = keystream independent of plaintext/ciphertext — can be pre-computed!</div>
+      <div class="note">Error in Cᵢ only corrupts Pᵢ (no error propagation) — good for noisy channels</div>
+      <div class="note">Disadvantage: If keystream Oᵢ is known, attacker can flip specific plaintext bits by flipping corresponding ciphertext bits (bit flipping attack)</div>
+    </div>
+  </div>
+  <div class="theory-block">
+    <h3>5. CTR — Counter Mode (Modern Favourite)</h3>
+    <p>CTR mode encrypts successive counter values (counter = IV + i) to generate a keystream, then XORs with plaintext. This allows <strong>fully parallel</strong> encryption/decryption and random access to any block.</p>
+    <div class="formula-box">
+      <span class="label">CTR Mode — Formulas</span>
+      <div class="formula">Counter: Tᵢ = IV ‖ i   (IV concatenated with block counter i)</div>
+      <div class="formula">Encryption: Cᵢ = Pᵢ ⊕ E(K, Tᵢ)</div>
+      <div class="formula">Decryption: Pᵢ = Cᵢ ⊕ E(K, Tᵢ)    (same formula!)</div>
+      <div class="note">Advantages: Fully parallel (all Tᵢ values independent) | Random access | No padding needed | Pre-computable keystream</div>
+      <div class="note">Used in: AES-CTR for TLS 1.3, IPSec, WPA2 wireless security</div>
+    </div>
+    <h3>All 5 Modes — Master Comparison Table ⭐⭐⭐</h3>
+    <table class="comp-table">
+      <tr><th>Mode</th><th>Encryption Formula</th><th>Parallel Enc?</th><th>Parallel Dec?</th><th>Error Propagation</th><th>Patterns Hidden?</th><th>Best Use</th></tr>
+      <tr><td><span class="hl-r">ECB</span></td><td>Cᵢ = E(K, Pᵢ)</td><td>✅ Yes</td><td>✅ Yes</td><td>No (isolated)</td><td>❌ No</td><td>Key encryption only</td></tr>
+      <tr><td><span class="hl-o">CBC</span></td><td>Cᵢ = E(K, Pᵢ⊕Cᵢ₋₁)</td><td>❌ No</td><td>✅ Yes</td><td>2 blocks</td><td>✅ Yes</td><td>File encryption, TLS</td></tr>
+      <tr><td><span class="hl">CFB</span></td><td>Cᵢ = Pᵢ⊕E(K,Cᵢ₋₁)</td><td>❌ No</td><td>✅ Yes</td><td>2 blocks</td><td>✅ Yes</td><td>Stream-like, self-sync</td></tr>
+      <tr><td><span class="hl-g">OFB</span></td><td>Cᵢ = Pᵢ⊕E(K,Oᵢ₋₁)</td><td>✅ (pre-compute)</td><td>✅ (pre-compute)</td><td>No (isolated)</td><td>✅ Yes</td><td>Noisy channels</td></tr>
+      <tr><td><span class="hl-v">CTR</span></td><td>Cᵢ = Pᵢ⊕E(K,IV+i)</td><td>✅ Yes (fully)</td><td>✅ Yes (fully)</td><td>No (isolated)</td><td>✅ Yes</td><td>High-speed, random access</td></tr>
+    </table>
+    <div class="tip-box validate">
+      <div class="tip-icon">✅</div>
+      <div class="tip-content">
+        <div class="tip-title">Cipher Modes — Exam Validation Trick</div>
+        <p>For any mode question, always write these 4 things: (1) Encryption formula, (2) Decryption formula, (3) One advantage, (4) One disadvantage. Also draw the block diagram — chaining arrow, XOR circle, E(K) box, IV label. The diagram alone earns 2 marks in a 4-mark answer.</p>
+      </div>
+    </div>
+  </div>
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — Cipher Modes</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain the Electronic Code Book (ECB) and Cipher Block Chaining (CBC) modes of block cipher operations.</div>
+      <div class="pyq-meta"><span>2024 Part C Q2 · 10 marks ⭐⭐⭐</span><span class="topic-tag">ECB + CBC</span><span class="pred-tag">🔮 VERY HIGH 2026</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        <strong>ECB — Electronic Code Book Mode:</strong><br><br>
+        ECB is the simplest block cipher mode. Each plaintext block is encrypted independently with the same key.<br><br>
+        Encryption: Cᵢ = E(K, Pᵢ)<br>
+        Decryption: Pᵢ = D(K, Cᵢ)<br><br>
+        Advantages: Simple | Parallel encryption/decryption | Random access to any block<br>
+        Disadvantages: FATAL FLAW — identical plaintext blocks produce identical ciphertext. Statistical patterns in plaintext are preserved in ciphertext. An attacker can identify which blocks are identical without decryption.<br>
+        Example of weakness: ECB-encrypted penguin image — the shape of the penguin remains visible!<br>
+        Use: Key encryption — when all blocks are different (not for bulk data)<br><br>
+        [Draw: P₁→E(K)→C₁, P₂→E(K)→C₂, P₃→E(K)→C₃ — all independent, same key]<br><br>
+        <strong>CBC — Cipher Block Chaining Mode:</strong><br><br>
+        CBC fixes ECB's pattern problem by XOR-ing each plaintext block with the PREVIOUS ciphertext block before encryption. This chains the blocks together — any change early in the message affects all subsequent ciphertext.<br><br>
+        Encryption: Cᵢ = E(K, Pᵢ ⊕ Cᵢ₋₁) where C₀ = IV (Initialization Vector)<br>
+        Decryption: Pᵢ = D(K, Cᵢ) ⊕ Cᵢ₋₁ where C₀ = IV<br><br>
+        IV: A random 128-bit value, different for each message. Prevents identical messages from having identical ciphertext. IV is publicly shared (not secret).<br><br>
+        Advantages: Identical blocks → different ciphertext (no pattern leakage) | Standard for most encryption uses | Decryption can be parallelised<br>
+        Disadvantages: Encryption must be sequential (needs previous ciphertext) | Error in Cᵢ corrupts Pᵢ AND Pᵢ₊₁ (two-block error propagation)<br>
+        Use: File encryption, disk encryption, TLS record encryption, database encryption<br><br>
+        [DRAW the chaining diagram: IV→XOR←P₁→E(K)→C₁→XOR←P₂→E(K)→C₂→...]
+      </div></div>
+    </div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain block cipher modes of operations with suitable diagrams.</div>
+      <div class="pyq-meta"><span>2023-Jul Part C Q2 · 10 marks ⭐⭐⭐</span><span class="topic-tag">All Modes</span><span class="pred-tag">🔮 HIGH 2026</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        <strong>Introduction:</strong> A block cipher processes one fixed-size block at a time. Modes of operation define how to apply a block cipher repeatedly for messages of arbitrary length.<br><br>
+        <strong>Five Modes:</strong><br><br>
+        <strong>1. ECB:</strong> Cᵢ = E(K, Pᵢ) | Simplest | Identical blocks → identical ciphertext (weakness) | Parallel<br><br>
+        <strong>2. CBC:</strong> Cᵢ = E(K, Pᵢ⊕Cᵢ₋₁), C₀=IV | Chained | No patterns | Sequential encryption | Most used<br><br>
+        <strong>3. CFB:</strong> Cᵢ = Pᵢ⊕E(K,Cᵢ₋₁), C₀=IV | Stream-like | Decryption uses E (not D) | Can encrypt <128 bits<br><br>
+        <strong>4. OFB:</strong> Oᵢ=E(K,Oᵢ₋₁); Cᵢ=Pᵢ⊕Oᵢ | Keystream pre-computable | No error propagation | Good for noisy channels<br><br>
+        <strong>5. CTR:</strong> Cᵢ=Pᵢ⊕E(K,IV+i) | Fully parallel | Random access | Modern standard (TLS 1.3)<br><br>
+        [DRAW diagrams for at least ECB (simple 3-block encryption) and CBC (chaining diagram with IV, XOR, E(K) boxes)]<br><br>
+        [Include the comparison table from the notes above]
+      </div></div>
+    </div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain the Electronic Code Book (ECB) block cipher mode of operation.</div>
+      <div class="pyq-meta"><span>2025 Part B Q6 · 4 marks ⭐⭐</span><span class="topic-tag">ECB Mode</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        <strong>ECB — Electronic Code Book Mode:</strong><br><br>
+        ECB is the simplest and most naive mode of operation. The plaintext is divided into b-bit blocks. Each block is encrypted independently using the same key K.<br><br>
+        <strong>Formulas:</strong><br>
+        Encryption: Cᵢ = E(K, Pᵢ)   for i = 1, 2, ..., N<br>
+        Decryption: Pᵢ = D(K, Cᵢ)   for i = 1, 2, ..., N<br><br>
+        [Draw: Three parallel encryption paths P₁→E(K)→C₁, P₂→E(K)→C₂, P₃→E(K)→C₃]<br><br>
+        <strong>Advantages:</strong><br>
+        • Simplest to implement — no chaining or IV required<br>
+        • Fully parallel — all blocks can be encrypted/decrypted simultaneously<br>
+        • Random access — any block can be decrypted independently<br>
+        • Error isolation — corruption in Cᵢ only affects Pᵢ, not other blocks<br><br>
+        <strong>Disadvantages (Critical!):</strong><br>
+        • PATTERN LEAKAGE: Same plaintext block always produces same ciphertext. Structural patterns in plaintext are visible in ciphertext.<br>
+        • NOT suitable for encrypting structured data with repeated blocks (e.g., images, database records)<br>
+        • Susceptible to replay attacks — attacker can rearrange ciphertext blocks<br><br>
+        <strong>Example weakness:</strong> ECB-encrypted bitmap of a penguin still shows the outline of the penguin in the ciphertext.<br><br>
+        <strong>Usage:</strong> ECB is only safe when all blocks are guaranteed to be unique (e.g., encrypting a single session key). Never use for bulk data.
+      </div></div>
+    </div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. In SSL and TLS, why is there a separate change cipher spec protocol rather than including a change-cipher-spec message in the handshake protocol?</div>
+      <div class="pyq-meta"><span>2023-24 (61N0403) Part B Q6 · 4 marks ⭐</span><span class="topic-tag">SSL/TLS Cipher Modes</span></div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Answer</button>
+      <div class="answer-content"><div class="pyq-answer">
+        The separate <strong>ChangeCipherSpec (CCS) protocol</strong> in SSL/TLS exists for the following reasons:<br><br>
+        1. <strong>Clear protocol demarcation:</strong> The handshake and record protocols serve different functions. CCS signals the exact moment when the negotiated cipher suite takes effect — creating a clean boundary between "old" (pre-handshake, no encryption) and "new" (post-handshake, encrypted) modes. Including it in the handshake would blur this boundary.<br><br>
+        2. <strong>Sequencing guarantee:</strong> CCS is processed in the order it arrives in the record stream. Separating it from the handshake messages ensures proper sequencing — the switch to new cipher parameters happens only AFTER all handshake messages have been processed and verified.<br><br>
+        3. <strong>Simplicity of handshake parser:</strong> The handshake protocol parser only handles key exchange and authentication messages. CCS is just a 1-byte message (value 0x01) — too simple to deserve a handshake message type, but important enough to need its own protocol layer.<br><br>
+        4. <strong>Historical design (SSL 3.0):</strong> The SSL 3.0 designers separated it to keep the state machine clear — handshake negotiates parameters; CCS activates them; record protocol uses them. Three distinct phases, three distinct protocols.
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════ 2026 PREDICTED PAPER ══════ -->
+<section class="section" id="predicted">
+  <div class="section-header">
+    <span class="section-num">P</span>
+    <h2 class="section-title">🔮 Predicted Paper — 2026 (Unit 3 Focus)</h2>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- ══════ PREDICTED PAPER SECTION (Full Width) ══════ -->
+<div style="background:#060e14;border-top:1px solid var(--border2);border-bottom:1px solid var(--border2);padding:64px 5vw;" id="predicted-full">
+  <div style="max-width:var(--content-max);margin:0 auto;">
+    <div class="pred-badge">🔮 AI-Powered Analysis — Based on 2022–2025 ISS PYQ Pattern + 2026 DIP &amp; ML Paper Analysis</div>
+    <div class="sec-header" style="margin-bottom:14px">
+      <h2>ISS — Predicted Paper 2026 (Full Paper)</h2>
+      <span class="sub">CROSS-REFERENCED WITH ACTUAL 2026 DIP AND ML PAPER PATTERNS + 6-PAPER ISS ANALYSIS</span>
+    </div>
+    <p style="font-family:var(--mono);font-size:0.78rem;color:var(--dim2);margin-bottom:14px;line-height:1.75;">Based on deep analysis of 6 ISS papers (2022–2025), the 2026 DIP paper pattern, and the 2026 ML paper pattern: RTU follows a rotation pattern where topics absent in 2025 return in 2026. DES and AES key expansion are permanent fixtures. Cipher modes rotate between ECB-only and all-modes. DSA appears for the 4th consecutive year. ElGamal numerical is in every single paper.</p>
+    <div class="tip-box warning" style="margin-bottom:24px">
+      <div class="tip-icon">⚠️</div>
+      <div class="tip-content">
+        <div class="tip-title">Disclaimer</div>
+        <p>Predictions are based on historical patterns and are not guaranteed. Use this for prioritising study time — do not skip unpredicted topics entirely.</p>
+      </div>
+    </div>
+    <div class="pred-grid">
+      <!-- Part A -->
+      <div class="pred-card">
+        <div class="pred-part">📝 Part A — 2 marks (Q1)</div>
+        <div class="pred-q">Differentiate between Active and Passive Attacks</div>
+        <div class="pred-reason">Appeared in 2023-Jul Q1 and 2024 Q1. Absent in 2025 (replaced by Cryptography vs Cryptanalysis). Classic RTU rotation — strongly due to return in 2026 Q1 slot.</div>
+        <span class="pred-conf high">VERY HIGH confidence</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📝 Part A — 2 marks (Q2)</div>
+        <div class="pred-q">Differentiate between Stream Cipher and Block Cipher</div>
+        <div class="pred-reason">Present in every single ISS paper from 2022 to 2025 without exception. The single most consistent Part A question in this subject — Q2 slot permanently occupied.</div>
+        <span class="pred-conf high">CERTAIN</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📝 Part A — 2 marks (Q3)</div>
+        <div class="pred-q">What is Avalanche Effect? Give an example.</div>
+        <div class="pred-reason">Asked in 2023-Jul Q3 and 2024 Q3. Replaced in 2025 by "Confusion and Diffusion" in Q3 slot. RTU rotation strongly suggests Avalanche effect returns to Q3 in 2026.</div>
+        <span class="pred-conf high">VERY HIGH confidence</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📝 Part A — 2 marks (Q4)</div>
+        <div class="pred-q">What are Confusion and Diffusion in cryptography?</div>
+        <div class="pred-reason">First appeared as 2025 Q3. Based on DIP and ML 2026 patterns where new 2025 topics are retained in 2026, Confusion/Diffusion is likely to migrate to Q4 or remain in Q3-Q4 rotation.</div>
+        <span class="pred-conf high">HIGH confidence</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📝 Part A — 2 marks (Q5)</div>
+        <div class="pred-q">Differentiate Public Key vs Private Key cryptosystems</div>
+        <div class="pred-reason">Asked in 2023-Jul Q5 (public key crypto), 2024 Q5 (differentiate private vs public), 2025 Q5 (difference between public/private). Core Unit 4 distinction — present every year, never dropped.</div>
+        <span class="pred-conf high">CERTAIN</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📝 Part A — 2 marks (Q6)</div>
+        <div class="pred-q">Write any two applications of public key cryptography</div>
+        <div class="pred-reason">Alternates between "applications" (2023-Jul, 2025) and "disadvantages" (2024). The applications variant is due for 2026 based on the clear alternating pattern.</div>
+        <span class="pred-conf high">HIGH confidence</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📝 Part A — 2 marks (Q7)</div>
+        <div class="pred-q">What is a cryptographic hash function? Write its two properties.</div>
+        <div class="pred-reason">Asked in 2023-Jul Q7, 2024 Q7, AND 2025 Q7 — three consecutive identical questions. Among the most reliable Part A questions. Zero variation across papers.</div>
+        <span class="pred-conf high">CERTAIN</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📝 Part A — 2 marks (Q8)</div>
+        <div class="pred-q">What are the requirements of a Message Authentication Code?</div>
+        <div class="pred-reason">"What is MAC" (2023-Jul, 2024), "requirements of MAC" (2025). The requirements phrasing is now established for 2026 — RTU typically keeps new phrasings after first use.</div>
+        <span class="pred-conf high">HIGH confidence</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📝 Part A — 2 marks (Q9)</div>
+        <div class="pred-q">Write any four general means of authenticating a user's identity</div>
+        <div class="pred-reason">Appears VERBATIM in 2023-Jul, 2024, and 2025 — three consecutive identical questions. Among the most reliably repeated Part A questions in the subject.</div>
+        <span class="pred-conf high">CERTAIN</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📝 Part A — 2 marks (Q10)</div>
+        <div class="pred-q">What is HTTPS? Why is HTTPS preferred over HTTP?</div>
+        <div class="pred-reason">Present in 2023-Jul, 2024, and 2025. The extended phrasing "why preferred over HTTP" appeared in 2023-24 (61N0403). The 2026 paper is expected to ask this combined form.</div>
+        <span class="pred-conf high">CERTAIN</span>
+      </div>
+      <!-- Part B -->
+      <div class="pred-card">
+        <div class="pred-part">📋 Part B — 4 marks (Q1)</div>
+        <div class="pred-q">Hill Cipher: Encrypt "CODE" (or similar) using key [[3,2],[8,5]] and decrypt</div>
+        <div class="pred-reason">Hill Cipher appeared in 2023-Jul B-Q1 and 2025 B-Q1 with same key and message. RTU rarely changes numericals — expect same or very similar values. The method, not the numbers, is what must be learned.</div>
+        <span class="pred-conf high">VERY HIGH confidence</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📋 Part B — 4 marks (Q2)</div>
+        <div class="pred-q">Explain AES Key Expansion algorithm with suitable diagram</div>
+        <div class="pred-reason">Appeared in 2024 B-Q2 AND 2025 B-Q2 — two consecutive years, identical phrasing. Now a permanent Part B Q2 fixture. Learn RotWord, SubWord, Rcon. Draw the word generation diagram.</div>
+        <span class="pred-conf high">CERTAIN</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📋 Part B — 4 marks (Q3)</div>
+        <div class="pred-q">ElGamal encryption/decryption numerical (predicted: q=23, α=5, XA=4, M=11, k=3)</div>
+        <div class="pred-reason">ElGamal numerical is in 100% of all ISS papers (every year, every variant). Values change each cycle — q was 71 (2023-Jul), 71 (2024), then 19 (2025). Prepare the 5-step algorithm for any given values.</div>
+        <span class="pred-conf high">CERTAIN</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📋 Part B — 4 marks (Q4)</div>
+        <div class="pred-q">Explain Cipher-Based MAC (CMAC) with diagram</div>
+        <div class="pred-reason">CMAC appeared in Part B in 2023-Jul, 2024, AND 2025 — three consecutive years. Near-certain for 2026 Part B Q4. Know subkey generation K1/K2, CBC chain, final block XOR. Draw the diagram.</div>
+        <span class="pred-conf high">CERTAIN</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📋 Part B — 4 marks (Q5)</div>
+        <div class="pred-q">Explain SSL Record Protocol with suitable diagram</div>
+        <div class="pred-reason">SSL Record Protocol appeared in 2023-Jul B-Q7 and 2025 B-Q5 — every other year. 2026 is the next cycle. Cover the 4 steps: fragmentation, compression, MAC addition, encryption.</div>
+        <span class="pred-conf high">HIGH confidence</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📋 Part B — 4 marks (Q6)</div>
+        <div class="pred-q">Explain design principles of block cipher (Confusion, Diffusion, Feistel, Avalanche)</div>
+        <div class="pred-reason">Design principles appeared in 2023-Jul B-Q2 and 2024 B-Q3. Absent from 2025 Part B. After one-year absence, strongly due to return in 2026 B-Q6.</div>
+        <span class="pred-conf high">HIGH confidence</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📋 Part B — 4 marks (Q7)</div>
+        <div class="pred-q">Explain the application of cryptographic hash function for digital signature</div>
+        <div class="pred-reason">This exact question appeared in 2025 B-Q7 for the first time. Based on 2026 DIP/ML patterns of retaining new topics, this is likely to appear again in 2026 — possibly as B-Q7 again.</div>
+        <span class="pred-conf med">MEDIUM confidence</span>
+      </div>
+      <!-- Part C -->
+      <div class="pred-card">
+        <div class="pred-part">📖 Part C — 10 marks (Q1)</div>
+        <div class="pred-q">DES Algorithm — full structure with single round diagram</div>
+        <div class="pred-reason">DES appears in EVERY ISS paper from 2022 to 2025 — either "full structure" or "single round." The most reliable Part C question. Draw the overall structure AND the single round (E, XOR Kᵢ, S-boxes, P-box).</div>
+        <span class="pred-conf high">CERTAIN — every paper</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📖 Part C — 10 marks (Q2)</div>
+        <div class="pred-q">Explain ECB and CBC modes of block cipher operations (or all 5 modes)</div>
+        <div class="pred-reason">ECB+CBC appeared in 2024 Part C. All 5 modes appeared in 2023-Jul Part C. Either format is likely for 2026 Q2. Always draw chaining diagrams. Mention ECB weakness explicitly.</div>
+        <span class="pred-conf high">VERY HIGH confidence</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📖 Part C — 10 marks (Q3)</div>
+        <div class="pred-q">RSA Algorithm + Numerical (predicted: p=7, q=11, e=13, M=3 or similar)</div>
+        <div class="pred-reason">RSA numerical appeared in 2023-Aug (p=11,q=13,e=7), was absent from 2024 Part C, returned in 2025 (p=5,q=31,e=13). For 2026, a new set of small prime values is expected. Master the key generation and encryption/decryption steps.</div>
+        <span class="pred-conf high">CERTAIN</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📖 Part C — 10 marks (Q4)</div>
+        <div class="pred-q">DSA — Digital Signature Algorithm with signing and verifying diagrams</div>
+        <div class="pred-reason">DSA appeared in Part C in 2023-Aug, 2024, AND 2025 — three consecutive years. Near-certain for 2026 Q4. The 2025 paper required "diagrams showing functions of signing and verifying" — use this exact format.</div>
+        <span class="pred-conf high">VERY HIGH confidence</span>
+      </div>
+      <div class="pred-card">
+        <div class="pred-part">📖 Part C — 10 marks (Q5)</div>
+        <div class="pred-q">Kerberos Version 4 Protocol with diagram (OR SHA-512 Algorithm)</div>
+        <div class="pred-reason">Kerberos appeared in 2023-Jul Part C — absent for 2 years. SHA-512 appeared in 2023-Jul and 2024 — absent in 2025. Both are due. Prepare both; one will be Q5. 2025 had "Public-key certificate" as Q5 — might return but less likely than Kerberos/SHA.</div>
+        <span class="pred-conf med">MEDIUM-HIGH confidence</span>
+      </div>
+    </div>
+    <div class="tip-box validate" style="margin-top:28px">
+      <div class="tip-icon">✅</div>
+      <div class="tip-content">
+        <div class="tip-title">2026 Quick Preparation Strategy — Unit 3 Focus</div>
+        <p><strong>MUST prepare completely (Part C topics):</strong> DES (full + single round diagram), ECB+CBC modes (with diagrams), RSA numerical (any given values).<br><br>
+        <strong>MUST prepare for Part B:</strong> AES Key Expansion (RotWord/SubWord/Rcon), Design principles (Confusion/Diffusion/Feistel/Avalanche), ECB mode (diagram + weakness).<br><br>
+        <strong>Part A (25 words each):</strong> Active vs Passive attacks, Stream vs Block cipher, Avalanche effect, Confusion/Diffusion, Stream vs Block cipher.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ PYQ MASTER LIST ══════ -->
+<div class="layout">
+<div style="width:var(--sidebar-w);min-width:var(--sidebar-w);flex-shrink:0;"></div>
+<div class="content">
+<section class="section" id="pyq-master" style="margin-top:40px">
+  <div class="section-header">
+    <span class="section-num">M</span>
+    <h2 class="section-title">All PYQs — Unit 3 Master List</h2>
+  </div>
+  <div class="pyq-section">
+    <div class="pyq-header">📋 Complete PYQ Coverage — Unit 3 Topics (2022–2025)</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Complete Reference — All Unit 3 Questions by Year</div>
+      <button class="pyq-toggle" onclick="toggle(this)">▼ Show Full List</button>
+      <div class="answer-content"><div class="pyq-answer">
+        <strong>PART A (2 marks — all papers):</strong><br>
+        All papers Q2: Stream vs Block cipher (PERMANENT FIXTURE)<br>
+        2023-Jul Q3: Avalanche effect | Q4: Two strengths of DES<br>
+        2023-Aug Q4: Difference between stream cipher and block cipher | Q5: List modes of operation<br>
+        2024 Q3: Avalanche effect | Q4: Advantages of multiple encryption and Triple DES<br>
+        2025 Q3: Confusion and Diffusion | Q4: Strengths of DES<br>
+        2022: What is encryption? | Define block ciphers<br><br>
+        <strong>PART B (4 marks):</strong><br>
+        2023-Jul: Hill Cipher (B-Q1) | Design principles of block cipher (B-Q2) | RSA numerical p=3,q=11,e=7,M=5 (B-Q3)<br>
+        2023-Aug: Transposition cipher (B-Q1) | DES single round + S-box purpose (B-Q2)<br>
+        2024: Playfair matrix key="occurrence" encrypt "Jaipur" (B-Q1) | AES key expansion (B-Q2) | Design principles (B-Q3) | ElGamal q=71,α=7,XA=3,M=30,k=2 (B-Q4)<br>
+        2025: Hill Cipher key=[[3,2],[8,5]] encrypt "Code" (B-Q1) | AES key expansion (B-Q2) | ElGamal q=19,α=13,XA=5,M=15,k=6 (B-Q3) | ECB mode (B-Q6)<br>
+        2022: DES with example (Part B Q2) | Design principles (B-Q3) | RSA p=11,q=13,e=7,M=5 (Part C Q2)<br>
+        2023-24 (61N0403): Playfair matrix (B-Q2) | Avalanche effect (B-Q3) | Key size in DES (B-Q4)<br><br>
+        <strong>PART C (10 marks):</strong><br>
+        ALL PAPERS: DES algorithm with diagrams (every year without exception)<br>
+        2023-Jul: AES general structure (C-Q1) | Block cipher modes all 5 (C-Q2)<br>
+        2023-Aug: DES single round (main question)<br>
+        2024: DES algorithm (C-Q1) | ECB and CBC modes (C-Q2)<br>
+        2025: DES internal structure single round (C-Q2)<br>
+        2023-24 (61N0403): AES encryption with block diagram (C-Q2)<br><br>
+        <strong>KEY PATTERNS:</strong><br>
+        DES: Every paper, always 10 marks Part C<br>
+        AES key expansion: Part B 2024 and 2025 (two consecutive years)<br>
+        Cipher modes: Part C 2023-Jul (all 5) and 2024 (ECB+CBC)<br>
+        Design principles: Part B 2023-Jul and 2024 (absent 2025 → due 2026)
+      </div></div>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+
+<!-- FLOATING TOGGLE -->
+<button class="sidebar-toggle" id="sidebarToggle" onclick="openSidebar()">☰</button>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <div class="footer-links">
+    <a href="index.html">🏠 Home</a>
+    <a href="unit2.html">⚔️ U2: Attacks</a>
+    <a href="unit4.html">🔮 U4: Public Key</a>
+    <a href="unit5.html">🔐 U5: Hash/MAC/Sig</a>
+    <a href="unit6.html">🌐 U6: Key Mgmt/SSL</a>
+    <a href="pyq.html" style="color:var(--upred)">📋 Solved PYQs</a>
+  </div>
+  © 2026 Mahansh Gaur · ISS RTU Study Guide · Unit 3 — Modern Block Ciphers · Educational use only.
+</footer>
+
+<script>
+function toggle(btn){
+  const ans = btn.nextElementSibling;
+  if(ans.classList.contains('open')){
+    ans.classList.remove('open');
+    btn.textContent = btn.textContent.replace('▲','▼');
+  } else {
+    ans.classList.add('open');
+    btn.textContent = btn.textContent.replace('▼','▲');
+  }
+}
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('visible');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('visible');
+}
+
+// Active nav highlighting on scroll
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      navItems.forEach(n => {
+        n.classList.remove('active');
+        if(n.getAttribute('href') === '#' + e.target.id) n.classList.add('active');
+      });
+    }
+  });
+}, { rootMargin: '-15% 0px -70% 0px' });
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
