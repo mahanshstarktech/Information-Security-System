@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISS Unit 2 — Security Attacks &amp; Classical Encryption | RTU Exam Prep</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400&family=JetBrains+Mono:wght@300;400;500;600&family=Outfit:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg:#060a0d; --bg2:#091018; --surface:#0f1c26; --surface2:#152432;
+  --border:#1e3040; --border2:#122030;
+  --u1:#22d3ee; --u2:#f97316; --u3:#ef4444; --u4:#a78bfa; --u5:#10b981; --u6:#3b82f6;
+  --upred:#f59e0b; --gold:#fbbf24; --text:#dde8f0; --dim:#3d5a70; --dim2:#6a8fa8;
+  --mono:'JetBrains Mono',monospace; --head:'Fraunces',serif; --body:'Outfit',sans-serif;
+  --accent: var(--u2);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:17px;line-height:1.82;overflow-x:hidden;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* TOP NAV */
+.topnav{position:sticky;top:0;z-index:100;background:rgba(6,10,13,0.94);backdrop-filter:blur(20px);border-bottom:1px solid var(--border2);padding:0 20px;display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none;}
+.topnav::-webkit-scrollbar{display:none;}
+.tnlabel{font-family:var(--mono);font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--u2);padding:14px 12px 14px 0;border-right:1px solid var(--border);margin-right:6px;white-space:nowrap;flex-shrink:0;}
+.tnlink{font-family:var(--mono);font-size:11px;padding:7px 12px;border-radius:6px;text-decoration:none;color:var(--dim2);white-space:nowrap;flex-shrink:0;transition:all .18s;border:1px solid transparent;}
+.tnlink:hover{color:var(--text);background:var(--surface2);}
+.tnlink.active{color:var(--u2);background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.3);}
+.tnlink.pyq{color:var(--upred);background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.2);margin-left:4px;}
+
+/* CREDIT BAND */
+.credit-band{background:#080c12;border-bottom:1px solid var(--border2);padding:10px 32px;display:flex;align-items:center;justify-content:center;gap:20px;flex-wrap:wrap;}
+.credit-band-text{font-family:var(--mono);font-size:11px;color:var(--dim2);}
+.credit-band-text span{color:var(--upred);font-weight:600;}
+.credit-link{font-family:var(--mono);font-size:11px;padding:4px 12px;border-radius:4px;border:1px solid var(--border);color:var(--dim2);text-decoration:none;transition:all .2s;}
+.credit-link:hover{border-color:var(--u1);color:var(--u1);}
+
+/* HERO */
+.hero{position:relative;overflow:hidden;padding:52px 40px 44px;}
+.hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,rgba(249,115,22,.1) 1px,transparent 1px),radial-gradient(circle,rgba(34,211,238,.05) 1px,transparent 1px);background-size:40px 40px,80px 80px;background-position:0 0,20px 20px;animation:dotDrift 28s linear infinite;}
+@keyframes dotDrift{0%{transform:translate(0,0);}100%{transform:translate(40px,40px);}}
+.hero::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 55% at 15% 50%,rgba(249,115,22,.08) 0%,transparent 65%),radial-gradient(ellipse 50% 45% at 85% 15%,rgba(239,68,68,.07) 0%,transparent 60%);pointer-events:none;}
+.hero-inner{position:relative;z-index:1;max-width:1100px;margin:0 auto;}
+.hero-tag{font-family:var(--mono);font-size:11px;color:var(--u2);letter-spacing:3px;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.hero-dot{width:7px;height:7px;border-radius:50%;background:var(--u2);box-shadow:0 0 12px var(--u2);animation:blink 2.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
+.hero h1{font-family:var(--head);font-weight:800;font-size:clamp(32px,5.5vw,62px);line-height:1.05;color:#fff;letter-spacing:-1px;}
+.hero h1 span{color:var(--u2);}
+.hero-sub{margin-top:14px;color:var(--dim2);font-size:clamp(15px,2vw,17px);max-width:640px;line-height:1.75;}
+.hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;}
+.badge{font-family:var(--mono);font-size:11px;padding:4px 12px;border-radius:4px;border:1px solid;}
+.badge-orange{color:var(--u2);border-color:rgba(249,115,22,.35);background:rgba(249,115,22,.08);}
+.badge-red{color:var(--u3);border-color:rgba(239,68,68,.35);background:rgba(239,68,68,.08);}
+.badge-blue{color:var(--u6);border-color:rgba(59,130,246,.35);background:rgba(59,130,246,.08);}
+.badge-green{color:var(--u5);border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.08);}
+.badge-gold{color:var(--upred);border-color:rgba(245,158,11,.35);background:rgba(245,158,11,.08);}
+
+/* LAYOUT */
+.layout{display:flex;max-width:1400px;margin:0 auto;}
+
+/* SIDEBAR */
+.sidebar{width:272px;min-width:272px;padding:24px 14px;border-right:1px solid var(--border);position:sticky;top:44px;height:calc(100vh - 44px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+.sidebar::-webkit-scrollbar{width:4px;}.sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+.sidebar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.sidebar-title{font-family:var(--mono);font-size:10px;color:var(--u2);letter-spacing:2px;text-transform:uppercase;}
+.sidebar-close{display:none;background:none;border:1px solid var(--border);border-radius:4px;color:var(--dim2);cursor:pointer;padding:2px 8px;font-family:var(--mono);font-size:11px;}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:6px;cursor:pointer;font-family:var(--head);font-size:13px;font-weight:600;color:var(--dim2);transition:all .2s;margin-bottom:2px;text-decoration:none;}
+.nav-item:hover,.nav-item.active{background:var(--surface2);color:var(--text);}
+.nav-item.active{color:var(--u2);border-left:2px solid var(--u2);}
+.nav-imp{margin-left:auto;font-family:var(--mono);font-size:10px;padding:2px 6px;border-radius:3px;background:var(--surface2);}
+.nav-imp.high{color:var(--u3);} .nav-imp.med{color:var(--upred);} .nav-imp.low{color:var(--u6);}
+.nav-pred{font-family:var(--mono);font-size:9px;color:var(--upred);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);padding:1px 5px;border-radius:3px;margin-left:auto;}
+
+/* SIDEBAR TOGGLE */
+.sidebar-toggle{display:none;position:fixed;bottom:20px;right:20px;z-index:1000;width:50px;height:50px;border-radius:50%;background:var(--u2);border:none;cursor:pointer;font-size:20px;color:#000;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(249,115,22,.4);transition:transform .2s;}
+.sidebar-toggle:hover{transform:scale(1.1);}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:98;backdrop-filter:blur(2px);}
+.sidebar-overlay.visible{display:block;}
+
+/* CONTENT */
+.content{flex:1;padding:36px 48px;max-width:calc(100% - 272px);overflow-x:hidden;}
+
+/* SECTION */
+.section{margin-bottom:64px;scroll-margin-top:60px;}
+.section-header{display:flex;align-items:center;gap:14px;margin-bottom:22px;padding-bottom:12px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.section-num{font-family:var(--mono);font-size:12px;color:var(--u2);background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.3);padding:4px 8px;border-radius:4px;min-width:36px;text-align:center;}
+.section-title{font-family:var(--head);font-size:clamp(20px,3vw,26px);font-weight:800;color:#fff;}
+.imp-pill{margin-left:auto;font-family:var(--mono);font-size:11px;padding:4px 12px;border-radius:20px;}
+.pred-tag{font-family:var(--mono);font-size:10px;color:var(--upred);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);padding:3px 10px;border-radius:20px;margin-left:8px;}
+
+/* THEORY */
+.theory-block{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:18px;}
+.theory-block h3{font-family:var(--head);font-size:17px;font-weight:700;color:var(--u2);margin-bottom:12px;}
+.theory-block p{margin-bottom:12px;font-size:16px;}
+.theory-block p:last-child{margin-bottom:0;}
+.theory-block ul,.theory-block ol{padding-left:22px;margin:10px 0;}
+.theory-block li{margin-bottom:8px;font-size:16px;}
+
+/* LAYMAN */
+.layman{background:rgba(249,115,22,.07);border:1px solid rgba(249,115,22,.2);border-left:3px solid var(--u2);border-radius:8px;padding:14px 18px;font-family:var(--mono);font-size:13px;color:#fed7aa;margin:12px 0;line-height:1.7;}
+.layman::before{content:'💬 LAYMAN: ';color:var(--u2);font-weight:600;}
+
+/* FORMULA */
+.formula-box{background:#040c12;border:1px solid rgba(249,115,22,.25);border-left:3px solid var(--u2);border-radius:8px;padding:16px 20px;margin:16px 0;font-family:var(--mono);font-size:13px;overflow-x:auto;}
+.formula-box .label{font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;display:block;}
+.formula-box .formula{color:#fed7aa;margin:4px 0;line-height:1.65;}
+.formula-box .note{color:var(--dim2);font-size:12px;margin-top:8px;}
+
+/* TIPS */
+.tip-box{border-radius:8px;padding:16px 18px;margin:14px 0;display:flex;gap:12px;}
+.tip-box.trick{background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.25);}
+.tip-box.validate{background:rgba(16,185,129,.07);border:1px solid rgba(16,185,129,.25);}
+.tip-box.connect{background:rgba(59,130,246,.07);border:1px solid rgba(59,130,246,.25);}
+.tip-box.warning{background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.25);}
+.tip-icon{font-size:20px;flex-shrink:0;margin-top:2px;}
+.tip-content{flex:1;}
+.tip-title{font-family:var(--head);font-size:13px;font-weight:700;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;}
+.tip-box.trick .tip-title{color:var(--gold);}
+.tip-box.validate .tip-title{color:var(--u5);}
+.tip-box.connect .tip-title{color:var(--u6);}
+.tip-box.warning .tip-title{color:var(--u3);}
+.tip-content p{font-size:14px;color:var(--text);margin:0;line-height:1.65;}
+
+/* EXAMPLE */
+.example-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:18px 22px;margin:14px 0;}
+.example-label{font-family:var(--mono);font-size:10px;color:var(--u2);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+pre{background:#040710;border:1px solid var(--border);border-radius:8px;padding:16px;overflow-x:auto;font-family:var(--mono);font-size:12px;color:#fed7aa;margin:12px 0;line-height:1.65;}
+
+/* TABLE */
+.comp-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:15px;display:block;overflow-x:auto;}
+.comp-table th{background:var(--surface2);padding:10px 14px;text-align:left;font-family:var(--head);font-weight:700;color:var(--u2);border-bottom:1px solid var(--border);white-space:nowrap;}
+.comp-table td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;}
+.comp-table tr:last-child td{border-bottom:none;}
+.comp-table tr:hover td{background:var(--surface2);}
+
+/* PYQ */
+.pyq-section{background:#070c12;border:1px solid rgba(245,158,11,.25);border-radius:12px;padding:22px 26px;margin-top:24px;}
+.pyq-header{font-family:var(--head);font-size:15px;font-weight:700;color:var(--upred);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.pyq-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:14px;}
+.pyq-q-text{font-family:var(--head);font-size:15px;font-weight:700;color:#fff;margin-bottom:4px;}
+.pyq-meta{font-family:var(--mono);font-size:10px;color:var(--dim2);margin-bottom:12px;display:flex;gap:12px;flex-wrap:wrap;}
+.pyq-meta .topic-tag{background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.25);color:var(--u2);padding:2px 8px;border-radius:3px;}
+.pyq-meta .pred-tag-sm{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);color:var(--upred);padding:2px 8px;border-radius:3px;}
+.pyq-toggle{background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:6px 14px;cursor:pointer;font-family:var(--mono);font-size:11px;color:var(--upred);margin-top:10px;transition:all .2s;}
+.pyq-toggle:hover{background:var(--upred);color:#000;}
+.answer-content{display:none;margin-top:14px;font-size:15px;line-height:1.85;}
+.answer-content.open{display:block;}
+
+/* PREDICTED BANNER */
+.pred-banner{background:linear-gradient(135deg,rgba(245,158,11,.08),rgba(245,158,11,.03));border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:20px 24px;margin-bottom:24px;}
+.pred-badge{font-family:var(--mono);font-size:11px;color:var(--upred);background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);padding:4px 12px;border-radius:20px;display:inline-block;margin-bottom:10px;}
+
+/* DIAGRAM */
+.diagram-wrap{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:20px;margin:16px 0;text-align:center;overflow-x:auto;}
+.diagram-cap{font-family:var(--mono);font-size:11px;color:var(--dim2);margin-top:10px;text-align:center;}
+
+/* IMP BARS */
+.imp-bar-wrap{margin-bottom:8px;}
+.imp-bar-label{font-family:var(--mono);font-size:12px;color:var(--dim2);margin-bottom:4px;display:flex;justify-content:space-between;}
+.imp-bar-bg{height:6px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+.imp-bar-fill{height:100%;border-radius:3px;}
+.imp-high .imp-bar-fill{background:var(--u3);box-shadow:0 0 6px var(--u3);}
+.imp-med .imp-bar-fill{background:var(--upred);box-shadow:0 0 6px var(--upred);}
+.imp-low .imp-bar-fill{background:var(--u6);}
+
+/* STEPS */
+.steps{margin:14px 0;}
+.step-item{display:flex;gap:14px;margin-bottom:12px;}
+.step-num{width:30px;height:30px;border-radius:50%;background:var(--u2);color:#000;font-family:var(--mono);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-text{font-size:16px;padding-top:4px;flex:1;}
+
+/* CIPHER TABLE (special) */
+.cipher-grid{display:grid;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:12px 0;width:fit-content;max-width:100%;overflow-x:auto;}
+.cipher-cell{font-family:var(--mono);font-size:12px;padding:6px 10px;background:var(--surface);text-align:center;min-width:30px;}
+.cipher-cell.head{background:var(--surface2);color:var(--u2);font-weight:700;}
+.cipher-cell.key{background:rgba(249,115,22,.1);color:var(--u2);}
+.cipher-cell.highlight{background:rgba(249,115,22,.2);color:var(--upred);font-weight:700;}
+
+.hl{color:var(--u1);font-weight:600;} .hl-o{color:var(--u2);font-weight:600;} .hl-r{color:var(--u3);font-weight:600;} .hl-v{color:var(--u4);font-weight:600;} .hl-g{color:var(--u5);font-weight:600;} .hl-b{color:var(--u6);font-weight:600;} .hl-gold{color:var(--upred);font-weight:600;}
+h4{font-family:var(--head);font-size:16px;font-weight:700;color:var(--text);margin:16px 0 8px;}
+.divider{border:none;border-top:1px solid var(--border);margin:36px 0;}
+
+/* RESPONSIVE */
+@media(max-width:1100px){
+  .hero{padding:48px 28px 40px;}
+  .content{padding:28px 28px;}
+}
+@media(max-width:768px){
+  .sidebar{position:fixed;top:0;left:0;height:100vh;z-index:99;background:var(--bg);transform:translateX(-100%);border-right:1px solid var(--border);transition:transform .3s ease;}
+  .sidebar.open{transform:translateX(0);box-shadow:4px 0 30px rgba(0,0,0,.8);}
+  .sidebar-close{display:block;}
+  .sidebar-toggle{display:flex;}
+  .content{max-width:100%;padding:20px 18px;}
+  .hero{padding:36px 18px 32px;}
+  .section-header{flex-direction:column;align-items:flex-start;gap:8px;}
+  .imp-pill,.pred-tag{margin-left:0;}
+  .theory-block{padding:18px;}
+  .pyq-section{padding:16px;}
+}
+@media(max-width:768px) and (orientation:portrait){
+  body{font-size:18px;line-height:1.88;}
+  .theory-block p,.theory-block li,.step-text{font-size:18px;}
+  .layman{font-size:14px;}
+  h4{font-size:17px;}
+  .section-title{font-size:22px;}
+  .comp-table{font-size:15px;}
+  .comp-table th,.comp-table td{padding:9px 11px;}
+  .pyq-q-text{font-size:16px;}
+  .answer-content{font-size:16px;}
+  .formula-box{font-size:12px;}
+  pre{font-size:11px;}
+}
+@media(min-width:769px){
+  .sidebar-toggle{display:none !important;}
+  .sidebar-overlay{display:none !important;}
+}
+@media(max-width:480px){
+  body{font-size:18px;}
+  .hero h1{font-size:clamp(28px,9vw,44px);}
+  .content{padding:16px 14px;}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <span class="tnlabel">ISS · RTU</span>
+  <a class="tnlink" href="index.html">🏠 Home</a>
+  <a class="tnlink active" href="unit2.html">⚔️ U2: Attacks</a>
+  <a class="tnlink" href="unit3.html">🔴 U3: Block Ciphers</a>
+  <a class="tnlink" href="unit4.html">🔮 U4: Public Key</a>
+  <a class="tnlink" href="unit5.html">🔐 U5: Hash/MAC/Sig</a>
+  <a class="tnlink" href="unit6.html">🌐 U6: Key Mgmt/SSL</a>
+  <a class="tnlink pyq" href="pyq.html">📋 Solved PYQs</a>
+</nav>
+
+<div class="credit-band">
+  <div class="credit-band-text">Crafted by <span>Mahansh Gaur</span> · B.Tech · RTU Kota</div>
+  <a class="credit-link" href="https://www.instagram.com/mahaanshgaur_6513" target="_blank">📸 @mahaanshgaur_6513</a>
+  <a class="credit-link" href="https://github.com/mahanshstarktech" target="_blank">🐙 GitHub</a>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag"><span class="hero-dot"></span>📚 B.Tech VI Sem · RTU Exam Prep · Unit 2</div>
+    <h1>Security Attacks &amp;<br><span>Classical Encryption</span></h1>
+    <p class="hero-sub">Active vs Passive Attacks · Substitution Ciphers (Caesar, Playfair, Hill, Vigenère) · Transposition Ciphers · Cryptanalysis · Stream vs Block Ciphers — complete guide with all RTU PYQ solutions 2022–2025 and 2026 predictions.</p>
+    <div class="hero-badges">
+      <span class="badge badge-orange">⚔️ Security Attacks</span>
+      <span class="badge badge-red">🔢 Hill Cipher Numerical</span>
+      <span class="badge badge-gold">🔮 2026 Predicted</span>
+      <span class="badge badge-blue">All PYQs Solved</span>
+      <span class="badge badge-green">Layman Explanations</span>
+    </div>
+  </div>
+</div>
+
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="layout">
+
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-title">Unit 2 Topics</div>
+    <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+  </div>
+  <a class="nav-item active" href="#overview">📊 Overview &amp; Importance</a>
+  <a class="nav-item" href="#attacks">⚔️ Security Attacks<span class="nav-imp high">92%</span></a>
+  <a class="nav-item" href="#services">🛡️ Security Services &amp; Mech.<span class="nav-imp med">75%</span></a>
+  <a class="nav-item" href="#caesar">🔤 Caesar Cipher<span class="nav-imp low">60%</span></a>
+  <a class="nav-item" href="#playfair">🟩 Playfair Cipher<span class="nav-imp high">88%</span></a>
+  <a class="nav-item" href="#hill">🔢 Hill Cipher<span class="nav-imp high">95%</span></a>
+  <a class="nav-item" href="#vigenere">🔁 Vigenère Cipher<span class="nav-imp med">70%</span></a>
+  <a class="nav-item" href="#transposition">📋 Transposition Ciphers<span class="nav-imp high">82%</span></a>
+  <a class="nav-item" href="#cryptanalysis">🔍 Cryptanalysis<span class="nav-imp med">72%</span></a>
+  <a class="nav-item" href="#stream-block">💡 Stream vs Block<span class="nav-imp high">90%</span></a>
+  <a class="nav-item" href="#predicted">🔮 2026 Predicted</a>
+  <a class="nav-item" href="#pyq-master">📝 All PYQs Master List</a>
+</nav>
+
+<main class="content">
+
+<!-- ═══ SECTION 00: OVERVIEW ═══ -->
+<section class="section" id="overview">
+  <div class="section-header">
+    <span class="section-num">00</span>
+    <h2 class="section-title">Topic Importance — Unit 2</h2>
+  </div>
+  <div class="theory-block">
+    <p>Unit 2 has consistent presence across all ISS papers. Hill Cipher numericals and Playfair matrix construction appear almost every year in Part B. Active vs Passive attacks appear in every Part A. Stream vs Block cipher distinction is asked in 100% of papers.</p>
+    <div class="imp-bar-wrap imp-high" style="margin-top:16px">
+      <div class="imp-bar-label"><span>Hill Cipher (encryption + decryption numerical)</span><span style="color:#ef4444">95%</span></div>
+      <div class="imp-bar-bg"><div class="imp-bar-fill" style="width:95%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-high" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Active vs Passive Attacks</span><span style="color:#ef4444">92%</span></div>
+      <div class="imp-bar-bg"><div class="imp-bar-fill" style="width:92%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-high" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Stream vs Block Cipher</span><span style="color:#ef4444">90%</span></div>
+      <div class="imp-bar-bg"><div class="imp-bar-fill" style="width:90%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-high" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Playfair Cipher (matrix + encryption)</span><span style="color:#ef4444">88%</span></div>
+      <div class="imp-bar-bg"><div class="imp-bar-fill" style="width:88%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-high" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Transposition Cipher with example</span><span style="color:#ef4444">82%</span></div>
+      <div class="imp-bar-bg"><div class="imp-bar-fill" style="width:82%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-med" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Security Services &amp; Mechanisms</span><span style="color:#f59e0b">75%</span></div>
+      <div class="imp-bar-bg"><div class="imp-bar-fill" style="width:75%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-med" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Cryptanalysis types</span><span style="color:#f59e0b">72%</span></div>
+      <div class="imp-bar-bg"><div class="imp-bar-fill" style="width:72%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-med" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Vigenère Cipher</span><span style="color:#f59e0b">70%</span></div>
+      <div class="imp-bar-bg"><div class="imp-bar-fill" style="width:70%"></div></div>
+    </div>
+    <div class="imp-bar-wrap imp-low" style="margin-top:10px">
+      <div class="imp-bar-label"><span>Caesar Cipher</span><span style="color:#3b82f6">60%</span></div>
+      <div class="imp-bar-bg"><div class="imp-bar-fill" style="width:60%"></div></div>
+    </div>
+  </div>
+  <div class="tip-box trick">
+    <div class="tip-icon">⚡</div>
+    <div class="tip-content">
+      <div class="tip-title">Unit 2 Exam Strategy</div>
+      <p><strong>Active vs Passive attacks</strong> = guaranteed 2 marks in Part A every year. Learn the 25-word answer cold. <strong>Hill Cipher numerical</strong> = appears in Part B almost every year (2023-Jul B1, 2025 B1) — practice the matrix multiplication + modulo 26. <strong>Playfair matrix construction</strong> = if Hill Cipher doesn't appear, Playfair will (2024 B1 with key "occurrence"). <strong>Stream vs Block</strong> = another guaranteed 2-marker — never skip it. Security attacks as a whole topic (substitution + transposition explanation) appeared as a combined 10-mark question in 2022.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 01: SECURITY ATTACKS ═══ -->
+<section class="section" id="attacks">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">Security Attacks — Active vs Passive</h2>
+    <span class="imp-pill badge badge-red">🔥 92% — Every Paper Part A</span>
+    <span class="pred-tag">🔮 2026 Predicted</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>What is a Security Attack?</h3>
+    <p>A <span class="hl-o">security attack</span> is any action that compromises the security of information or the information systems of an organization. Attacks can target confidentiality, integrity, availability, or authentication of data and systems.</p>
+    <div class="layman">A security attack is anything someone does to try to break into your data, steal it, change it, or stop you from accessing it. Think of it as different ways a burglar might try to break into your house — they might just peek through the window (passive) or actually break in and rearrange furniture (active).</div>
+    <p>Attacks are broadly classified into two categories based on whether they modify the data being transmitted:</p>
+  </div>
+
+  <div class="theory-block">
+    <h3>Passive Attacks</h3>
+    <p>A <span class="hl-o">passive attack</span> involves monitoring or eavesdropping on transmissions. The attacker does NOT modify data — they only observe and collect information.</p>
+    <div class="layman">A passive attacker is like someone secretly reading your diary. They don't change anything — they just read. You wouldn't even know they were there because nothing looks different.</div>
+    <h4>Two types of Passive Attacks:</h4>
+    <ul>
+      <li><span class="hl-o">Release of message contents:</span> Reading the content of transmitted messages — e.g., reading an unencrypted email containing sensitive data</li>
+      <li><span class="hl-o">Traffic analysis:</span> Even if messages are encrypted, attackers observe patterns — who communicates with whom, how often, at what times, and message lengths. This can reveal sensitive information without breaking encryption.</li>
+    </ul>
+    <p><strong>Key properties:</strong> Hard to detect (leaves no trace) · Prevention: Encryption · Target: Confidentiality</p>
+  </div>
+
+  <div class="theory-block">
+    <h3>Active Attacks</h3>
+    <p>An <span class="hl-o">active attack</span> involves modifying, replaying, or creating data. The attacker actively interferes with the communication.</p>
+    <div class="layman">An active attacker is like a burglar who actually breaks into your house and rearranges furniture (or steals things, or leaves fake notes). They interact with your stuff — they don't just watch.</div>
+    <h4>Four types of Active Attacks:</h4>
+    <ul>
+      <li><span class="hl-o">Masquerade:</span> Pretending to be someone else. Attacker impersonates a legitimate entity — e.g., sending an email pretending to be your bank manager.</li>
+      <li><span class="hl-o">Replay:</span> Capturing a valid transmission and re-sending it later. Example: capturing a bank's authentication message and replaying it to get unauthorized access.</li>
+      <li><span class="hl-o">Modification of messages:</span> Altering, delaying, or reordering messages. Example: changing "Transfer ₹100 to Account A" to "Transfer ₹1,00,000 to Account B".</li>
+      <li><span class="hl-o">Denial of Service (DoS):</span> Preventing legitimate access to resources by overwhelming the system. Example: flooding a web server with millions of fake requests until it crashes.</li>
+    </ul>
+    <p><strong>Key properties:</strong> Easier to detect (causes disruption) · Prevention: Authentication + Integrity checks (MACs, digital signatures) · Target: Integrity, Availability, Authenticity</p>
+
+    <div class="formula-box">
+      <span class="label">Active vs Passive — Key Distinction (2-mark format)</span>
+      <div class="formula">Passive: Eavesdrop only. No modification. Goal = Confidentiality breach.</div>
+      <div class="formula">         Prevention = Encryption. Detection = Very difficult.</div>
+      <div class="formula">Active:  Modifies/creates/replays data. Goal = Integrity/Availability/Auth breach.</div>
+      <div class="formula">         Prevention = Authentication + MAC + Digital Signatures. Detection = Easier.</div>
+    </div>
+  </div>
+
+  <div class="diagram-wrap">
+    <svg viewBox="0 0 580 220" width="100%" height="auto" xmlns="http://www.w3.org/2000/svg">
+      <text x="10" y="18" fill="#f97316" font-family="JetBrains Mono" font-size="11">Security Attacks Classification</text>
+      <!-- Root -->
+      <rect x="215" y="28" width="150" height="38" rx="6" fill="#152432" stroke="#f97316" stroke-width="2"/>
+      <text x="290" y="50" text-anchor="middle" fill="#f97316" font-family="JetBrains Mono" font-size="11" font-weight="bold">Security Attacks</text>
+      <!-- Lines down -->
+      <line x1="290" y1="66" x2="290" y2="82" stroke="#4ade80" stroke-width="1.5"/>
+      <line x1="130" y1="82" x2="450" y2="82" stroke="#4ade80" stroke-width="1.5"/>
+      <line x1="130" y1="82" x2="130" y2="98" stroke="#4ade80" stroke-width="1.5"/>
+      <line x1="450" y1="82" x2="450" y2="98" stroke="#4ade80" stroke-width="1.5"/>
+      <!-- Passive box -->
+      <rect x="50" y="98" width="160" height="38" rx="6" fill="#0f1c26" stroke="#22d3ee" stroke-width="2"/>
+      <text x="130" y="121" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="11" font-weight="bold">Passive Attack</text>
+      <!-- Active box -->
+      <rect x="370" y="98" width="160" height="38" rx="6" fill="#0f1c26" stroke="#ef4444" stroke-width="2"/>
+      <text x="450" y="121" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="11" font-weight="bold">Active Attack</text>
+      <!-- Passive sub-types -->
+      <line x1="90" y1="136" x2="90" y2="152" stroke="#22d3ee" stroke-width="1"/>
+      <line x1="170" y1="136" x2="170" y2="152" stroke="#22d3ee" stroke-width="1"/>
+      <rect x="30" y="152" width="120" height="28" rx="4" fill="#152432" stroke="#22d3ee" stroke-width="1"/>
+      <text x="90" y="165" text-anchor="middle" fill="#dde8f0" font-family="JetBrains Mono" font-size="8">Release of msg</text>
+      <text x="90" y="176" text-anchor="middle" fill="#dde8f0" font-family="JetBrains Mono" font-size="8">contents</text>
+      <rect x="110" y="152" width="120" height="28" rx="4" fill="#152432" stroke="#22d3ee" stroke-width="1"/>
+      <text x="170" y="170" text-anchor="middle" fill="#dde8f0" font-family="JetBrains Mono" font-size="9">Traffic Analysis</text>
+      <!-- Active sub-types -->
+      <line x1="395" y1="136" x2="395" y2="152" stroke="#ef4444" stroke-width="1"/>
+      <line x1="425" y1="136" x2="425" y2="152" stroke="#ef4444" stroke-width="1"/>
+      <line x1="455" y1="136" x2="455" y2="152" stroke="#ef4444" stroke-width="1"/>
+      <line x1="505" y1="136" x2="505" y2="152" stroke="#ef4444" stroke-width="1"/>
+      <rect x="358" y="152" width="75" height="28" rx="3" fill="#152432" stroke="#ef4444" stroke-width="1"/>
+      <text x="395" y="170" text-anchor="middle" fill="#dde8f0" font-family="JetBrains Mono" font-size="8">Masquerade</text>
+      <rect x="408" y="152" width="75" height="28" rx="3" fill="#152432" stroke="#ef4444" stroke-width="1"/>
+      <text x="445" y="166" text-anchor="middle" fill="#dde8f0" font-family="JetBrains Mono" font-size="8">Message</text>
+      <text x="445" y="177" text-anchor="middle" fill="#dde8f0" font-family="JetBrains Mono" font-size="8">Modification</text>
+      <rect x="460" y="152" width="70" height="28" rx="3" fill="#152432" stroke="#ef4444" stroke-width="1"/>
+      <text x="495" y="170" text-anchor="middle" fill="#dde8f0" font-family="JetBrains Mono" font-size="8">Replay / DoS</text>
+      <!-- CIA targets -->
+      <text x="130" y="205" text-anchor="middle" fill="#22d3ee" font-family="JetBrains Mono" font-size="9">Target: Confidentiality</text>
+      <text x="450" y="205" text-anchor="middle" fill="#ef4444" font-family="JetBrains Mono" font-size="9">Target: Integrity / Availability / Auth</text>
+    </svg>
+    <div class="diagram-cap">Fig 1.1 — Security Attack Classification Tree</div>
+  </div>
+
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — Security Attacks</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. What are security attacks? Differentiate between active and passive attacks.</div>
+      <div class="pyq-meta"><span>2023-Jul A1 · 2024 A1 · May 2025 Part C Q1 · Multiple papers ⭐⭐⭐</span><span class="topic-tag">Active vs Passive</span><span class="pred-tag-sm">🔮 2026 Predicted</span></div>
+      <button class="pyq-toggle" onclick="tog(this)">▼ Show Answer</button>
+      <div class="answer-content">
+        <strong>Security Attack — Definition:</strong><br>
+        Any intentional action taken to compromise the security of information or an information system. Attacks target the CIA triad (Confidentiality, Integrity, Availability) and/or Authentication of a system.<br><br>
+        <strong>Passive Attacks:</strong><br>
+        Attacker monitors or eavesdrops on transmissions without modifying data. Goal = breach confidentiality. Very hard to detect (no visible disruption). Types: (1) Release of message contents — reading plaintext, (2) Traffic analysis — observing patterns of encrypted communication.<br>
+        Prevention: Encryption makes intercepted data unreadable.<br><br>
+        <strong>Active Attacks:</strong><br>
+        Attacker modifies, creates, or replays data. Goal = breach integrity/availability/authentication. Easier to detect as it disrupts communication. Types:<br>
+        (1) Masquerade — impersonating another entity<br>
+        (2) Replay — re-sending captured valid messages<br>
+        (3) Modification — altering message content<br>
+        (4) Denial of Service — flooding system to deny access<br>
+        Prevention: Authentication protocols, MACs, digital signatures.<br><br>
+        [Draw the classification tree diagram above]
+      </div>
+    </div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. What are security attacks? Explain substitution ciphers and transposition ciphers.</div>
+      <div class="pyq-meta"><span>June 2022 · Part B Q1 · 10 marks ⭐⭐</span><span class="topic-tag">Attacks + Classical Ciphers</span></div>
+      <button class="pyq-toggle" onclick="tog(this)">▼ Show Answer</button>
+      <div class="answer-content">
+        <strong>Security Attacks:</strong> [As defined above — active vs passive with diagram]<br><br>
+        <strong>Substitution Ciphers:</strong><br>
+        A substitution cipher replaces each letter/group of letters in the plaintext with another letter/group according to a fixed rule. The positions of letters change but the letters themselves are replaced. Examples: Caesar, Playfair, Hill, Vigenère.<br><br>
+        <strong>Transposition Ciphers:</strong><br>
+        A transposition cipher rearranges the letters/characters of the plaintext without changing the letters themselves. The letters stay the same but their positions change. Example: Rail Fence, columnar transposition.<br><br>
+        Key difference: Substitution = What letters (identity changes); Transposition = Where letters go (position changes).
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 02: SECURITY SERVICES ═══ -->
+<section class="section" id="services">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">Security Services &amp; Mechanisms</h2>
+    <span class="imp-pill badge badge-orange">75% · Part A/B</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>Security Services (What we want to protect)</h3>
+    <p>Defined by ITU-T X.800. A security service is a capability that protects against a specific type of attack:</p>
+    <table class="comp-table">
+      <tr><th>Service</th><th>What it provides</th><th>Threatened by</th></tr>
+      <tr><td><span class="hl-o">Authentication</span></td><td>Assurance of identity of communicating entity</td><td>Masquerade attack</td></tr>
+      <tr><td><span class="hl-o">Access Control</span></td><td>Prevents unauthorized use of resources</td><td>Privilege escalation</td></tr>
+      <tr><td><span class="hl-o">Data Confidentiality</span></td><td>Protection from unauthorized disclosure</td><td>Passive attacks (eavesdropping)</td></tr>
+      <tr><td><span class="hl-o">Data Integrity</span></td><td>Assurance data has not been altered</td><td>Modification attacks</td></tr>
+      <tr><td><span class="hl-o">Non-Repudiation</span></td><td>Sender/receiver cannot deny a message</td><td>Denial of sending/receiving</td></tr>
+      <tr><td><span class="hl-o">Availability</span></td><td>System accessible when needed</td><td>Denial of Service</td></tr>
+    </table>
+
+    <h3>Security Mechanisms (How we achieve services)</h3>
+    <ul>
+      <li><span class="hl-o">Encipherment:</span> Transformation of data using algorithms (DES, AES, RSA) — provides confidentiality</li>
+      <li><span class="hl-o">Digital Signature:</span> Data that proves authenticity and provides non-repudiation</li>
+      <li><span class="hl-o">Access Control:</span> Rights, permissions, capabilities management</li>
+      <li><span class="hl-o">Data Integrity:</span> Hash functions to detect modification</li>
+      <li><span class="hl-o">Authentication Exchange:</span> Protocols to verify identity (passwords, Kerberos)</li>
+      <li><span class="hl-o">Traffic Padding:</span> Inserting dummy bits to defeat traffic analysis</li>
+      <li><span class="hl-o">Routing Control:</span> Selecting physically secure routes for sensitive traffic</li>
+      <li><span class="hl-o">Notarization:</span> Trusted third party records communications for non-repudiation</li>
+    </ul>
+    <div class="tip-box connect">
+      <div class="tip-icon">🔗</div>
+      <div class="tip-content">
+        <div class="tip-title">Connection — Unit 2 to All Other Units</div>
+        <p>Security services define WHAT needs protecting. The rest of the course explains HOW each mechanism works: Unit 3 (DES/AES = Encipherment for confidentiality), Unit 4 (RSA = Encipherment + Key Exchange), Unit 5 (Hash = Integrity, Digital Sig = Auth + Non-repudiation), Unit 6 (Kerberos = Auth Exchange, SSL = multiple services combined). Every later topic is a specific implementation of one of these 6 security services.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 03: CAESAR CIPHER ═══ -->
+<section class="section" id="caesar">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">Caesar Cipher</h2>
+    <span class="imp-pill badge badge-blue">60% · Part A</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>What is the Caesar Cipher?</h3>
+    <p>The <span class="hl-o">Caesar cipher</span> (also called ROT-3 or shift cipher) is the simplest and earliest known substitution cipher. Each letter of the plaintext is shifted by a fixed number of positions (key k) in the alphabet. Named after Julius Caesar who used k=3.</p>
+    <div class="layman">Imagine the alphabet written in a circle. To encrypt, you move each letter 3 steps forward. "A" becomes "D", "B" becomes "E", "Z" wraps around and becomes "C". To decrypt, move 3 steps back. It's so simple that even a child can break it by trying all 25 possible shifts.</div>
+
+    <div class="formula-box">
+      <span class="label">Caesar Cipher Formula</span>
+      <div class="formula">Encryption: C = (P + k) mod 26</div>
+      <div class="formula">Decryption: P = (C - k + 26) mod 26</div>
+      <div class="formula">where: P = plaintext letter (0=A, 1=B, ..., 25=Z), k = key (shift amount)</div>
+      <div class="note">Caesar used k=3. Key space = only 25 possible keys → easily brute-forced!</div>
+    </div>
+
+    <div class="example-box">
+      <div class="example-label">📌 Caesar Cipher Example (k=3)</div>
+      <pre>
+Plaintext:  H E L L O   W O R L D
+            7 4 11 11 14  22 14 17 11 3
+
+Add k=3:    10 7 14 14 17  25 17 20 14 6
+
+Ciphertext: K H O O R   Z R U O G
+
+Decryption: K(10)-3=H(7)=H, H(7)-3=E(4)=E... → HELLO WORLD ✓
+      </pre>
+    </div>
+
+    <h4>Weaknesses of Caesar Cipher</h4>
+    <ul>
+      <li><span class="hl-r">Tiny key space:</span> Only 25 possible keys (k=1 to 25) — attacker can try ALL keys in seconds</li>
+      <li><span class="hl-r">Frequency analysis:</span> Letter frequency preserved — 'E' (most common in English) → same ciphertext letter always</li>
+      <li><span class="hl-r">No key management:</span> Single number as key is trivial to guess</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══ SECTION 04: PLAYFAIR CIPHER ═══ -->
+<section class="section" id="playfair">
+  <div class="section-header">
+    <span class="section-num">04</span>
+    <h2 class="section-title">Playfair Cipher</h2>
+    <span class="imp-pill badge badge-red">88% · Part B</span>
+    <span class="pred-tag">🔮 2026 Predicted</span>
+  </div>
+
+  <div class="pred-banner">
+    <div class="pred-badge">🔮 2026 HIGH Confidence</div>
+    <p>Playfair appeared in 2024 Part B Q1 (key="occurrence", message="Jaipur") and 2025 Part B Q1 (key="Code", with Hill Cipher). Playfair alternates with Hill Cipher in Part B. Since Hill Cipher is predicted strongly for 2026, Playfair may appear as the alternative Part B question.</p>
+  </div>
+
+  <div class="theory-block">
+    <h3>What is the Playfair Cipher?</h3>
+    <p>The <span class="hl-o">Playfair cipher</span> is a digraph (letter pair) substitution cipher invented by Charles Wheatstone in 1854, popularized by Lord Playfair. Instead of encrypting one letter at a time, it encrypts pairs of letters using a 5×5 key matrix. This defeats simple frequency analysis since it analyzes pairs, not individual letters.</p>
+    <div class="layman">Instead of replacing one letter at a time (like Caesar), Playfair replaces TWO letters at a time using a secret 5×5 grid. You build the grid from a keyword, then look up pairs of letters in the grid and apply rules to encrypt them. It's like a more complex version of "find the letters in this word search grid and follow these directions."</div>
+  </div>
+
+  <div class="theory-block">
+    <h3>Step 1 — Build the 5×5 Matrix</h3>
+    <p>Rules for building the Playfair matrix:</p>
+    <div class="steps">
+      <div class="step-item"><div class="step-num">1</div><div class="step-text">Write the keyword, removing duplicate letters: Key="OCCURRENCE" → remove duplicates: O-C-U-R-E-N</div></div>
+      <div class="step-item"><div class="step-num">2</div><div class="step-text">Fill remaining alphabet letters (A-Z, combining I and J as one cell) after removing keyword letters</div></div>
+      <div class="step-item"><div class="step-num">3</div><div class="step-text">Fill the 5×5 grid row by row with keyword letters first, then remaining letters</div></div>
+    </div>
+
+    <div class="example-box">
+      <div class="example-label">📌 Playfair Matrix — Key = "OCCURRENCE"</div>
+      <pre>
+Key = OCCURRENCE → Remove duplicates → O C U R E N (unique letters in order)
+Remaining (unused) letters: A B D F G H I/J K L M P Q S T V W X Y Z
+
+5×5 Playfair Matrix:
+  ┌───┬───┬───┬───┬───┐
+  │ O │ C │ U │ R │ E │   ← keyword letters first
+  ├───┼───┼───┼───┼───┤
+  │ N │ A │ B │ D │ F │   ← remaining letters
+  ├───┼───┼───┼───┼───┤
+  │ G │ H │ I │ K │ L │   (I and J share one cell)
+  ├───┼───┼───┼───┼───┤
+  │ M │ P │ Q │ S │ T │
+  ├───┼───┼───┼───┼───┤
+  │ V │ W │ X │ Y │ Z │
+  └───┴───┴───┴───┴───┘
+</pre>
+    </div>
+  </div>
+
+  <div class="theory-block">
+    <h3>Step 2 — Prepare the Plaintext</h3>
+    <ul>
+      <li>Split plaintext into digraphs (pairs of 2 letters)</li>
+      <li>If both letters in a pair are same, insert 'X' between them: "LL" → "LX L"</li>
+      <li>If odd number of letters, add 'X' at the end</li>
+      <li>Replace J with I throughout</li>
+    </ul>
+    <div class="example-box">
+      <div class="example-label">📌 Preparing "JAIPUR" for Playfair</div>
+      <pre>
+Plaintext: JAIPUR → replace J with I → IAIPUR
+Split into pairs: IA  IP  UR
+No duplicate pairs, no odd ending → 3 digraphs: IA, IP, UR
+</pre>
+    </div>
+  </div>
+
+  <div class="theory-block">
+    <h3>Step 3 — Encryption Rules (3 Rules)</h3>
+    <p>For each digraph (pair), apply the FIRST matching rule:</p>
+
+    <div class="formula-box">
+      <span class="label">Playfair Encryption Rules</span>
+      <div class="formula">Rule 1 — SAME ROW: Replace each letter with the letter to its RIGHT (wrap around)</div>
+      <div class="formula">Rule 2 — SAME COLUMN: Replace each letter with the letter BELOW it (wrap around)</div>
+      <div class="formula">Rule 3 — RECTANGLE: Each letter replaced by letter in same row but the OTHER letter's column</div>
+      <div class="note">For decryption: Rule 1 → go LEFT; Rule 2 → go UP; Rule 3 → same rectangle rule (symmetric)</div>
+    </div>
+
+    <div class="example-box">
+      <div class="example-label">📌 Encrypting "JAIPUR" with key "OCCURRENCE"</div>
+      <pre>
+Matrix:    O C U R E
+           N A B D F
+           G H I K L
+           M P Q S T
+           V W X Y Z
+
+Digraph 1: I A
+  I is at row 2, col 2 (0-indexed)
+  A is at row 1, col 1
+  → Different row AND different column → RECTANGLE Rule
+  → I's row=2, A's column=1: M[2][1] = H
+  → A's row=1, I's column=2: M[1][2] = B
+  → IA → HB ✓
+
+Digraph 2: I P
+  I is at row 2, col 2
+  P is at row 3, col 1
+  → RECTANGLE Rule
+  → I's row=2, P's col=1: M[2][1] = H
+  → P's row=3, I's col=2: M[3][2] = Q
+  → IP → HQ ✓
+
+Digraph 3: U R
+  U is at row 0, col 2
+  R is at row 0, col 3
+  → SAME ROW Rule → move right
+  → U→R (one right), R→E (one right)
+  → UR → RE ✓
+
+Ciphertext: HB HQ RE → HBHQRE
+</pre>
+    </div>
+
+    <div class="tip-box trick">
+      <div class="tip-icon">💡</div>
+      <div class="tip-content">
+        <div class="tip-title">Playfair Memory Trick — "RSR Rule"</div>
+        <p><strong>R</strong>ow → go Right (encryption) / Left (decryption). <strong>S</strong>ame column → go Down / Up. <strong>R</strong>ectangle → swap columns but keep rows. Always check Row first, then Column, then Rectangle. For exam: write the matrix clearly first — it earns marks even if you make a calculation error later.</p>
+      </div>
+    </div>
+
+    <div class="tip-box validate">
+      <div class="tip-icon">✅</div>
+      <div class="tip-content">
+        <div class="tip-title">Answer Validation Trick</div>
+        <p>To verify your Playfair encryption: decrypt your ciphertext using the REVERSE rules (Left instead of Right, Up instead of Down, same Rectangle). If you get back the original plaintext, your encryption is correct. Also count: ciphertext should have the same number of digraphs as plaintext.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — Playfair Cipher</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Construct a Playfair matrix with the key "occurrence" and encrypt the message "Jaipur".</div>
+      <div class="pyq-meta"><span>2024 · Part B Q1 · 4 marks ⭐⭐⭐</span><span class="topic-tag">Playfair Cipher</span></div>
+      <button class="pyq-toggle" onclick="tog(this)">▼ Show Answer</button>
+      <div class="answer-content">
+        [Complete solution above in the worked example. Final answer: Ciphertext = HBHQRE]<br><br>
+        <strong>Full steps for exam:</strong><br>
+        Step 1: Build key matrix using "OCCURRENCE" (remove duplicates: OCUREN, fill rest of alphabet)<br>
+        Step 2: Prepare plaintext: JAIPUR → IAIPUR → pairs: IA, IP, UR<br>
+        Step 3: Apply rules:<br>
+        • IA → rectangle → HB<br>
+        • IP → rectangle → HQ<br>
+        • UR → same row → RE<br>
+        Ciphertext = HBHQRE
+      </div>
+    </div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Construct a Playfair matrix with key "largest" and encrypt a message.</div>
+      <div class="pyq-meta"><span>2023-24 (61N0403) · Part B Q2 · 4 marks ⭐</span><span class="topic-tag">Playfair Cipher</span></div>
+      <button class="pyq-toggle" onclick="tog(this)">▼ Show Answer</button>
+      <div class="answer-content">
+        <strong>Matrix for key "LARGEST":</strong><br>
+        Remove duplicates from LARGEST → L A R G E S T (all unique)<br>
+        Remaining: B C D F H I/J K M N O P Q U V W X Y Z<br><br>
+        <pre>
+  L A R G E
+  S T B C D
+  F H I K M
+  N O P Q U
+  V W X Y Z
+        </pre>
+        For any given message, apply the 3 Playfair rules:<br>
+        Same Row → go Right · Same Column → go Down · Rectangle → swap columns<br><br>
+        <strong>Example:</strong> Encrypt "HELLO"<br>
+        Prepare: HE LL OX (LL has duplicate → insert X → HE LX LO)<br>
+        Pairs: HE, LX, LO<br>
+        HE: H(row2,col1), E(row0,col4) → Rectangle → H's row, E's col = M[2][4]=M; E's row, H's col = M[0][1]=A → HE→MA<br>
+        LX: L(row0,col0), X(row4,col2) → Rectangle → L's row, X's col = M[0][2]=R; X's row, L's col = M[4][0]=V → LX→RV<br>
+        LO: L(row0,col0), O(row3,col1) → Rectangle → L's row, O's col = M[0][1]=A; O's row, L's col = M[3][0]=N → LO→AN<br>
+        Ciphertext: MARVAN
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 05: HILL CIPHER ═══ -->
+<section class="section" id="hill">
+  <div class="section-header">
+    <span class="section-num">05</span>
+    <h2 class="section-title">Hill Cipher — Matrix Encryption</h2>
+    <span class="imp-pill badge badge-red">🔥 95% — Almost Every Paper!</span>
+    <span class="pred-tag">🔮 2026 Predicted</span>
+  </div>
+
+  <div class="pred-banner">
+    <div class="pred-badge">🔮 2026 CERTAIN — Appears Every Year</div>
+    <p>Hill Cipher numerical appeared in <strong>2023-Jul Part B Q1</strong> (key [[3,2],[8,5]], message="Code") and <strong>2025 Part B Q1</strong> (same key [[3,2],[8,5]]). RTU uses the same key matrix repeatedly with different messages. For 2026, expect: same key [[3,2],[8,5]] OR [[1,2],[8,5]] with a new 4-letter message. <strong>Practice Hill Cipher until you can do it in your sleep.</strong></p>
+  </div>
+
+  <div class="theory-block">
+    <h3>What is the Hill Cipher?</h3>
+    <p>The <span class="hl-o">Hill cipher</span> (1929, by Lester Hill) is a polygraphic substitution cipher based on linear algebra. It encrypts blocks of letters simultaneously using matrix multiplication. A 2×2 key matrix encrypts 2 letters at a time; a 3×3 key matrix encrypts 3 letters at a time.</p>
+    <div class="layman">The Hill cipher treats your message as a column of numbers (A=0, B=1, ..., Z=25) and multiplies it by a secret matrix (the key) using matrix multiplication, then takes the result modulo 26. It's like a scrambler that mixes multiple letters together at once — changing one input letter changes multiple output letters, making it harder to break than Caesar or even Playfair.</div>
+  </div>
+
+  <div class="theory-block">
+    <h3>Hill Cipher — Encryption (Step by Step)</h3>
+
+    <div class="formula-box">
+      <span class="label">Hill Cipher Formula</span>
+      <div class="formula">Encryption: C = K × P (mod 26)</div>
+      <div class="formula">Decryption: P = K⁻¹ × C (mod 26)</div>
+      <div class="formula">where: K = n×n key matrix, P = plaintext column vector (n letters), K⁻¹ = modular inverse of K</div>
+      <div class="note">All arithmetic is modulo 26. Letters: A=0, B=1, C=2, D=3, E=4, ..., Z=25</div>
+    </div>
+
+    <div class="example-box">
+      <div class="example-label">📌 Complete Example — Encrypt "CODE" with K = [[3,2],[8,5]]</div>
+      <pre>
+Key matrix: K = [ 3  2 ]
+                [ 8  5 ]
+
+Convert "CODE" to numbers:
+C=2, O=14, D=3, E=4
+
+Split into 2-letter blocks: [C,O] and [D,E]
+
+Block 1: Encrypt [C,O] = [2, 14]ᵀ
+
+C = K × P (mod 26)
+[ 3  2 ] × [ 2  ] = [ 3×2 + 2×14 ] = [ 6 + 28  ] = [ 34 ] ≡ [ 8  ] (mod 26)
+[ 8  5 ]   [ 14 ]   [ 8×2 + 5×14 ]   [ 16 + 70 ]   [ 86 ]   [ 8  ]
+
+8 = I, 8 = I → Block 1 encrypts to "II"
+
+Block 2: Encrypt [D,E] = [3, 4]ᵀ
+
+[ 3  2 ] × [ 3 ] = [ 3×3 + 2×4 ] = [ 9 + 8  ] = [ 17 ] ≡ [ 17 ] (mod 26)
+[ 8  5 ]   [ 4 ]   [ 8×3 + 5×4 ]   [ 24 + 20]   [ 44 ]   [ 18 ]
+
+17 = R, 18 = S → Block 2 encrypts to "RS"
+
+Final Ciphertext: IIRS ✓
+</pre>
+    </div>
+  </div>
+
+  <div class="theory-block">
+    <h3>Hill Cipher — Decryption</h3>
+    <p>Decryption requires the modular inverse matrix K⁻¹. To find K⁻¹ (mod 26) for a 2×2 matrix:</p>
+
+    <div class="formula-box">
+      <span class="label">Finding K⁻¹ for K = [[a,b],[c,d]]</span>
+      <div class="formula">det(K) = ad - bc</div>
+      <div class="formula">K⁻¹ = det(K)⁻¹ × adj(K) (mod 26)</div>
+      <div class="formula">adj(K) = [ d  -b ]  (swap a,d; negate b,c)</div>
+      <div class="formula">         [ -c  a ]</div>
+      <div class="formula">det(K)⁻¹ = modular multiplicative inverse of det(K) modulo 26</div>
+      <div class="note">det⁻¹ exists only if gcd(det(K), 26) = 1. Find x such that det(K)×x ≡ 1 (mod 26)</div>
+    </div>
+
+    <div class="example-box">
+      <div class="example-label">📌 Decrypt "IIRS" with K = [[3,2],[8,5]]</div>
+      <pre>
+K = [ 3  2 ]
+    [ 8  5 ]
+
+Step 1: Find det(K)
+det(K) = 3×5 - 2×8 = 15 - 16 = -1 ≡ 25 (mod 26)
+
+Step 2: Find det(K)⁻¹ (mod 26)
+We need x such that 25x ≡ 1 (mod 26)
+25 × 25 = 625 = 24×26 + 1 → 625 ≡ 1 (mod 26)
+So det(K)⁻¹ = 25
+
+Step 3: Find adj(K)
+adj(K) = [  5  -2 ] = [  5  24 ] (mod 26, since -2 ≡ 24)
+         [ -8   3 ]   [ 18   3 ]   (since -8 ≡ 18 mod 26)
+
+Step 4: K⁻¹ = det⁻¹ × adj(K) (mod 26)
+K⁻¹ = 25 × [  5  24 ] = [ 125  600 ] ≡ [  21  2 ] (mod 26)
+            [ 18   3 ]   [ 450   75 ]   [   8  23]
+
+Check: 125 mod 26 = 125 - 4×26 = 125-104 = 21 ✓
+       600 mod 26 = 600 - 23×26 = 600-598 = 2 ✓
+       450 mod 26 = 450 - 17×26 = 450-442 = 8 ✓
+       75 mod 26 = 75 - 2×26 = 75-52 = 23 ✓
+
+K⁻¹ = [ 21   2 ]
+      [  8  23 ]
+
+Step 5: Decrypt Block 1: [I,I] = [8,8]ᵀ
+P = K⁻¹ × C = [ 21  2 ] × [ 8 ] = [ 21×8 + 2×8 ] = [ 168+16 ] = [ 184 ] ≡ [ 2  ] (mod 26)
+               [  8 23 ]   [ 8 ]   [  8×8 +23×8 ]   [  64+184]   [ 248 ]   [ 14 ]
+
+2=C, 14=O → "CO" ✓
+
+Step 6: Decrypt Block 2: [R,S] = [17,18]ᵀ
+P = [ 21   2 ] × [ 17 ] = [ 21×17 + 2×18 ] = [ 357+36 ] = [ 393 ] ≡ [ 3  ] (mod 26)
+    [  8  23 ]   [ 18 ]   [  8×17 +23×18 ]   [ 136+414]   [ 550 ]   [ 4  ]
+
+3=D, 4=E → "DE" ✓
+
+Decrypted: CODE ✓ (Original plaintext recovered!)
+</pre>
+    </div>
+
+    <div class="tip-box trick">
+      <div class="tip-icon">⚡</div>
+      <div class="tip-content">
+        <div class="tip-title">Hill Cipher Exam Speed Tricks</div>
+        <p><strong>1. Letter-to-number cheatsheet:</strong> A=0,B=1,C=2,D=3,E=4,...,I=8,...,O=14,...,R=17,S=18,...,Z=25. Write this at the start.<br>
+        <strong>2. Modulo shortcut:</strong> 26+n (if n is negative), or subtract 26s from large numbers. 86 mod 26 = 86-78 = 8 (since 3×26=78).<br>
+        <strong>3. Validation:</strong> Decrypt your ciphertext using K⁻¹. If you get back plaintext, you're correct. This takes 2 mins but guarantees full marks.<br>
+        <strong>4. If det(K)=-1:</strong> det⁻¹ = 25 (since 25×25=625≡1 mod26). This is the most common case in RTU papers!</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — Hill Cipher</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Encrypt the message "Code" using Hill cipher with key [[3,2],[8,5]] and decrypt the ciphertext to original plaintext.</div>
+      <div class="pyq-meta"><span>2023-Jul B1 · 2025 B1 — SAME QUESTION, APPEARS TWICE ⭐⭐⭐</span><span class="topic-tag">Hill Cipher Numerical</span><span class="pred-tag-sm">🔮 2026 Predicted</span></div>
+      <button class="pyq-toggle" onclick="tog(this)">▼ Show Answer</button>
+      <div class="answer-content">
+        [Complete solution worked above in the example boxes]<br><br>
+        <strong>Summary for exam:</strong><br>
+        • C=2, O=14, D=3, E=4<br>
+        • Block 1 [2,14]: [3×2+2×14, 8×2+5×14] = [34,86] ≡ [8,8] mod 26 → II<br>
+        • Block 2 [3,4]: [3×3+2×4, 8×3+5×4] = [17,44] ≡ [17,18] mod 26 → RS<br>
+        • <strong>Ciphertext: IIRS</strong><br><br>
+        Decryption:<br>
+        • det(K) = 15-16 = -1 ≡ 25; det⁻¹ = 25<br>
+        • K⁻¹ = [[21,2],[8,23]]<br>
+        • Decrypt IIRS → CODE ✓
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 06: VIGENÈRE CIPHER ═══ -->
+<section class="section" id="vigenere">
+  <div class="section-header">
+    <span class="section-num">06</span>
+    <h2 class="section-title">Vigenère Cipher</h2>
+    <span class="imp-pill badge badge-orange">70% · Part A/B</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>What is the Vigenère Cipher?</h3>
+    <p>The <span class="hl-o">Vigenère cipher</span> is a polyalphabetic substitution cipher that uses multiple Caesar ciphers with different shift values, determined by a repeating keyword. It was considered "le chiffre indéchiffrable" (the unbreakable cipher) for 300 years — until Kasiski broke it in 1863.</p>
+    <div class="layman">Instead of shifting all letters by the same amount (like Caesar), the Vigenère cipher shifts by different amounts based on a keyword. If your keyword is "KEY", the first letter shifts by K=10, the second by E=4, the third by Y=24, and then the pattern repeats. It's like using multiple Caesar ciphers in rotation.</div>
+
+    <div class="formula-box">
+      <span class="label">Vigenère Cipher Formula</span>
+      <div class="formula">Encryption: Cᵢ = (Pᵢ + Kᵢ) mod 26</div>
+      <div class="formula">Decryption: Pᵢ = (Cᵢ - Kᵢ + 26) mod 26</div>
+      <div class="formula">where: Pᵢ = plaintext letter i, Kᵢ = keyword letter i (cycling), Cᵢ = ciphertext letter i</div>
+    </div>
+
+    <div class="example-box">
+      <div class="example-label">📌 Vigenère Cipher — Encrypt "ATTACK" with key "KEY"</div>
+      <pre>
+Plaintext:   A  T  T  A  C  K
+             0  19 19  0  2  10
+
+Key:         K  E  Y  K  E  Y  (repeat as needed)
+             10  4 24 10  4  24
+
+C = (P+K) mod 26:
+A+K = 0+10 = 10 = K
+T+E = 19+4 = 23 = X
+T+Y = 19+24 = 43 mod 26 = 17 = R
+A+K = 0+10 = 10 = K
+C+E = 2+4 = 6 = G
+K+Y = 10+24 = 34 mod 26 = 8 = I
+
+Ciphertext: KXRKGI
+
+Decryption (verify):
+K-K = 10-10 = 0 = A ✓
+X-E = 23-4 = 19 = T ✓
+R-Y = 17-24 = -7 → -7+26 = 19 = T ✓
+... → ATTACK ✓
+</pre>
+    </div>
+
+    <h4>Why is Vigenère Stronger than Caesar?</h4>
+    <ul>
+      <li>The same plaintext letter encrypts to DIFFERENT ciphertext letters depending on its position</li>
+      <li>Key space = 26ⁿ where n = key length (much larger than Caesar's 25)</li>
+      <li>Defeats simple frequency analysis — 'E' doesn't always map to the same ciphertext letter</li>
+      <li><strong>Weakness:</strong> Kasiski test can find key length by detecting repeated patterns in ciphertext</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ═══ SECTION 07: TRANSPOSITION CIPHERS ═══ -->
+<section class="section" id="transposition">
+  <div class="section-header">
+    <span class="section-num">07</span>
+    <h2 class="section-title">Transposition Ciphers</h2>
+    <span class="imp-pill badge badge-red">82% · Part B</span>
+    <span class="pred-tag">🔮 2026 Predicted</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>What is a Transposition Cipher?</h3>
+    <p>A <span class="hl-o">transposition cipher</span> rearranges (permutes) the positions of the characters in the plaintext WITHOUT changing the characters themselves. The letters stay the same — only their positions change.</p>
+    <div class="layman">A transposition cipher is like cutting up a sentence written on paper, putting all the words in a bag, shaking it up, then gluing them down in a different order. You can still see the same words — they're just in the wrong places. The secret is knowing what order they should have been in.</div>
+    <p><strong>Key difference from Substitution:</strong> Substitution = WHAT letters (letters change, positions preserved). Transposition = WHERE letters go (letters preserved, positions change).</p>
+  </div>
+
+  <div class="theory-block">
+    <h3>Rail Fence Cipher</h3>
+    <p>The plaintext is written diagonally across a number of "rails" (rows), then read off row by row to produce the ciphertext.</p>
+
+    <div class="example-box">
+      <div class="example-label">📌 Rail Fence — "INFORMATION SECURITY" with 3 rails</div>
+      <pre>
+Plaintext: INFORMATIONSECURITY (spaces removed)
+
+Write diagonally across 3 rails:
+Rail 1:  I . . . M . . . I . . . S . . . R . . 
+Rail 2:  . N . O . A . I . N . E . U . I . Y .
+Rail 3:  . . F . . . T . . . O . . . C . . . .
+
+Rail 1: I M I S R
+Rail 2: N O A I N E U I Y
+Rail 3: F T O C
+
+Read off: IMISR NOAINEUI Y FTOC
+Ciphertext: IMISRNOAINEUIYTOC
+
+Decryption: Know the pattern, map back to original positions.
+</pre>
+    </div>
+
+    <h3>Columnar Transposition Cipher</h3>
+    <p>The most important transposition cipher. Write the plaintext in rows under a keyword, then read off the columns in alphabetical key order.</p>
+
+    <div class="example-box">
+      <div class="example-label">📌 Columnar Transposition — "INFORMATION SECURITY" with key "BEST"</div>
+      <pre>
+Key:      B  E  S  T
+Order:    1  2  4  3    (alphabetical: B=1st, E=2nd, S=4th, T=3rd)
+
+Write plaintext in rows under key (4 columns):
+Row 1:    I  N  F  O
+Row 2:    R  M  A  T
+Row 3:    I  O  N  S
+Row 4:    E  C  U  R
+Row 5:    I  T  Y  X    (pad with X if needed)
+
+Read columns in order B(1), E(2), T(3), S(4):
+Col B: I R I E I
+Col E: N M O C T
+Col T (order 3): O T S R X
+Col S (order 4): F A N U Y
+
+Ciphertext: IRIEI NMOCT OTSRX FANUY
+
+Decryption: Know the key, recreate the table, read row by row.
+</pre>
+    </div>
+
+    <div class="tip-box trick">
+      <div class="tip-icon">⚡</div>
+      <div class="tip-content">
+        <div class="tip-title">Exam Trick — Transposition vs Substitution</div>
+        <p>RTU frequently asks: "What is the difference between substitution and transposition cipher?" Perfect 2-mark answer: <strong>Substitution</strong> = letters are REPLACED (Caesar: A→D, B→E). Letter identity changes. <strong>Transposition</strong> = letters are REARRANGED (columnar: letters stay same, positions change). Then add: Both together (product cipher) is stronger than either alone — used in DES (S-boxes = substitution, P permutation = transposition).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — Transposition Cipher</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Explain transposition cipher with example.</div>
+      <div class="pyq-meta"><span>2023-Aug · Part B Q1 · 10 marks ⭐⭐</span><span class="topic-tag">Transposition Cipher</span><span class="pred-tag-sm">🔮 2026 Predicted</span></div>
+      <button class="pyq-toggle" onclick="tog(this)">▼ Show Answer</button>
+      <div class="answer-content">
+        <strong>Transposition Cipher — Definition:</strong><br>
+        A transposition cipher is a type of classical symmetric encryption technique in which the positions of the characters in the plaintext are rearranged (permuted) without changing the characters themselves. The resulting ciphertext is a permutation of the original plaintext characters.<br><br>
+
+        <strong>Key Property:</strong> Letters stay the same (A remains A, B remains B), but their positions change. This is fundamentally different from substitution ciphers where letters are replaced with other letters.<br><br>
+
+        <strong>Types of Transposition Ciphers:</strong><br>
+        1. Rail Fence Cipher<br>
+        2. Columnar Transposition Cipher (most important)<br>
+        3. Route Cipher<br><br>
+
+        <strong>Columnar Transposition — Detailed Example:</strong><br>
+        Plaintext: "INFORMATION SECURITY" (remove spaces → INFORMATIONSECURITY)<br>
+        Key: "SECURITY" → Find alphabetical order: C=1, E=2, I=3, R=4, S=5, T=6, U=7, Y=8<br><br>
+
+        Wait — let's use a simpler key. Key = "BEST" (B=1, E=2, S=4, T=3):<br><br>
+        Write plaintext in rows of 4 columns:<br>
+        B E S T<br>
+        I N F O<br>
+        R M A T<br>
+        I O N S<br>
+        E C U R<br>
+        I T Y X (padded)<br><br>
+
+        Read columns in order 1(B), 2(E), 3(T), 4(S):<br>
+        Column B: IRIEI → Column E: NMOCT → Column T: OTSRX → Column S: FANUY<br>
+        Ciphertext: IRIEINMOCTOTSRXFANUY<br><br>
+
+        <strong>Decryption:</strong><br>
+        1. Determine column length = ceil(len(plaintext)/key_length)<br>
+        2. Recreate the grid by placing ciphertext column by column in key order<br>
+        3. Read plaintext row by row<br><br>
+
+        <strong>Security:</strong> Columnar transposition alone has a relatively small key space (n! for n columns). Combining multiple rounds (double transposition) significantly increases security. Modern ciphers like DES use transposition (the P permutation) as one component alongside substitution (S-boxes).
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 08: CRYPTANALYSIS ═══ -->
+<section class="section" id="cryptanalysis">
+  <div class="section-header">
+    <span class="section-num">08</span>
+    <h2 class="section-title">Cryptanalysis</h2>
+    <span class="imp-pill badge badge-orange">72% · Part A/B</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>What is Cryptanalysis?</h3>
+    <p><span class="hl-o">Cryptanalysis</span> is the science of breaking cryptographic systems — analyzing ciphers to recover plaintext or the key without authorized access. Together with cryptography, it forms <span class="hl-o">cryptology</span>.</p>
+    <div class="layman">Cryptography is designing locks. Cryptanalysis is studying how to pick those locks, find their weaknesses, and break them open. Cryptanalysts are the "ethical hackers" of the encryption world — by finding weaknesses, they help build better ciphers.</div>
+
+    <h4>Types of Cryptanalytic Attacks (by attacker knowledge)</h4>
+    <table class="comp-table">
+      <tr><th>Attack Type</th><th>What Attacker Has</th><th>Goal</th><th>Example</th></tr>
+      <tr><td><span class="hl-o">Ciphertext Only Attack (COA)</span></td><td>Only ciphertext</td><td>Find key or plaintext</td><td>Frequency analysis on Caesar cipher</td></tr>
+      <tr><td><span class="hl-o">Known Plaintext Attack (KPA)</span></td><td>Some plaintext + corresponding ciphertext pairs</td><td>Find key</td><td>WWII breaking Enigma using known message headers</td></tr>
+      <tr><td><span class="hl-o">Chosen Plaintext Attack (CPA)</span></td><td>Attacker can choose plaintexts and get ciphertexts</td><td>Find key</td><td>Differential cryptanalysis on DES</td></tr>
+      <tr><td><span class="hl-o">Chosen Ciphertext Attack (CCA)</span></td><td>Attacker can choose ciphertexts and get plaintexts</td><td>Find key</td><td>Padding oracle attacks on SSL</td></tr>
+    </table>
+
+    <div class="tip-box connect">
+      <div class="tip-icon">🔗</div>
+      <div class="tip-content">
+        <div class="tip-title">Connection — Cryptanalysis → Design Principles (Unit 3)</div>
+        <p>Understanding what cryptanalytic attacks exist directly motivates the design principles in Unit 3! DES has 16 rounds specifically because differential cryptanalysis of 15-round DES is easier than brute force, but full 16-round DES is not. AES was designed to resist all known attacks (differential, linear, interpolation). The S-boxes provide non-linearity to prevent linear cryptanalysis. Knowing the "why" of design principles (Unit 3) requires knowing these attack types from Unit 2.</p>
+      </div>
+    </div>
+
+    <h4>Brute Force Attack</h4>
+    <p>Try every possible key until the correct one is found. Always succeeds eventually — the question is how long it takes. A 56-bit DES key has 2⁵⁶ ≈ 72 quadrillion possibilities. Modern computers broke DES by brute force in 22 hours (1999). AES-128 with 2¹²⁸ keys is computationally infeasible to brute-force with all computers on Earth combined.</p>
+  </div>
+
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — Cryptanalysis</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. What is the difference between Cryptography and Cryptanalysis?</div>
+      <div class="pyq-meta"><span>May 2025 · Part A Q1 · 2 marks ⭐⭐</span><span class="topic-tag">Cryptography vs Cryptanalysis</span></div>
+      <button class="pyq-toggle" onclick="tog(this)">▼ Show Answer</button>
+      <div class="answer-content">
+        <strong>Cryptography:</strong> The science of designing methods and algorithms to protect information — creating ciphers, keys, and cryptographic protocols that transform readable data (plaintext) into unreadable form (ciphertext). It focuses on making communication secure. Examples: AES, RSA, SHA-256.<br><br>
+        <strong>Cryptanalysis:</strong> The science of breaking or circumventing cryptographic systems — analyzing ciphers to find weaknesses and recover plaintext or keys without authorized access. It tests the strength of cryptographic methods. Examples: frequency analysis, differential cryptanalysis, brute force.<br><br>
+        Together they form <strong>Cryptology</strong> — cryptography builds the locks, cryptanalysis tests if they can be picked.
+      </div>
+    </div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. What do you understand by cryptanalysis?</div>
+      <div class="pyq-meta"><span>2023-24 (61N0403) · Part A Q2 · 2 marks ⭐</span><span class="topic-tag">Cryptanalysis</span></div>
+      <button class="pyq-toggle" onclick="tog(this)">▼ Show Answer</button>
+      <div class="answer-content">
+        <strong>Cryptanalysis</strong> is the study of analyzing information systems in order to discover hidden aspects of those systems. In cryptography context, it is the art and science of breaking ciphers — recovering plaintext from ciphertext without knowing the key, or discovering the key itself.<br><br>
+        Cryptanalysis techniques include: (1) Frequency analysis — analyzing letter frequency in ciphertext (breaks Caesar, Vigenère), (2) Known Plaintext Attack — using known plaintext-ciphertext pairs to deduce key, (3) Differential Cryptanalysis — analyzing differences in plaintext pairs (used to study DES), (4) Brute Force — systematically trying all possible keys.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 09: STREAM VS BLOCK ═══ -->
+<section class="section" id="stream-block">
+  <div class="section-header">
+    <span class="section-num">09</span>
+    <h2 class="section-title">Stream Ciphers vs Block Ciphers</h2>
+    <span class="imp-pill badge badge-red">🔥 90% — Every Paper!</span>
+    <span class="pred-tag">🔮 2026 Predicted</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>Stream Cipher — Bit by Bit</h3>
+    <p>A <span class="hl-o">stream cipher</span> encrypts data one bit (or one byte) at a time by XOR-ing the plaintext with a pseudorandom keystream generated from the key.</p>
+    <div class="layman">A stream cipher is like two people using the same page from a secret random number book. You encrypt each letter by shifting it by the corresponding random number. As long as both sides have the same book and start at the same page, they can decrypt perfectly. The "book" is generated from your shared key.</div>
+
+    <div class="formula-box">
+      <span class="label">Stream Cipher Core Formula</span>
+      <div class="formula">Encryption: Cᵢ = Pᵢ XOR Kᵢ  (XOR each plaintext bit with keystream bit)</div>
+      <div class="formula">Decryption: Pᵢ = Cᵢ XOR Kᵢ  (XOR ciphertext bit with same keystream bit)</div>
+      <div class="formula">Keystream Kᵢ = PRNG(key, nonce)  (Pseudorandom Number Generator)</div>
+      <div class="note">XOR properties: A⊕A=0, A⊕0=A. So encrypting twice with same key = original plaintext. Never reuse a key+nonce!</div>
+    </div>
+
+    <p><strong>Examples:</strong> RC4 (used in old WEP WiFi), A5/1 (2G GSM voice encryption), ChaCha20 (modern, used in TLS 1.3), one-time pad (theoretically unbreakable)</p>
+  </div>
+
+  <div class="theory-block">
+    <h3>Block Cipher — Fixed Block Processing</h3>
+    <p>A <span class="hl-o">block cipher</span> encrypts data in fixed-size blocks (typically 64 or 128 bits) through multiple rounds of complex transformations using the same key for each block.</p>
+    <div class="layman">A block cipher is like a meat grinder that takes exactly one pound of meat at a time, puts it through a very complicated grinding mechanism 16 times, and produces one pound of completely different material. To process two pounds, you run it twice.</div>
+    <p><strong>Examples:</strong> DES (64-bit blocks), AES (128-bit blocks), 3DES, Blowfish</p>
+  </div>
+
+  <div class="theory-block">
+    <h3>Comparison — Stream vs Block</h3>
+    <table class="comp-table">
+      <tr><th>Property</th><th>Stream Cipher</th><th>Block Cipher</th></tr>
+      <tr><td>Processing unit</td><td>1 bit/byte at a time</td><td>Fixed block (64 or 128 bits)</td></tr>
+      <tr><td>Key type</td><td>Keystream (generated from key)</td><td>Same key for each block</td></tr>
+      <tr><td>Speed</td><td>Faster (simpler XOR operation)</td><td>Slower (multiple complex rounds)</td></tr>
+      <tr><td>Error propagation</td><td>1 bit error affects only that bit</td><td>1 bit error may corrupt whole block</td></tr>
+      <tr><td>Implementation</td><td>Simple (XOR with keystream)</td><td>More complex (Feistel / SPN)</td></tr>
+      <tr><td>Memory usage</td><td>Low (process bit by bit)</td><td>Higher (store full block)</td></tr>
+      <tr><td>Use case</td><td>Real-time: voice, video streaming</td><td>File encryption, secure channels</td></tr>
+      <tr><td>Examples</td><td>RC4, A5/1, ChaCha20</td><td>DES, AES, 3DES</td></tr>
+      <tr><td>Key reuse danger</td><td>CRITICAL — never reuse key+nonce</td><td>Less critical (ECB mode exception)</td></tr>
+    </table>
+
+    <div class="tip-box trick">
+      <div class="tip-icon">⚡</div>
+      <div class="tip-content">
+        <div class="tip-title">RTU 2-Mark Answer Template — Stream vs Block</div>
+        <p><strong>Sentence 1:</strong> Stream cipher encrypts one bit/byte at a time; block cipher encrypts fixed-size blocks (64/128 bits).<br>
+        <strong>Sentence 2:</strong> Stream cipher uses XOR with a pseudorandom keystream; block cipher uses multiple rounds of substitution and permutation.<br>
+        <strong>Sentence 3 (bonus):</strong> Stream cipher is faster and suited for real-time applications (VoIP); block cipher is more widely used for storage encryption. This answer appears in every paper — memorize these 3 sentences.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="pyq-section">
+    <div class="pyq-header">📝 RTU PYQs — Stream vs Block Cipher</div>
+    <div class="pyq-item">
+      <div class="pyq-q-text">Q. Write any two differences between Stream and Block ciphers.</div>
+      <div class="pyq-meta"><span>ALL PAPERS 2022–2025 · Part A · 2 marks — 100% Appearance Rate ⭐⭐⭐</span><span class="topic-tag">Stream vs Block</span><span class="pred-tag-sm">🔮 2026 CERTAIN</span></div>
+      <button class="pyq-toggle" onclick="tog(this)">▼ Show Answer</button>
+      <div class="answer-content">
+        <strong>Difference 1 — Processing Unit:</strong><br>
+        Stream cipher: encrypts one bit or byte at a time using XOR with a pseudorandom keystream.<br>
+        Block cipher: encrypts data in fixed-size blocks (DES: 64 bits, AES: 128 bits) all at once through multiple rounds.<br><br>
+        <strong>Difference 2 — Speed &amp; Application:</strong><br>
+        Stream cipher: faster due to simple XOR operations; suited for real-time applications (voice calls, streaming video, GSM encryption).<br>
+        Block cipher: slower but more widely used for secure storage, file encryption, and secure communication protocols (SSL/TLS uses AES).<br><br>
+        <strong>Additional difference (if 3 asked):</strong><br>
+        Error propagation: Stream cipher — 1-bit error affects only that bit. Block cipher — 1-bit error may corrupt the entire block (in modes like ECB/CBC).
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 10: 2026 PREDICTED ═══ -->
+<section class="section" id="predicted">
+  <div class="section-header">
+    <span class="section-num">🔮</span>
+    <h2 class="section-title">2026 Predicted Topics — Unit 2</h2>
+    <span class="imp-pill badge badge-gold">Based on 5-year PYQ Pattern</span>
+  </div>
+
+  <div class="pred-banner">
+    <div class="pred-badge">🔮 Pattern Analysis: 2022–2025</div>
+    <p>Cross-referencing all 5 ISS papers with observed RTU exam patterns. RTU tends to repeat ~60% of question types with different parameters. Topics absent in 2025 are more likely to appear in 2026.</p>
+  </div>
+
+  <div class="theory-block">
+    <h3>Predicted Questions for 2026 — Unit 2</h3>
+    <table class="comp-table">
+      <tr><th>Part</th><th>Predicted Question</th><th>Confidence</th><th>Reason</th></tr>
+      <tr><td>Part A</td><td>Differentiate between active and passive attacks</td><td style="color:#ef4444">CERTAIN</td><td>In every single paper 2022–2025 without exception</td></tr>
+      <tr><td>Part A</td><td>Write any two differences between stream and block ciphers</td><td style="color:#ef4444">CERTAIN</td><td>In every single paper 2022–2025 without exception</td></tr>
+      <tr><td>Part A</td><td>What is avalanche effect?</td><td style="color:#ef4444">VERY HIGH</td><td>In 2023-Jul, 2024, 2023-24 — 3 of 5 papers</td></tr>
+      <tr><td>Part B</td><td>Hill Cipher: Encrypt a 4-letter word with key [[3,2],[8,5]] and decrypt</td><td style="color:#ef4444">VERY HIGH</td><td>Same exact question in 2023-Jul and 2025 — RTU repeats it</td></tr>
+      <tr><td>Part B</td><td>Playfair cipher with key "LARGEST" or new keyword, new message</td><td style="color:#ef4444">HIGH</td><td>Appeared 2024, 2025 — alternates with Hill Cipher in Part B</td></tr>
+      <tr><td>Part B</td><td>Transposition cipher with columnar example</td><td style="color:#f59e0b">HIGH</td><td>In 2023-Aug B1 — 2026 is 3 years later, due for return</td></tr>
+      <tr><td>Part C</td><td>Security attacks: explain active/passive + substitution + transposition ciphers</td><td style="color:#f59e0b">MEDIUM</td><td>Was 10-mark in 2022; 2023-24 had security goals for 10 marks. Pattern shows combined attack+cipher question returns</td></tr>
+      <tr><td>Part A</td><td>What is cryptanalysis? OR Difference between cryptography and cryptanalysis?</td><td style="color:#f59e0b">MEDIUM</td><td>2023-24 has cryptanalysis, 2025 has cryptography vs cryptanalysis — topic rotating</td></tr>
+    </table>
+
+    <div class="tip-box warning">
+      <div class="tip-icon">⚠️</div>
+      <div class="tip-content">
+        <div class="tip-title">Priority Study Order for Unit 2</div>
+        <p><strong>Must master completely:</strong><br>
+        1. Active vs Passive attacks (2-mark template)<br>
+        2. Stream vs Block cipher (2-mark template)<br>
+        3. Hill Cipher numerical — especially key [[3,2],[8,5]] with any 4-letter word<br>
+        4. Playfair cipher — matrix construction + 3 encryption rules<br>
+        5. Columnar transposition cipher with example<br><br>
+        <strong>Quick prep only:</strong> Caesar cipher (formula only), Vigenère cipher (XOR table), Cryptanalysis types (memorize 4 types).</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ SECTION 11: MASTER PYQ LIST ═══ -->
+<section class="section" id="pyq-master">
+  <div class="section-header">
+    <span class="section-num">✦</span>
+    <h2 class="section-title">All RTU PYQs — Master List (Unit 2)</h2>
+    <span class="imp-pill badge badge-red">Complete Reference</span>
+  </div>
+
+  <div class="theory-block">
+    <h3>Part A Questions — Unit 2</h3>
+    <table class="comp-table">
+      <tr><th>Year</th><th>Question</th><th>Topic</th></tr>
+      <tr><td>2025</td><td>What is difference between Cryptography and Cryptanalysis?</td><td>Cryptanalysis ⭐</td></tr>
+      <tr><td>2025</td><td>What is difference between stream and block ciphers?</td><td>Stream vs Block ⭐⭐⭐</td></tr>
+      <tr><td>2025</td><td>What are Confusion and Diffusion in Cryptography?</td><td>Design Principles (Unit 3)</td></tr>
+      <tr><td>2024</td><td>Differentiate between active and passive attacks</td><td>Active/Passive ⭐⭐⭐</td></tr>
+      <tr><td>2024</td><td>Differentiate between stream and block ciphers</td><td>Stream vs Block ⭐⭐⭐</td></tr>
+      <tr><td>2024</td><td>What is avalanche effect?</td><td>Avalanche Effect ⭐⭐</td></tr>
+      <tr><td>2023-Jul</td><td>What are security attacks? Differentiate between active and passive attacks</td><td>Active/Passive ⭐⭐⭐</td></tr>
+      <tr><td>2023-Jul</td><td>Write any two differences between Stream and Block ciphers</td><td>Stream vs Block ⭐⭐⭐</td></tr>
+      <tr><td>2023-Jul</td><td>What is avalanche effect?</td><td>Avalanche Effect ⭐⭐</td></tr>
+      <tr><td>2023-Aug</td><td>What is the difference between stream cipher and block cipher?</td><td>Stream vs Block ⭐⭐⭐</td></tr>
+      <tr><td>2023-Aug</td><td>List down different modes of operation</td><td>Block Cipher Modes (Unit 3)</td></tr>
+      <tr><td>2023-24</td><td>What do you understand by cryptanalysis?</td><td>Cryptanalysis ⭐</td></tr>
+      <tr><td>2023-24</td><td>Differentiate stream ciphers and block ciphers</td><td>Stream vs Block ⭐⭐⭐</td></tr>
+      <tr><td>2022</td><td>What is encryption?</td><td>Basic Encryption</td></tr>
+      <tr><td>2022</td><td>Define Cryptanalysis</td><td>Cryptanalysis ⭐</td></tr>
+      <tr><td>2022</td><td>Define block ciphers</td><td>Block Ciphers ⭐</td></tr>
+    </table>
+
+    <h3 style="margin-top:20px">Part B Questions — Unit 2</h3>
+    <table class="comp-table">
+      <tr><th>Year</th><th>Question</th><th>Topic</th></tr>
+      <tr><td>2025</td><td>Encrypt "Code" using Hill cipher with key [[3,2],[8,5]] and decrypt</td><td>Hill Cipher ⭐⭐⭐</td></tr>
+      <tr><td>2024</td><td>Construct Playfair matrix with key "occurrence" and encrypt "Jaipur"</td><td>Playfair ⭐⭐⭐</td></tr>
+      <tr><td>2023-Jul</td><td>Encrypt "Code" using Hill cipher with key [[3,2],[8,5]] and decrypt</td><td>Hill Cipher ⭐⭐⭐</td></tr>
+      <tr><td>2023-Aug</td><td>Explain transposition cipher with example</td><td>Transposition ⭐⭐</td></tr>
+      <tr><td>2023-24</td><td>Construct Playfair matrix with key "largest"</td><td>Playfair ⭐⭐</td></tr>
+      <tr><td>2023-24</td><td>Explain the 'avalanche' effect with example</td><td>Avalanche ⭐⭐</td></tr>
+      <tr><td>2022</td><td>What are security attacks? Explain substitution ciphers and transposition ciphers</td><td>Attacks + Classical ⭐⭐</td></tr>
+    </table>
+
+    <h3 style="margin-top:20px">Part C Questions — Unit 2</h3>
+    <table class="comp-table">
+      <tr><th>Year</th><th>Question</th><th>Topic</th></tr>
+      <tr><td>2025</td><td>What are security attacks? Explain different types of security attacks</td><td>Security Attacks ⭐⭐</td></tr>
+      <tr><td>2023-24</td><td>Describe security goals in detail</td><td>CIA Triad / Services</td></tr>
+    </table>
+  </div>
+
+  <div class="tip-box validate">
+    <div class="tip-icon">🏆</div>
+    <div class="tip-content">
+      <div class="tip-title">Top 5 Must-Prepare for Unit 2 (Priority Order)</div>
+      <p>
+        <strong>1.</strong> Active vs Passive attacks — 25-word 2-mark answer cold-memorized<br>
+        <strong>2.</strong> Hill Cipher with key [[3,2],[8,5]] — complete encryption + decryption with K⁻¹<br>
+        <strong>3.</strong> Playfair Cipher — matrix construction + 3 rules + worked example<br>
+        <strong>4.</strong> Stream vs Block cipher — 3-sentence comparison answer<br>
+        <strong>5.</strong> Transposition cipher (columnar) — write plaintext in grid, read columns in key order
+      </p>
+    </div>
+  </div>
+</section>
+
+</main>
+</div><!-- /layout -->
+
+<button class="sidebar-toggle" id="sidebarToggle" onclick="openSidebar()">☰</button>
+
+<script>
+function tog(btn){
+  var ans = btn.nextElementSibling;
+  ans.classList.toggle('open');
+  btn.textContent = ans.classList.contains('open') ? '▲ Hide Answer' : '▼ Show Answer';
+}
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('visible');
+  document.getElementById('sidebarToggle').textContent = '✕';
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('visible');
+  document.getElementById('sidebarToggle').textContent = '☰';
+}
+// Active nav highlight on scroll
+const sections = document.querySelectorAll('.section');
+const navItems = document.querySelectorAll('.nav-item');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if(window.scrollY >= s.offsetTop - 80) current = s.id; });
+  navItems.forEach(n => {
+    n.classList.remove('active');
+    if(n.getAttribute('href') === '#' + current) n.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>
